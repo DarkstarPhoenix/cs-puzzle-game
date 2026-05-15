@@ -694,8 +694,27 @@ else:
 
     // HELP
     if (raw === "help") {
-      addLine("Commands: go [direction], look, solve [code], help", "system");
-    
+      return addLine(
+    `> HELP MENU
+
+    Navigation:
+      go north
+      go south
+      go east
+      go west
+      go firewall
+
+    Interaction:
+      look
+      solve [answer]
+      help
+
+    Tip:
+      Use "look" when entering a new room.
+      Use "solve [answer]" when a puzzle asks for a response.`,
+        "system"
+      );    
+      
     // ── LOOK ──────────────────
     } else if (raw === "look") {
       let diagram = "";
