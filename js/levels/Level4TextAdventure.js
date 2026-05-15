@@ -37,7 +37,11 @@ Paths detected: EAST.`,
     },
     // CORE
     core: {
-      enterFirst: `> CORE SYSTEM ACCESSED
+      enterFirst: `╔══════════════════════╗
+║     SYSTEM CORE      ║
+╚══════════════════════╝
+
+> CORE SYSTEM ACCESSED
 You step into the heart of the system.
 Data streams converge here, flowing in all directions.
 A large firewall pulses at the far end - blocking your escape`,
@@ -67,7 +71,11 @@ Paths detected: NORTH, EAST, SOUTH, WEST, FIREWALL`,
     },
     // LOGIC
     logic: {
-      enterFirst: `> LOGIC NODE ACCESSED
+      enterFirst: `╔══════════════════════╗
+║     LOGIC NODE       ║
+╚══════════════════════╝
+
+> LOGIC NODE ACCESSED
 You step into a chamber filled with shifting data structures...
 Streams of binary cascade around you as a circuit begins to assemble itself.`,
 
@@ -165,7 +173,11 @@ Type: solve [code]`,
 
     // IF/ELSE ROOM
     ifelse: {
-      enterFirst: `> CONDITIONAL NODE ACCESSED
+      enterFirst: `╔══════════════════════╗
+║   CONDITIONAL NODE   ║
+╚══════════════════════╝
+
+> CONDITIONAL NODE ACCESSED
   
 A digital gate materialises in front of you, its logic incomplete.
 It requires a condition to determine which path the data should flow through.
@@ -180,7 +192,12 @@ A rule flashes in front of you...`,
 
     // FIREWALL
     firewall: {
-      enterFirst: `> FIREWALL INTERFACE ACCESSED
+      enterFirst: `╔══════════════════════╗
+║   FIREWALL ACTIVE    ║
+║   ACCESS RESTRICTED  ║
+╚══════════════════════╝
+
+> FIREWALL INTERFACE ACCESSED
 You approach the barrier blocking your escape.
 The system reacts immediately.
 
@@ -271,7 +288,7 @@ function Level4({ onComplete, onBack }) {
   const [firewallBoss, setFirewallBoss] = useState(null);
   const [firewallAttempts, setFirewallAttempts] = useState(0);
 
-  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
+  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 35;
   const LINE_DELAY = FAST_MODE ? 0 : 700;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
