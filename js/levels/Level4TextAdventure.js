@@ -271,7 +271,7 @@ function Level4({ onComplete, onBack }) {
   const [firewallBoss, setFirewallBoss] = useState(null);
   const [firewallAttempts, setFirewallAttempts] = useState(0);
 
-  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
+  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 35;
   const LINE_DELAY = FAST_MODE ? 0 : 700;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
@@ -366,7 +366,9 @@ function Level4({ onComplete, onBack }) {
     setDisplayedHistory([]);
 
     return addLine("> TRANSFERRING TO NEW NODE...", "system")
-      .then(() => new Promise(r => setTimeout(r, delay(800))))
+      .then(() => new Promise(r => setTimeout(r, delay(500))))
+      .then(() => addLine("> CONNECTION STABLE", "success"))
+      .then(() => new Promise(r => setTimeout(r, delay(500))))
       .then(() => {
         setDisplayedHistory([]);
         return addLine(text, "system");
