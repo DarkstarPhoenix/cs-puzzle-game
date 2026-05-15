@@ -263,6 +263,7 @@ function Level4({ onComplete, onBack }) {
   ]);
 
   const [started, setStarted] = useState(false);
+  const [digitising, setDigitising] = useState(false);
   const [input, setInput] = useState("");
   const [won, setWon] = useState(false);
   const [score, setScore] = useState(0);
@@ -568,11 +569,11 @@ function Level4({ onComplete, onBack }) {
   }
 
   function triggerGlitch(duration = 200) {
-    playLevel4Sound("glitch");
+  playLevel4Sound("glitch");
 
-    setGlitch(true);
-    setTimeout(() => setGlitch(false), duration);
-  }
+  setGlitch(true);
+  setTimeout(() => setGlitch(false), duration);
+}
 
   function awardBits(count) {
     return new Promise(resolve => {
@@ -1326,6 +1327,25 @@ else:
     }
   }
 
+  if (digitising) {
+    return (
+      <div className="screen">
+        <div className="victory-card glitch">
+          <div className="victory-title">
+            DIGITISING USER<span className="digitising-dots">...</span>
+          </div>
+          <div className="hint-text">
+            {" > CONSCIOUSNESS TRANSFER INITIALISED"}
+            <br />
+            {" > BODY SCAN IN PROGRESS"}
+            <br />
+            {" > UPLOADING USER PROFILE..."}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!started) {
     return (
       <div className="screen">
@@ -1357,7 +1377,16 @@ else:
 
           <button
             className="btn btn-primary"
-            onClick={() => setStarted(true)}
+            onClick={() => {
+            triggerGlitch(1500);
+
+            setDigitising(true);
+
+            setTimeout(() => {
+              setStarted(true);
+              setDigitising(false);
+            }, 1800);
+          }}
           >
             Start Adventure →
           </button>
