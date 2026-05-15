@@ -9,6 +9,13 @@ const { useState, useEffect, useRef } = React;
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
+const BACKGROUND_TRACKS = [
+  "assets/background_music/bg1.mp3",
+  "assets/background_music/bg2.mp3",
+  "assets/background_music/bg3.mp3",
+  "assets/background_music/bg4.mp3"
+];
+
 function getCtx() {
   if (!audioCtx) audioCtx = new AudioCtx();
   return audioCtx;
@@ -309,12 +316,62 @@ function HomeScreen({
 // APP ROOT
 // ══════════════════════════════════════════════
 function App() {
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState("start");
   const [completedLevels, setCompletedLevels] = useState([]);
   const [scores, setScores] = useState({});
   // ── NEW ──
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [toastQueue, setToastQueue] = useState([]);
+
+  // BACKGROUND MUSIC
+  const musicRef = useRef(null);
+  const [trackIndex, setTrackIndex] = useState(0);
+
+  // ── CREATE / SWITCH TRACKS ──────────────────
+  useEffect(() => {
+    const audio = new Audio(BACKGROUND_TRACKS[trackIndex]);
+
+    musicRef.current = audio;
+
+    audio.volume = 0.06;
+
+    audio.play().catch(() => {
+      console.log("Autoplay blocked until user interaction");
+    });
+
+    audio.onended = () => {
+      setTrackIndex((prev) => (prev + 1) % BACKGROUND_TRACKS.length);
+    };
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [trackIndex]);
+
+
+  // ── START MUSIC AFTER FIRST USER INTERACTION ──────────────────
+  useEffect(() => {
+
+    const startMusic = () => {
+
+      if (musicRef.current) {
+        musicRef.current.play().catch(() => {});
+      }
+
+      window.removeEventListener("click", startMusic);
+      window.removeEventListener("keydown", startMusic);
+    };
+
+    window.addEventListener("click", startMusic);
+    window.addEventListener("keydown", startMusic);
+
+    return () => {
+      window.removeEventListener("click", startMusic);
+      window.removeEventListener("keydown", startMusic);
+    };
+
+  }, []);
 
   function handleSelectLevel(id) {
   setScreen(`level${id}`);
@@ -364,6 +421,40 @@ function App() {
 
   return (
     <>
+      {screen === "start" && (
+        <div className="screen">
+          <div className="victory-card">
+            <div className="home-subtitle">TEAM SOFTWARE ENGINEERING</div>
+
+            <div className="home-title">
+              CS PUZZLE
+              <br />
+              GAME <span className="blinking-cursor" />
+            </div>
+
+            <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
+              Learn Computer Science by Playing
+            </div>
+
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                if (musicRef.current) {
+                  musicRef.current.volume = 0.12;
+                  musicRef.current.muted = false;
+                  musicRef.current.play()
+                    .then(() => console.log("Music started"))
+                    .catch(err => console.log("Music failed:", err));
+                }
+
+                setScreen("home");
+              }}
+            >
+              Start Game →
+            </button>
+          </div>
+        </div>
+      )}
       {screen === "home" && (
         <HomeScreen
           completedLevels={completedLevels}
