@@ -288,77 +288,50 @@ function Level4({ onComplete, onBack }) {
   const [firewallBoss, setFirewallBoss] = useState(null);
   const [firewallAttempts, setFirewallAttempts] = useState(0);
 
-  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
+  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 35;
   const LINE_DELAY = FAST_MODE ? 0 : 700;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
 
+  const typeSound = useRef(
+  new Audio("assets/sfx/dragon-studio-single-key-press-393908.mp3")
+  );
+
+  const unlockSound = useRef(
+    new Audio("assets/sfx/freesound_community-access-granted-87075.mp3")
+  );
+
   function playLevel4Sound(type) {
     try {
-      const ctx = getCtx();
 
+      // REAL AUDIO: typing
       if (type === "type") {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = "triangle";
-        osc.frequency.value = 240 + Math.random() * 40;
-
-        gain.gain.setValueAtTime(0.006, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(
-          0.001,
-          ctx.currentTime + 0.035
-        );
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 0.035);
+        const audio = typeSound.current;
+        audio.volume = 0.08;
+        audio.currentTime = 0;
+        audio.play();
       }
 
-      if (type === "glitch") {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(90, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.18);
-
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 0.18);
-      }
-
+      // REAL AUDIO: access granted
       if (type === "unlock") {
-        [440, 660, 880].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc.type = "sine";
-          osc.frequency.value = freq;
-
-          gain.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.08);
-          gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            ctx.currentTime + i * 0.08 + 0.18
-          );
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc.start(ctx.currentTime + i * 0.08);
-          osc.stop(ctx.currentTime + i * 0.08 + 0.18);
-        });
+        const audio = unlockSound.current;
+        audio.volume = 0.2;
+        audio.currentTime = 0;
+        audio.play();
       }
-    } catch (e) {}
+
+      // ZzFX: glitch/corruption
+      if (type === "glitch") {
+        zzfx(...[
+          0.7, , 40, 0.04, 0.18, 0.18,
+          1, 0.5, -12, , , , 0.02
+        ]);
+      }
+
+    } catch (e) {
+      console.log(e);
+    }
   }
-  
 
   useEffect(() => {
     if (historyRef.current) {
@@ -406,6 +379,7 @@ function Level4({ onComplete, onBack }) {
 
             // APPLY GLITCH DURING TYPING
             if (nextChar && nextChar.trim() && !FAST_MODE) {
+              console.log("typing sound");
               playLevel4Sound("type");
             }
             if (glitch && Math.random() < 0.15) {
@@ -594,6 +568,8 @@ function Level4({ onComplete, onBack }) {
   }
 
   function triggerGlitch(duration = 200) {
+    playLevel4Sound("glitch");
+
     setGlitch(true);
     setTimeout(() => setGlitch(false), duration);
   }
@@ -1232,6 +1208,7 @@ else:
             .then(() => new Promise(r => setTimeout(r, delay(800))))
 
             .then(() => {
+              playLevel4Sound("unlock");
               setDisplayedHistory([]);
               return addLine("> ACCESS GRANTED", "success");
             })
