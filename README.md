@@ -45,3 +45,23 @@ The system provides feedback throughout to guide the user and support learning.
 
 
 
+## Asset Credits
+
+### Sound Effects
+- Keyboard typing sound:
+  “Dragon Studio Single Key Press” sourced from Pixabay
+  https://pixabay.com/sound-effects/
+
+- Access granted sound:
+  “Access Granted” sourced from Freesound Community
+  https://pixabay.com/sound-effects/
+
+### Background Music
+- Background music tracks sourced from Pixabay Music
+  https://pixabay.com/music/
+
+Tracks used:
+- Inplusmusic — Technology Science Digital Technology Music
+- Miromaxmusic — Cyber Dance No Copyright DJ Music
+- Miromaxmusic — Cyber Sport No Copyright DJ Music
+- Miromaxmusic — Sport Cyber No Copyright DJ Music
