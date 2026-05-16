@@ -1074,12 +1074,14 @@ else:
                 }
                 if (newCount === 6) {
                   addLine("> HINT: NOT ALL PATHS REQUIRE MOVEMENT", "system");
+                  addLine("> HINT: ESCAPING MAY REQUIRE A COMMAND — NOT A DIRECTION", "system");
                 }
                 if (newCount === 7) {
                   addLine(
                     glitchText("> WARNING: RECURSIVE STATE CONFIRMED", 0.12),
                     "error",
                   );
+                  addLine("> HINT: YOU MAY NEED TO BREAK OUT OF HERE", "system");
                 }
 
                 // 💀 LOOP CRASH
