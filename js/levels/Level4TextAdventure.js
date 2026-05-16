@@ -249,6 +249,10 @@ Type: solve [decimal]`,
 
 // ── LEVEL 4 – TEXT ADVENTURE ──────────────────
 
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
 function Level4({ onComplete, onBack }) {
   const [room, setRoom] = useState("room1");
   const [displayedHistory, setDisplayedHistory] = useState([]);
@@ -289,7 +293,19 @@ function Level4({ onComplete, onBack }) {
   const [firewallBoss, setFirewallBoss] = useState(null);
   const [firewallAttempts, setFirewallAttempts] = useState(0);
 
-  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
+  const [coreExits] = useState(() => {
+    const puzzleRooms = shuffleArray(["loopRoom", "logic", "ifelse"]);
+
+    return {
+      north: puzzleRooms[0],
+      east: puzzleRooms[1],
+      south: puzzleRooms[2],
+      west: "room1",
+      firewall: "firewall"
+    };
+  });
+
+  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 28;
   const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
@@ -915,8 +931,10 @@ else:
         return;
       }
 
-      if (currentRoom.exits[dir]) {
-        const nextId = currentRoom.exits[dir];
+      const exits = room === "core" ? coreExits : currentRoom.exits;
+
+      if (exits[dir]) {
+        const nextId = exits[dir];
         const nextRoom = ADVENTURE.rooms[nextId];
 
         // FIREWALL EARLY ACCESS CHECK
