@@ -312,7 +312,7 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: typing
       if (type === "type") {
         const audio = typeSound.current;
-        audio.volume = 0.08;
+        audio.volume = 0.025;
         audio.currentTime = 0;
         audio.play();
       }
@@ -320,6 +320,7 @@ function Level4({ onComplete, onBack }) {
       if (type === "denied") {
         const audio = deniedSound.current;
         audio.volume = 0.18;
+        audio.playbackRate = 0.95;
         audio.currentTime = 0;
         audio.play();
       }
@@ -327,7 +328,8 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: access granted
       if (type === "unlock") {
         const audio = unlockSound.current;
-        audio.volume = 0.2;
+        audio.volume = 0.22;
+        audio.playbackRate = 1.05;
         audio.currentTime = 0;
         audio.play();
       }
@@ -335,7 +337,7 @@ function Level4({ onComplete, onBack }) {
       // ZzFX: glitch/corruption
       if (type === "glitch") {
         zzfx(...[
-          0.7, , 40, 0.04, 0.18, 0.18,
+          0.18, , 40, 0.04, 0.18, 0.18,
           1, 0.5, -12, , , , 0.02
         ]);
       }
@@ -912,24 +914,26 @@ else:
         const nextId = currentRoom.exits[dir];
         const nextRoom = ADVENTURE.rooms[nextId];
 
+        // FIREWALL EARLY ACCESS CHECK
+        if (nextId === "firewall" && binaryCode.length < 7) {
+          playLevel4Sound("denied");
+          triggerGlitch(500);
+
+          addLine("> ACCESS DENIED", "error");
+          addLine("> INSUFFICIENT BINARY FRAGMENTS", "error");
+          addLine("> MINIMUM FRAGMENTS REQUIRED: 7", "system");
+          addLine("> RETURNING TO CORE INTERFACE", "system");
+          addLine(`> CURRENT FRAGMENTS: ${binaryCode.length}/7`, "system");
+
+          return;
+        }
+
         setRoom(nextId);
 
         // ROOM HANDLING
 
         // FIREWALL SPECIAL DISPLAY
         if (nextId === "firewall") {
-          if (binaryCode.length < 7) {
-
-            playLevel4Sound("denied");
-
-            triggerGlitch(500);
-
-            addLine("> ACCESS DENIED", "error");
-            addLine("> INSUFFICIENT BINARY FRAGMENTS", "error");
-            addLine("> MINIMUM FRAGMENTS REQUIRED: 7", "system");
-
-            return;
-          }
 
           const textToShow = getRoomText(nextId);
 
