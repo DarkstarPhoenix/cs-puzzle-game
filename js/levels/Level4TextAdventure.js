@@ -298,6 +298,10 @@ function Level4({ onComplete, onBack }) {
   new Audio("assets/sfx/dragon-studio-single-key-press-393908.mp3")
   );
 
+  const deniedSound = useRef(
+  new Audio("assets/sfx/freesound_community-access-denied-102628.mp3")
+);
+
   const unlockSound = useRef(
     new Audio("assets/sfx/freesound_community-access-granted-87075.mp3")
   );
@@ -309,6 +313,13 @@ function Level4({ onComplete, onBack }) {
       if (type === "type") {
         const audio = typeSound.current;
         audio.volume = 0.08;
+        audio.currentTime = 0;
+        audio.play();
+      }
+
+      if (type === "denied") {
+        const audio = deniedSound.current;
+        audio.volume = 0.18;
         audio.currentTime = 0;
         audio.play();
       }
@@ -907,6 +918,19 @@ else:
 
         // FIREWALL SPECIAL DISPLAY
         if (nextId === "firewall") {
+          if (binaryCode.length < 7) {
+
+            playLevel4Sound("denied");
+
+            triggerGlitch(500);
+
+            addLine("> ACCESS DENIED", "error");
+            addLine("> INSUFFICIENT BINARY FRAGMENTS", "error");
+            addLine("> MINIMUM FRAGMENTS REQUIRED: 7", "system");
+
+            return;
+          }
+
           const textToShow = getRoomText(nextId);
 
           setVisitedRooms((prev) => ({
