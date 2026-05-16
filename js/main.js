@@ -200,6 +200,12 @@ function HomeScreen({
   onSelectLevel,
   unlockedAchievements,
 }) {
+
+  const level4Unlocked =
+  completedLevels.includes(1) &&
+  completedLevels.includes(2) &&
+  completedLevels.includes(3);
+
   return (
     <div className="screen">
       <div style={{ marginBottom: 8 }}>
@@ -219,12 +225,17 @@ function HomeScreen({
       <div className="level-grid" style={{ marginTop: 36 }}>
         {LEVELS.map((lvl, i) => {
           const done = completedLevels.includes(lvl.id);
+          const locked = lvl.id === 4 && !level4Unlocked;
           return (
             <div
               key={lvl.id}
-              className="level-card"
+              className={`level-card ${locked ? "locked" : ""}`}
               style={{ "--card-color": lvl.color }}
-              onClick={() => onSelectLevel(lvl.id)}
+              onClick={() => {
+                if (!locked) {
+                  onSelectLevel(lvl.id);
+                }
+              }}
             >
               <div className="level-num">
                 LEVEL {lvl.id} ·{" "}
@@ -237,6 +248,18 @@ function HomeScreen({
               <div className="level-icon">{lvl.icon}</div>
               <div className="level-name">{lvl.name}</div>
               <div className="level-desc">{lvl.desc}</div>
+              {locked && (
+                <div
+                  style={{
+                    marginTop: 10,
+                    fontSize: "0.7rem",
+                    color: "#ff5555",
+                    fontWeight: "bold",
+                  }}
+                >
+                  🔒 Complete Levels 1–3 to unlock
+                </div>
+              )}
               {done && (
                 <div className="level-badge" title="Completed!">
                   ✅
