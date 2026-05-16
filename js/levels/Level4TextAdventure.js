@@ -232,7 +232,17 @@ Type: solve [decimal]`,
     
     // EXIT
     exit: {
-      desc: "> SYSTEM RESTORED\n\nAll errors resolved.\n\nYou feel your body reforming...\n\n> EXITING DIGITAL WORLD...\n\n🎉 You escaped the system!",
+      desc: `> SYSTEM RESTORED
+
+All errors resolved.
+
+You feel your body reforming...
+
+> EXITING DIGITAL WORLD...
+
+🎉 You escaped the system!
+
+> SO LONG, AND THANKS FOR ALL THE FISH.`,
       exits: {},
       win: true
     },    
