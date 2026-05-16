@@ -289,9 +289,9 @@ function Level4({ onComplete, onBack }) {
   const [firewallBoss, setFirewallBoss] = useState(null);
   const [firewallAttempts, setFirewallAttempts] = useState(0);
 
-  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
-  const CHAR_SPEED = FAST_MODE ? 0 : 35;
-  const LINE_DELAY = FAST_MODE ? 0 : 700;
+  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
+  const CHAR_SPEED = FAST_MODE ? 0 : 28;
+  const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
 
   const typeSound = useRef(
@@ -312,14 +312,15 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: typing
       if (type === "type") {
         const audio = typeSound.current;
-        audio.volume = 0.025;
+        audio.volume = 0.03;
+        audio.playbackRate = 1.15;
         audio.currentTime = 0;
         audio.play();
       }
 
       if (type === "denied") {
         const audio = deniedSound.current;
-        audio.volume = 0.18;
+        audio.volume = 0.22;
         audio.playbackRate = 0.95;
         audio.currentTime = 0;
         audio.play();
@@ -328,7 +329,7 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: access granted
       if (type === "unlock") {
         const audio = unlockSound.current;
-        audio.volume = 0.22;
+        audio.volume = 0.30;
         audio.playbackRate = 1.05;
         audio.currentTime = 0;
         audio.play();
@@ -337,7 +338,7 @@ function Level4({ onComplete, onBack }) {
       // ZzFX: glitch/corruption
       if (type === "glitch") {
         zzfx(...[
-          0.18, , 40, 0.04, 0.18, 0.18,
+          0.10, , 40, 0.04, 0.18, 0.18,
           1, 0.5, -12, , , , 0.02
         ]);
       }
@@ -392,8 +393,12 @@ function Level4({ onComplete, onBack }) {
             const nextChar = currentLine[charIndex - 1] || "";
 
             // APPLY GLITCH DURING TYPING
-            if (nextChar && nextChar.trim() && !FAST_MODE) {
-              console.log("typing sound");
+            if (
+              nextChar &&
+              nextChar.trim() &&
+              !FAST_MODE &&
+              charIndex % 2 === 0
+            ) {
               playLevel4Sound("type");
             }
             if (glitch && Math.random() < 0.15) {
