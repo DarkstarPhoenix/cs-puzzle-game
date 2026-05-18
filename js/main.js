@@ -17,6 +17,10 @@ const BACKGROUND_TRACKS = [
   "assets/background_music/bg4.mp3"
 ];
 
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
 function getCtx() {
   if (!audioCtx) audioCtx = new AudioCtx();
   return audioCtx;
@@ -360,9 +364,15 @@ function App() {
   const musicRef = useRef(null);
   const [trackIndex, setTrackIndex] = useState(0);
 
+  const shuffledTracks = useRef(
+    shuffleArray(BACKGROUND_TRACKS)
+  );
+
   // ── CREATE / SWITCH TRACKS ──────────────────
   useEffect(() => {
-    const audio = new Audio(BACKGROUND_TRACKS[trackIndex]);
+    const audio = new Audio(
+      shuffledTracks.current[trackIndex]
+    );
 
     musicRef.current = audio;
 
@@ -373,7 +383,9 @@ function App() {
     });
 
     audio.onended = () => {
-      setTrackIndex((prev) => (prev + 1) % BACKGROUND_TRACKS.length);
+      setTrackIndex(
+        (prev) => (prev + 1) % shuffledTracks.current.length
+      );
     };
 
     return () => {
