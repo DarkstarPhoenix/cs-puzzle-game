@@ -4,6 +4,7 @@
 // =============================================
 
 const { useState, useEffect, useRef } = React;
+const TEST_MODE = false; // set to true to unlock all levels from the start
 
 // ── SOUND ENGINE
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -76,6 +77,12 @@ const ACHIEVEMENTS = [
     icon: "🩸",
     title: "First Blood",
     desc: "Got your first correct answer",
+  },
+  {
+    id: "binary_master",
+    icon: "🔢",
+    title: "Binary Master",
+    desc: "Completed Binary to Decimal with no mistakes",
   },
   {
     id: "no_mistakes_1",
@@ -202,9 +209,12 @@ function HomeScreen({
 }) {
 
   const level4Unlocked =
-  completedLevels.includes(1) &&
-  completedLevels.includes(2) &&
-  completedLevels.includes(3);
+    TEST_MODE ||
+    (
+      completedLevels.includes(1) &&
+      completedLevels.includes(2) &&
+      completedLevels.includes(3)
+    );
 
   return (
     <div className="screen">
@@ -424,9 +434,9 @@ function App() {
     // ── ACHIEVEMENTS ON LEVEL COMPLETE ──
     if (mistakes === 0) {
       const ids = {
-      1: "no_mistakes_1",
-      2: "no_mistakes_2",
-      3: "no_mistakes_3"
+      1: "binary_master",
+      2: "no_mistakes_1",
+      3: "no_mistakes_2"
     };
       if (ids[levelId]) unlockAchievement(ids[levelId]);
     }

@@ -315,7 +315,7 @@ function Level4({ onComplete, onBack }) {
     };
   });
 
-  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
+  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 28;
   const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
