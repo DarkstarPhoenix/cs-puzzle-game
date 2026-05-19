@@ -283,6 +283,7 @@ function Level4({ onComplete, onBack }) {
   const [score, setScore] = useState(0);
   const historyRef = useRef(null);
   const inputRef = useRef(null);
+  const activeSequences = useRef(0);
   const [loopCount, setLoopCount] = useState(0);
   const [logicPuzzle, setLogicPuzzle] = useState(null);
   const [logicStage, setLogicStage] = useState(1);
@@ -294,6 +295,7 @@ function Level4({ onComplete, onBack }) {
   });
   const [completedRooms, setCompletedRooms] = useState({});
   const [locked, setLocked] = useState(false);
+  const [readyForInput, setReadyForInput] = useState(false);
   const [debugStage, setDebugStage] = useState(1);
   const [debugPuzzle, setDebugPuzzle] = useState(null);
   const [debugWrongAttempts, setDebugWrongAttempts] = useState(0);
@@ -338,7 +340,7 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: typing
       if (type === "type") {
         const audio = typeSound.current;
-        audio.volume = 0.03;
+        audio.volume = 0.1;
         audio.playbackRate = 1.15;
         audio.currentTime = 0;
         audio.play();
@@ -346,7 +348,7 @@ function Level4({ onComplete, onBack }) {
 
       if (type === "denied") {
         const audio = deniedSound.current;
-        audio.volume = 0.22;
+        audio.volume = 0.7;
         audio.playbackRate = 0.95;
         audio.currentTime = 0;
         audio.play();
@@ -355,7 +357,7 @@ function Level4({ onComplete, onBack }) {
       // REAL AUDIO: access granted
       if (type === "unlock") {
         const audio = unlockSound.current;
-        audio.volume = 0.30;
+        audio.volume = 0.5;
         audio.playbackRate = 1.05;
         audio.currentTime = 0;
         audio.play();
@@ -364,7 +366,7 @@ function Level4({ onComplete, onBack }) {
       // ZzFX: glitch/corruption
       if (type === "glitch") {
         zzfx(...[
-          0.10, , 40, 0.04, 0.18, 0.18,
+          0.2, , 40, 0.04, 0.18, 0.18,
           1, 0.5, -12, , , , 0.02
         ]);
       }
@@ -395,6 +397,8 @@ function Level4({ onComplete, onBack }) {
 
   function addLine(text, type = "system") {
     typingQueue.current = typingQueue.current.then(() => {
+      setLocked(true);
+      setReadyForInput(false);
       return new Promise((resolve) => {
         const line = { text: "", type };
 
@@ -463,10 +467,26 @@ function Level4({ onComplete, onBack }) {
       });
     });
 
-    return typingQueue.current;
+    const currentQueue = typingQueue.current;
+
+    currentQueue.then(() => {
+      if (
+        typingQueue.current === currentQueue &&
+        activeSequences.current === 0
+      ) {
+        setLocked(false);
+        setReadyForInput(true);
+      }
+    });
+
+    return currentQueue;
   }
 
   function loadNewRoom(text) {
+    activeSequences.current++;
+    setLocked(true);
+    setReadyForInput(false);
+
     setDisplayedHistory([]);
 
     return addLine("> TRANSFERRING TO NEW NODE...", "system")
@@ -476,6 +496,14 @@ function Level4({ onComplete, onBack }) {
       .then(() => {
         setDisplayedHistory([]);
         return addLine(text, "system");
+      })
+      .finally(() => {
+        activeSequences.current--;
+
+        if (activeSequences.current === 0) {
+          setLocked(false);
+          setReadyForInput(true);
+        }
       });
   }
 
@@ -947,6 +975,25 @@ else:
         const nextId = exits[dir];
         const nextRoom = ADVENTURE.rooms[nextId];
 
+        const completedRoomMap = {
+        logic: "logic",
+        ifelse: "ifelse",
+        debug: "debug",
+        loopRoom: "loop",
+        loop: "loop"
+        };
+
+        const completionKey = completedRoomMap[nextId];
+
+        if (
+          completionKey &&
+          completedRooms[completionKey]
+        ) {
+          addLine("> NODE ALREADY STABILISED", "system");
+          addLine("> NO FURTHER DATA CAN BE RECOVERED", "system");
+          return;
+        }
+
         // FIREWALL EARLY ACCESS CHECK
         if (nextId === "firewall" && binaryCode.length < 7) {
           playLevel4Sound("denied");
@@ -1397,6 +1444,18 @@ else:
           <div className="victory-title">
             DIGITISING USER<span className="digitising-dots">...</span>
           </div>
+          {readyForInput && (
+            <div
+              style={{
+                color: "var(--accent3)",
+                marginTop: 10,
+                fontSize: "1rem",
+                animation: "pulse 1s infinite",
+              }}
+            >
+              $&gt; READY FOR INPUT
+            </div>
+          )}
           <div className="hint-text">
             {" > CONSCIOUSNESS TRANSFER INITIALISED"}
             <br />
@@ -1531,15 +1590,32 @@ else:
       </div>
 
       <div className="adventure-input-row">
-        <span className="adventure-prompt">$&gt;&nbsp;</span>
+        <span
+          className="adventure-prompt"
+          style={{
+            opacity: locked ? 0.4 : 1,
+            animation: !locked
+              ? "terminalBlink 1s infinite"
+              : "none",
+          }}
+        >
+          $&gt;&nbsp;
+        </span>
         <input
           disabled={locked}
           ref={inputRef}
           className="adventure-input"
+          style={{
+            opacity: locked ? 0.5 : 1,
+          }}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="type a command and press Enter..."
+          placeholder={
+            locked
+              ? "SYSTEM BUSY..."
+              : "type a command and press Enter..."
+          }
           autoFocus
         />
       </div>

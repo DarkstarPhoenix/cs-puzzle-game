@@ -4,7 +4,7 @@
 // =============================================
 
 const { useState, useEffect, useRef } = React;
-const TEST_MODE = false; // set to true to unlock all levels from the start
+const TEST_MODE = true; // set to true to unlock all levels from the start
 
 // ── SOUND ENGINE
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -376,7 +376,7 @@ function App() {
 
     musicRef.current = audio;
 
-    audio.volume = 0.06;
+    audio.volume = 0.035;
 
     audio.play().catch(() => {
       console.log("Autoplay blocked until user interaction");
@@ -485,7 +485,7 @@ function App() {
               className="btn btn-primary"
               onClick={() => {
                 if (musicRef.current) {
-                  musicRef.current.volume = 0.12;
+                  musicRef.current.volume = 0.05;
                   musicRef.current.muted = false;
                   musicRef.current.play()
                     .then(() => console.log("Music started"))

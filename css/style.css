@@ -93,6 +93,26 @@ body::before {
 
 @keyframes blink { 50% { opacity: 0; } }
 
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes terminalBlink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .level-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
