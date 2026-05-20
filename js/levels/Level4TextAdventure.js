@@ -10,7 +10,6 @@ const ENABLE_DEBUG_ROOM = false; // Set to true to enable the debug room
 const ENABLE_IF_ELSE_ROOM = true; // Set to true to enable the if/else room
 
 
-const binCode = ""
 const ADVENTURE = {
   start: "room1",
   rooms: {
@@ -264,11 +263,11 @@ function shuffleArray(array) {
 }
 
 function Level4({ onComplete, onBack }) {
-  const [room, setRoom] = useState("room1");
+  const [room, setRoom] = useState(ADVENTURE.start);
   const [displayedHistory, setDisplayedHistory] = useState([]);
 
   // Initial boot sequence (used once on load)
-  const [history, setHistory] = useState([
+  const [history] = useState([
     { text: "> BOOTING SYSTEM...", type: "system" },
     { text: "> ESTABLISHING LINK...", type: "system" },
     { text: "> WARNING: USER DIGITISED", type: "error" },
@@ -282,21 +281,22 @@ function Level4({ onComplete, onBack }) {
   const [won, setWon] = useState(false);
   const [score, setScore] = useState(0);
   const historyRef = useRef(null);
-  const inputRef = useRef(null);
-  const activeSequences = useRef(0);
+    
   const isMounted = useRef(true);
+  const forceBusy = useRef(false);
+  const busyDepth = useRef(0);
+
   const [loopCount, setLoopCount] = useState(0);
   const [logicPuzzle, setLogicPuzzle] = useState(null);
   const [logicStage, setLogicStage] = useState(1);
-  const [logicScreen, setLogicScreen] = useState(false);
+  
   const [binaryCode, setBinaryCode] = useState([]);
   const [glitch, setGlitch] = useState(false);
   const [visitedRooms, setVisitedRooms] = useState({
     room1: true
   });
   const [completedRooms, setCompletedRooms] = useState({});
-  const [locked, setLocked] = useState(false);
-  const [readyForInput, setReadyForInput] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [debugStage, setDebugStage] = useState(1);
   const [debugPuzzle, setDebugPuzzle] = useState(null);
   const [debugWrongAttempts, setDebugWrongAttempts] = useState(0);
@@ -304,8 +304,7 @@ function Level4({ onComplete, onBack }) {
   const [ifStage, setIfStage] = useState(1);
 
   const [firewallBoss, setFirewallBoss] = useState(null);
-  const [firewallAttempts, setFirewallAttempts] = useState(0);
-
+  
   const [coreExits] = useState(() => {
     const puzzleRooms = shuffleArray(["loopRoom", "logic", "ifelse"]);
 
@@ -411,14 +410,15 @@ function Level4({ onComplete, onBack }) {
     history.forEach((line) => {
       addLine(line.text, line.type);
     });
+
   }, [started]);
 
   const typingQueue = useRef(Promise.resolve());
 
   function addLine(text, type = "system") {
+    setIsTyping(true);
+    
     typingQueue.current = typingQueue.current.then(() => {
-      setLocked(true);
-      setReadyForInput(false);
       return new Promise((resolve) => {
         const line = { text: "", type };
 
@@ -490,42 +490,49 @@ function Level4({ onComplete, onBack }) {
 
     const currentQueue = typingQueue.current;
 
-    currentQueue.then(() => {
-      if (
-        typingQueue.current === currentQueue &&
-        activeSequences.current === 0
-      ) {
-        setLocked(false);
-        setReadyForInput(true);
+    currentQueue.finally(() => {
+      if (typingQueue.current === currentQueue && !forceBusy.current) {
+        setIsTyping(false);
       }
     });
 
     return currentQueue;
   }
 
-  function loadNewRoom(text) {
-    activeSequences.current++;
-    setLocked(true);
-    setReadyForInput(false);
+  function runBusySequence(sequence) {
+    busyDepth.current++;
+    forceBusy.current = true;
+    setIsTyping(true);
 
+    return sequence().finally(() => {
+      busyDepth.current--;
+
+      if (busyDepth.current <= 0) {
+        busyDepth.current = 0;
+        forceBusy.current = false;
+
+        typingQueue.current.finally(() => {
+          if (busyDepth.current === 0) {
+            setIsTyping(false);
+          }
+        });
+      }
+    });
+  }
+
+  function loadNewRoom(text) {
     setDisplayedHistory([]);
 
-    return addLine("> TRANSFERRING TO NEW NODE...", "system")
-      .then(() => new Promise(r => setTimeout(r, delay(500))))
-      .then(() => addLine("> CONNECTION STABLE", "success"))
-      .then(() => new Promise(r => setTimeout(r, delay(500))))
-      .then(() => {
-        setDisplayedHistory([]);
-        return addLine(text, "system");
-      })
-      .finally(() => {
-        activeSequences.current--;
-
-        if (activeSequences.current === 0) {
-          setLocked(false);
-          setReadyForInput(true);
-        }
-      });
+    return runBusySequence(() =>
+      addLine("> TRANSFERRING TO NEW NODE...", "system")
+        .then(() => new Promise(r => setTimeout(r, delay(500))))
+        .then(() => addLine("> CONNECTION STABLE", "success"))
+        .then(() => new Promise(r => setTimeout(r, delay(500))))
+        .then(() => {
+          setDisplayedHistory([]);
+          return addLine(text, "system");
+        })
+    );
   }
 
   function getRoomText(roomId) {
@@ -558,28 +565,30 @@ function Level4({ onComplete, onBack }) {
   }
 
   function handleRoomSuccess(roomId, bits = 1, transitionDelay = 1200) {
-    return addLine("✅ NODE STABILISED", "success")
-      .then(() => new Promise(r => setTimeout(r, delay(800))))
+    return runBusySequence(() =>
+      addLine("✅ NODE STABILISED", "success")
+        .then(() => new Promise(r => setTimeout(r, delay(800))))
 
-      .then(() => {
-        if (bits > 0) return awardBits(bits);
+        .then(() => {
+          if (bits > 0) return awardBits(bits);
 
-        addLine("> NO DATA RECOVERED", "error");
-        return Promise.resolve(binaryCode);
-      })
+          return addLine("> NO DATA RECOVERED", "error")
+            .then(() => binaryCode);
+        })
 
-      .then(updatedCode => {
-        return new Promise(r => setTimeout(() => r(updatedCode), delay(1500)));
-      })
+        .then(updatedCode => {
+          return new Promise(r => setTimeout(() => r(updatedCode), delay(1500)));
+        })
 
-      .then(updatedCode => {
-        setCompletedRooms(prev => ({
-          ...prev,
-          [roomId]: true
-        }));
+        .then(updatedCode => {
+          setCompletedRooms(prev => ({
+            ...prev,
+            [roomId]: true
+          }));
 
-        return completeRoom(roomId, transitionDelay, updatedCode);
-      });
+          return completeRoom(roomId, transitionDelay, updatedCode);
+        })
+    );
   }
 
   function generateLogicPuzzle(stage = 1) {
@@ -841,10 +850,14 @@ else:
   // solve -> attempt puzzles
   // uknown -> error handling
   function handleCommand(cmd) {
-    if (locked) return;
+    if (isTyping) return;
 
     const raw = cmd.trim().toLowerCase();
-    addLine(`> ${cmd}`, "player");
+
+    setDisplayedHistory(h => [
+      ...h,
+      { text: `> ${cmd}`, type: "player" }
+    ]);
 
     // NOTE: currentRoom refers to the room BEFORE movement
     const currentRoom = ADVENTURE.rooms[room];
@@ -878,17 +891,19 @@ else:
 
       // IF/ELSE ROOM
       if (room === "ifelse" && ifPuzzle) {
-        return addLine(currentRoom.desc, "system")
-          .then(() => addLine(`> IF / ELSE STAGE ${ifStage}/3`, "system"))
-          .then(() => addLine("", "system"))
-          .then(() => addLine(`> ${ifPuzzle.title.toUpperCase()}`, "system"))
-          .then(() => addLine("", "system"))
-          .then(() => addLine(ifPuzzle.variables.join("\n"), "system"))
-          .then(() => addLine("", "system"))
-          .then(() => addLine(`if ${ifPuzzle.condition}:`, "system"))
-          .then(() => addLine("    go north", "system"))
-          .then(() => addLine("else:", "system"))
-          .then(() => addLine("    go south", "system"));
+        return runBusySequence(() =>
+          addLine(currentRoom.desc, "system")
+            .then(() => addLine(`> IF / ELSE STAGE ${ifStage}/3`, "system"))
+            .then(() => addLine("", "system"))
+            .then(() => addLine(`> ${ifPuzzle.title.toUpperCase()}`, "system"))
+            .then(() => addLine("", "system"))
+            .then(() => addLine(ifPuzzle.variables.join("\n"), "system"))
+            .then(() => addLine("", "system"))
+            .then(() => addLine(`if ${ifPuzzle.condition}:`, "system"))
+            .then(() => addLine("    go north", "system"))
+            .then(() => addLine("else:", "system"))
+            .then(() => addLine("    go south", "system"))
+          );
       }
 
       // LOGIC ROOM
@@ -934,18 +949,22 @@ else:
         }
 
         // ── STAGE 2/3: PUZZLE ONLY ──────────────────
-        return addLine("", "system")
-          .then(() => addLine("> RECONFIGURING CIRCUIT...", "system"))
-          .then(() => new Promise((r) => setTimeout(r, delay(1000))))
-          .then(() => addLine(`> LOGIC STAGE ${logicPuzzle.stage}/3`, "system"))
-          .then(() => addLine(diagram, "system"))
-          .then(() => addLine("Type: solve [0 or 1]", "system"));
+        return runBusySequence(() =>
+          addLine("", "system")
+            .then(() => addLine("> RECONFIGURING CIRCUIT...", "system"))
+            .then(() => new Promise((r) => setTimeout(r, delay(1000))))
+            .then(() => addLine(`> LOGIC STAGE ${logicPuzzle.stage}/3`, "system"))
+            .then(() => addLine(diagram, "system"))
+            .then(() => addLine("Type: solve [0 or 1]", "system"))
+        );
 
       // DEBUG ROOM
       } else if (room === "debug" && debugPuzzle) {
-          return addLine(`> DEBUG STAGE ${debugStage}/3`, "system")
-            .then(() => addLine(debugPuzzle.question, "system"))
-            .then(() => addLine("Type: solve [answer]", "system"));
+          return runBusySequence(() =>
+            addLine(`> DEBUG STAGE ${debugStage}/3`, "system")
+              .then(() => addLine(debugPuzzle.question, "system"))
+              .then(() => addLine("Type: solve [answer]", "system"))
+          );
       }
 
       // ── OTHER ROOMS ──────────────────
@@ -955,30 +974,32 @@ else:
     } else if (raw.startsWith("go ")) {
       const dir = raw.replace("go ", "").trim();
 
-      // IF/ELSE ROOM COLVING
+      // IF/ELSE ROOM SOLVING
       if (room === "ifelse" && ifPuzzle) {
         if (dir === ifPuzzle.correct) {
-          return addLine("> EVALUATING CONDITION...", "system")
-            .then(() => new Promise(r => setTimeout(r, delay(400))))
-            .then(() => addLine("> PROCESSING...", "system"))
-            .then(() => new Promise(r => setTimeout(r, delay(400))))
-            .then(() => addLine("✅ CONDITION EVALUATED CORRECTLY", "success"))
-            .then(() => addLine(`> ${ifPuzzle.explanation}`, "system"))
-            .then(() => {
-              if (ifStage === 3) {
-                return handleRoomSuccess("ifelse", 3);
-              }
+          return runBusySequence(() =>
+            addLine("> EVALUATING CONDITION...", "system")
+              .then(() => new Promise(r => setTimeout(r, delay(400))))
+              .then(() => addLine("> PROCESSING...", "system"))
+              .then(() => new Promise(r => setTimeout(r, delay(400))))
+              .then(() => addLine("✅ CONDITION EVALUATED CORRECTLY", "success"))
+              .then(() => addLine(`> ${ifPuzzle.explanation}`, "system"))
+              .then(() => {
+                if (ifStage === 3) {
+                  return handleRoomSuccess("ifelse", 3);
+                }
 
-              const nextStage = ifStage + 1;
+                const nextStage = ifStage + 1;
 
-              setIfStage(nextStage);
-              setIfPuzzle(generateIfElsePuzzle(nextStage));
+                setIfStage(nextStage);
+                setIfPuzzle(generateIfElsePuzzle(nextStage));
 
-              return addLine(`> IF / ELSE STAGE ${ifStage}/3 COMPLETE`, "system")
-                .then(() => new Promise(r => setTimeout(r, delay(500))))
-                .then(() => addLine(`> LOADING STAGE ${nextStage}/3`, "system"))
-                .then(() => addLine("> Type 'look' to inspect the new condition", "system"));
-            });
+                return addLine(`> IF / ELSE STAGE ${ifStage}/3 COMPLETE`, "system")
+                  .then(() => new Promise(r => setTimeout(r, delay(500))))
+                  .then(() => addLine(`> LOADING STAGE ${nextStage}/3`, "system"))
+                  .then(() => addLine("> Type 'look' to inspect the new condition", "system"));
+              })
+          );
         }
 
         triggerGlitch(300);
@@ -1047,23 +1068,21 @@ else:
           setFirewallBoss(boss);
           setFirewallAttempts(0);
 
-          loadNewRoom(textToShow)
-            .then(() => {
-              const code = binaryCode.join("");
-
-              addLine(`> DATA FRAGMENTS DETECTED: ${binaryCode.length}`, "system");
-
-              if (boss) {
-                return addLine(`> CURRENT BINARY: ${boss.original}`, "system")
-                  .then(() => addLine("", "system"))
-                  .then(() => addLine("> FIREWALL RULE DETECTED:", "system"))
-                  .then(() => addLine(boss.ruleText, "system"))
-                  .then(() => addLine("", "system"))
-                  .then(() => addLine("> Apply the rule, then convert the result to decimal.", "system"))
-                  .then(() => addLine("Type: solve [decimal]", "system"));
-              }
-            });          
-
+          return runBusySequence(() => 
+            loadNewRoom(textToShow)
+              .then(() => {                
+                addLine(`> DATA FRAGMENTS DETECTED: ${binaryCode.length}`, "system");
+                if (boss) {
+                  return addLine(`> CURRENT BINARY: ${boss.original}`, "system")
+                    .then(() => addLine("", "system"))
+                    .then(() => addLine("> FIREWALL RULE DETECTED:", "system"))
+                    .then(() => addLine(boss.ruleText, "system"))
+                    .then(() => addLine("", "system"))
+                    .then(() => addLine("> Apply the rule, then convert the result to decimal.", "system"))
+                    .then(() => addLine("Type: solve [decimal]", "system"));
+                }
+              })
+          );
           // LOGIC ROOM
         } else if (nextId === "logic") {
           const textToShow = getRoomText(nextId);
@@ -1159,41 +1178,33 @@ else:
                     glitchText("> WARNING: RECURSIVE STATE CONFIRMED", 0.12),
                     "error",
                   );
-                  addLine("> HINT: YOU MAY NEED TO BREAK OUT OF HERE", "system");
+                  addLine("> HINT: YOU MAY NEED TO 'BREAK' OUT OF HERE", "system");
                 }
 
                 // 💀 LOOP CRASH
                 if (newCount === 9) {
-                  setLocked(true);
+                  return runBusySequence(() => {
+                    triggerGlitch(2000);
 
-                  triggerGlitch(2000);
-
-                  addLine("> SYSTEM ERROR: INFINITE LOOP", "error")
-                    .then(() => addLine("> CRITICAL FAILURE DETECTED", "error"))
-                    .then(() => new Promise(r => setTimeout(r, delay(800))))
-
-                    .then(() => {
-                      setDisplayedHistory([]);
-                      return addLine("> SYSTEM COLLAPSE", "error");
-                    })
-
-                    .then(() => new Promise((r) => setTimeout(r, delay(1000))))
-
-                    .then(() => {
-                      setDisplayedHistory([]);
-                      return addLine("> REBOOTING SYSTEM...", "system");
-                    })
-
-                    .then(() => new Promise(r => setTimeout(r, delay(1200))))
-
-                    .then(() => {
-                      setRoom("core");
-                      setLoopCount(0);
-                      setLocked(false);
-
-                      return loadNewRoom(getRoomText("core"));
-                    });
-
+                    return addLine("> SYSTEM ERROR: INFINITE LOOP", "error")
+                      .then(() => addLine("> CRITICAL FAILURE DETECTED", "error"))
+                      .then(() => new Promise(r => setTimeout(r, delay(800))))
+                      .then(() => {
+                        setDisplayedHistory([]);
+                        return addLine("> SYSTEM COLLAPSE", "error");
+                      })
+                      .then(() => new Promise(r => setTimeout(r, delay(1000))))
+                      .then(() => {
+                        setDisplayedHistory([]);
+                        return addLine("> REBOOTING SYSTEM...", "system");
+                      })
+                      .then(() => new Promise(r => setTimeout(r, delay(1200))))
+                      .then(() => {
+                        setRoom("core");
+                        setLoopCount(0);
+                        return loadNewRoom(getRoomText("core"));
+                      });
+                  });
                 }
 
                 return newCount;
@@ -1234,26 +1245,24 @@ else:
 
         if (answer === logicPuzzle.answer) {
 
-          return addLine("✅ Correct", "success")
+          return runBusySequence(() =>
+            addLine("✅ Correct", "success")
+              .then(() => {
+                if (logicStage === 3) {
+                  return handleRoomSuccess(room, 3);
+                }
 
-            .then(() => {
+                const nextStage = logicStage + 1;
 
-              // FINAL STAGE
-              if (logicStage === 3) {
-                return handleRoomSuccess(room, 3); // 🎯 total reward    
-              }
+                setLogicStage(nextStage);
+                setLogicPuzzle(generateLogicPuzzle(nextStage));
 
-              // MOVE TO NEXT STAGE
-              const nextStage = logicStage + 1;
-
-              setLogicStage(nextStage);
-              setLogicPuzzle(generateLogicPuzzle(nextStage));
-
-              return addLine(`> STAGE ${logicStage}/3 COMPLETE`, "system")
-                .then(() => new Promise(r => setTimeout(r, delay(500))))
-                .then(() => addLine(`> ADVANCING TO STAGE ${nextStage}/3`, "system"))
-                .then(() => addLine("> Type 'look' to inspect new circuit", "system"));
-            });
+                return addLine(`> STAGE ${logicStage}/3 COMPLETE`, "system")
+                  .then(() => new Promise(r => setTimeout(r, delay(500))))
+                  .then(() => addLine(`> ADVANCING TO STAGE ${nextStage}/3`, "system"))
+                  .then(() => addLine("> Type 'look' to inspect new circuit", "system"));
+              })
+          );
 
         } else {
           triggerGlitch(300);
@@ -1272,26 +1281,27 @@ else:
 
           const bits = getLoopBits(loopCount);
 
-          return addLine("✅ Loop broken", "success")
-            .then(() => addLine("> ATTEMPTING MANUAL OVERRIDE...", "system"))
-                .then(() => new Promise(r => setTimeout(r, delay(600))))
-                .then(() => addLine("> INTERRUPTING LOOP...", "error"))
-                .then(() => new Promise(r => setTimeout(r, delay(600))))
-                .then(() => {
-                  triggerGlitch(800);
-                  return addLine("> REALITY DESYNCHRONISING...", "error");
-                })
-                .then(() => new Promise(r => setTimeout(r, delay(1200))))
+          return runBusySequence(() =>
+            addLine("✅ Loop broken", "success")
+              .then(() => addLine("> ATTEMPTING MANUAL OVERRIDE...", "system"))
+                  .then(() => new Promise(r => setTimeout(r, delay(600))))
+                  .then(() => addLine("> INTERRUPTING LOOP...", "error"))
+                  .then(() => new Promise(r => setTimeout(r, delay(600))))
+                  .then(() => {
+                    triggerGlitch(800);
+                    return addLine("> REALITY RESYNCHRONISING...", "success");
+                  })
+                  .then(() => new Promise(r => setTimeout(r, delay(1200))))
 
-            .then(() => {
-              if (bits === 0) {
-                return addLine("> NO DATA RECOVERED", "error")
-                  .then(() => completeRoom(room, 1200, binaryCode));
-              }
+              .then(() => {
+                if (bits === 0) {
+                  return addLine("> NO DATA RECOVERED", "error")
+                    .then(() => completeRoom(room, 1200, binaryCode));
+                }
 
-              return handleRoomSuccess(room, bits);
-            });
-
+                return handleRoomSuccess(room, bits);
+              })
+          );
         } else {
           triggerGlitch(300);
           addLine("❌ That doesn't break the loop.", "error");
@@ -1330,28 +1340,27 @@ else:
 
         // CORRECT
         if (userValue === correctDecimal) {
-          addLine("> AUTHENTICATION SUCCESSFUL", "success")
-            .then(() => addLine("> VALIDATING...", "system"))
-            .then(() => new Promise(r => setTimeout(r, delay(600))))
-            .then(() => addLine("> DECRYPTING...", "system"))
-            .then(() => new Promise(r => setTimeout(r, delay(600))))
-            .then(() => addLine("> BYPASSING SECURITY...", "system"))
-            .then(() => triggerGlitch(1200))
-            .then(() => new Promise(r => setTimeout(r, delay(800))))
-
-            .then(() => {
-              playLevel4Sound("unlock");
-              setDisplayedHistory([]);
-              return addLine("> ACCESS GRANTED", "success");
-            })
-
-            .then(() => new Promise((r) => setTimeout(r, delay(600))))
-
-            .then(() => {
-              const nextRoom = ADVENTURE.rooms[currentRoom.puzzle.success];
-              setRoom(currentRoom.puzzle.success);
-              return loadNewRoom(nextRoom.desc);
-            });
+          return runBusySequence(() =>
+            addLine("> AUTHENTICATION SUCCESSFUL", "success")
+              .then(() => addLine("> VALIDATING...", "system"))
+              .then(() => new Promise(r => setTimeout(r, delay(600))))
+              .then(() => addLine("> DECRYPTING...", "system"))
+              .then(() => new Promise(r => setTimeout(r, delay(600))))
+              .then(() => addLine("> BYPASSING SECURITY...", "system"))
+              .then(() => triggerGlitch(1200))
+              .then(() => new Promise(r => setTimeout(r, delay(800))))
+              .then(() => {
+                playLevel4Sound("unlock");
+                setDisplayedHistory([]);
+                return addLine("> ACCESS GRANTED", "success");
+              })
+              .then(() => new Promise(r => setTimeout(r, delay(600))))
+              .then(() => {
+                const nextRoom = ADVENTURE.rooms[currentRoom.puzzle.success];
+                setRoom(currentRoom.puzzle.success);
+                return loadNewRoom(nextRoom.desc);
+              })
+          );
         } else {
           // SMART FEEDBACK
           if (userValue > correctDecimal) {
@@ -1384,9 +1393,9 @@ else:
 
         if (isCorrect) {        
 
-          return addLine("✅ Fix applied", "success")
-
-            .then(() => {
+          return runBusySequence(() =>
+            addLine("✅ Fix applied", "success")
+              .then(() => {
 
               // FINAL STAGE
               if (debugStage === 3) {
@@ -1405,7 +1414,8 @@ else:
                 .then(() => addLine(`> LOADING NEXT ERROR...`, "error"))
                 .then(() => new Promise(r => setTimeout(r, delay(800))))
                 .then(() => addLine("> Type 'look' to inspect code", "system"));
-            });
+            })
+          );
           } else {
             triggerGlitch(300);
             setScore(s => Math.max(0, s - 10));
@@ -1447,6 +1457,7 @@ else:
       addLine(`Unknown command: '${raw}'. Type 'help' for commands.`, "error");
       setScore((s) => Math.max(0, s - 5));
     }
+
   }
   // End of command handler
   // Controls full game flow and progression logic
@@ -1465,18 +1476,6 @@ else:
           <div className="victory-title">
             DIGITISING USER<span className="digitising-dots">...</span>
           </div>
-          {readyForInput && (
-            <div
-              style={{
-                color: "var(--accent3)",
-                marginTop: 10,
-                fontSize: "1rem",
-                animation: "pulse 1s infinite",
-              }}
-            >
-              $&gt; READY FOR INPUT
-            </div>
-          )}
           <div className="hint-text">
             {" > CONSCIOUSNESS TRANSFER INITIALISED"}
             <br />
@@ -1614,8 +1613,8 @@ else:
         <span
           className="adventure-prompt"
           style={{
-            opacity: locked ? 0.4 : 1,
-            animation: !locked
+            opacity: isTyping ? 0.4 : 1,
+            animation: !isTyping
               ? "terminalBlink 1s infinite"
               : "none",
           }}
@@ -1623,17 +1622,16 @@ else:
           $&gt;&nbsp;
         </span>
         <input
-          disabled={locked}
-          ref={inputRef}
+          disabled={isTyping}
           className="adventure-input"
           style={{
-            opacity: locked ? 0.5 : 1,
+            opacity: isTyping ? 0.5 : 1
           }}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={
-            locked
+            isTyping
               ? "SYSTEM BUSY..."
               : "type a command and press Enter..."
           }
