@@ -573,6 +573,9 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
   }
 
   function handleRoomSuccess(roomId, bits = 1, transitionDelay = 1200) {
+
+    addScore(30);
+
     return runBusySequence(() =>
       addLine("✅ NODE STABILISED", "success")
         .then(() => new Promise(r => setTimeout(r, delay(800))))
@@ -985,6 +988,9 @@ else:
       // IF/ELSE ROOM SOLVING
       if (room === "ifelse" && ifPuzzle) {
         if (dir === ifPuzzle.correct) {
+          
+          addScore(10);
+
           return runBusySequence(() =>
             addLine("> EVALUATING CONDITION...", "system")
               .then(() => new Promise(r => setTimeout(r, delay(400))))
@@ -1252,6 +1258,8 @@ else:
 
         if (answer === logicPuzzle.answer) {
 
+          addScore(10);
+
           return runBusySequence(() =>
             addLine("✅ Correct", "success")
               .then(() => {
@@ -1399,6 +1407,8 @@ else:
         }
 
         if (isCorrect) {        
+          
+          addScore(10);
 
           return runBusySequence(() =>
             addLine("✅ Fix applied", "success")
