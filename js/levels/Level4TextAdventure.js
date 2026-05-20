@@ -280,6 +280,7 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
   const [input, setInput] = useState("");
   const [won, setWon] = useState(false);
   const [score, setScore] = useState(initialScore);
+  const [levelStartTime, setLevelStartTime] = useState(null);
   const historyRef = useRef(null);
     
   const isMounted = useRef(true);
@@ -375,6 +376,16 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
       console.log(e);
     }
   }
+
+  useEffect(() => {
+    if (!started || won) return;
+
+    const timer = setInterval(() => {
+      deductScore(1);
+    }, 10000);
+
+    return () => clearInterval(timer);
+  }, [started, won]);
 
   useEffect(() => {
     return () => {
@@ -541,6 +552,19 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
           return addLine(text, "system");
         })
     );
+  }
+
+  function getTimeBonus() {
+    if (!levelStartTime) return 0;
+
+    const elapsedMs = Date.now() - levelStartTime;
+    const elapsedMinutes = elapsedMs / 1000 / 60;
+
+    if (elapsedMinutes < 3) return 50;
+    if (elapsedMinutes < 5) return 30;
+    if (elapsedMinutes < 8) return 15;
+
+    return 0;
   }
 
   function getRoomText(roomId) {
@@ -1366,8 +1390,16 @@ else:
               .then(() => new Promise(r => setTimeout(r, delay(800))))
               .then(() => {
                 playLevel4Sound("unlock");
+
+                const timeBonus = getTimeBonus();
+                if (timeBonus > 0) {
+                  addScore(timeBonus);
+                }
+
                 setDisplayedHistory([]);
-                return addLine("> ACCESS GRANTED", "success");
+
+                return addLine("> ACCESS GRANTED", "success")
+                  .then(() => addLine(`> TIME BONUS: +${timeBonus}`, "success"));
               })
               .then(() => new Promise(r => setTimeout(r, delay(600))))
               .then(() => {
@@ -1544,6 +1576,7 @@ else:
             setDigitising(true);
 
             setTimeout(() => {
+              setLevelStartTime(Date.now());
               setStarted(true);
               setDigitising(false);
             }, 1800);
