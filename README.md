@@ -34,6 +34,9 @@ Users navigate a system using text commands such as:
 • go north / south / east / west  
 • look  
 • solve [answer]
+• help
+Clickable command shortcuts are shown on screen. Clicking a command places it into the input box, then the player presses Enter to run it.
+
 Players explore different rooms, solve puzzles, and collect binary fragments. These fragments are used to unlock the final firewall challenge.
 Firewall Boss  
 Users must apply rules to transform binary data and convert the result into a decimal value. This requires knowledge from previous levels.
@@ -42,7 +45,6 @@ General Controls
 • Follow on-screen instructions and prompts  
 • Progress through levels by solving puzzles  
 The system provides feedback throughout to guide the user and support learning.
-
 
 
 ## Asset Credits

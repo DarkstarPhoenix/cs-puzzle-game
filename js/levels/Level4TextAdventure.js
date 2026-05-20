@@ -1514,6 +1514,8 @@ else:
 
           <div className="hint-text">
             💡 Tip: Use <span style={{ color: "var(--accent)" }}>look</span> when entering puzzle rooms.
+            <br />
+            💡 Tip: Click a command to place it into the input box, then press Enter to run it.
           </div>
 
           <button
