@@ -241,7 +241,10 @@ You feel your body reforming...
 
 🎉 You escaped the system!
 
-> SO LONG, AND THANKS FOR ALL THE FISH.`,
+> SO LONG, AND THANKS FOR ALL THE FISH.
+
+> FINAL COMMAND REQUIRED
+> Type: exit()`,
       exits: {},
       win: true
     },    
@@ -262,6 +265,17 @@ function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+const LEVEL_1_MAX_SCORE = 700;
+const LEVEL_2_MAX_SCORE = 700;
+const LEVEL_3_MAX_SCORE = 3360;
+const LEVEL_4_MAX_SCORE = 260;
+
+const TOTAL_GAME_MAX_SCORE =
+  LEVEL_1_MAX_SCORE +
+  LEVEL_2_MAX_SCORE +
+  LEVEL_3_MAX_SCORE +
+  LEVEL_4_MAX_SCORE;
+
 function Level4({ onComplete, onBack, initialScore = 0 }) {
   const [room, setRoom] = useState(ADVENTURE.start);
   const [displayedHistory, setDisplayedHistory] = useState([]);
@@ -279,9 +293,12 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
   const [digitising, setDigitising] = useState(false);
   const [input, setInput] = useState("");
   const [won, setWon] = useState(false);
+  const [awaitingExitCommand, setAwaitingExitCommand] = useState(false);
+  
   const [score, setScore] = useState(initialScore);
   const [levelStartTime, setLevelStartTime] = useState(null);
   const historyRef = useRef(null);
+  const inputRef = useRef(null);
     
   const isMounted = useRef(true);
   const forceBusy = useRef(false);
@@ -318,7 +335,7 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
     };
   });
 
-  const FAST_MODE = false; // for testing true = instant text, false = typewriter effect
+  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
   const CHAR_SPEED = FAST_MODE ? 0 : 28;
   const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
@@ -504,10 +521,20 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
     currentQueue.finally(() => {
       if (typingQueue.current === currentQueue && !forceBusy.current) {
         setIsTyping(false);
+
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
       }
     });
 
     return currentQueue;
+  }
+
+  function focusInput() {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
   }
 
   function runBusySequence(sequence) {
@@ -525,6 +552,7 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
         typingQueue.current.finally(() => {
           if (busyDepth.current === 0) {
             setIsTyping(false);
+            focusInput();
           }
         });
       }
@@ -563,6 +591,14 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
     if (elapsedMinutes < 3) return 50;
     if (elapsedMinutes < 5) return 30;
     if (elapsedMinutes < 8) return 15;
+
+    return 0;
+  }
+
+  function getBitBonus() {
+    if (binaryCode.length >= 9) return 30;
+    if (binaryCode.length === 8) return 20;
+    if (binaryCode.length === 7) return 10;
 
     return 0;
   }
@@ -1255,7 +1291,7 @@ else:
 
         // ── WIN CHECK ──────────────────
         if (nextRoom.win) {
-          setWon(true);
+          setAwaitingExitCommand(true);
         }
       } else {
         addLine(`You can't go ${dir} from here.`, "error");
@@ -1319,6 +1355,10 @@ else:
         if (answer === "break") {
 
           const bits = getLoopBits(loopCount);
+
+          if (bits > 0) {
+            addScore(bits * 10);
+          }
 
           return runBusySequence(() =>
             addLine("✅ Loop broken", "success")
@@ -1391,19 +1431,34 @@ else:
               .then(() => {
                 playLevel4Sound("unlock");
 
+                
+                
                 const timeBonus = getTimeBonus();
+                const bitBonus = getBitBonus();
+
                 if (timeBonus > 0) {
                   addScore(timeBonus);
                 }
 
+                if (bitBonus > 0) {
+                  addScore(bitBonus);
+                }
+
                 setDisplayedHistory([]);
 
+                setAwaitingExitCommand(true);
+
                 return addLine("> ACCESS GRANTED", "success")
-                  .then(() => addLine(`> TIME BONUS: +${timeBonus}`, "success"));
+                  .then(() => addLine(`> TIME BONUS: +${timeBonus}`, "success"))
+                  .then(() => addLine(`> BIT BONUS: +${bitBonus}`, "success"))
+                  .then(() => addLine("", "system"))
+                  .then(() => addLine("> FINAL COMMAND REQUIRED", "system"))
+                  .then(() => addLine("> Type: exit()", "success"));
               })
               .then(() => new Promise(r => setTimeout(r, delay(600))))
               .then(() => {
                 const nextRoom = ADVENTURE.rooms[currentRoom.puzzle.success];
+                
                 setRoom(currentRoom.puzzle.success);
                 return loadNewRoom(nextRoom.desc);
               })
@@ -1501,7 +1556,26 @@ else:
       } else {
         addLine("Nothing to solve here.", "error");
       }
-      // UNKNOWN COMMAND
+    // EXIT COMMAND
+    // FINAL EXIT COMMAND
+    } else if (raw === "exit()") {
+
+      if (!awaitingExitCommand) {
+        addLine("> EXIT COMMAND UNAVAILABLE", "error");
+        return;
+      }
+
+      return runBusySequence(() =>
+        addLine("> EXECUTING exit()", "success")
+          .then(() => new Promise(r => setTimeout(r, delay(600))))
+          .then(() => addLine("> TERMINATING DIGITAL SESSION...", "system"))
+          .then(() => new Promise(r => setTimeout(r, delay(900))))
+          .then(() => {
+            setWon(true);
+          })
+      );
+
+    // UNKNOWN COMMAND
     } else {
       addLine(`Unknown command: '${raw}'. Type 'help' for commands.`, "error");
       deductScore(5);
@@ -1590,7 +1664,8 @@ else:
   }
 
   if (won) {
-    const stars = score >= 280 ? "⭐⭐⭐" : score >= 180 ? "⭐⭐" : "⭐";
+    const scorePercent = Math.round((score / TOTAL_GAME_MAX_SCORE) * 100);
+    const stars = scorePercent >= 90 ? "⭐⭐⭐" : scorePercent >= 60 ? "⭐⭐" : "⭐";
     return (
       <div className="screen">
         <div className="victory-card">
@@ -1636,7 +1711,13 @@ else:
     return (
       <span
         style={commandStyle}
-        onClick={() => setInput(command)}
+        onClick={() => {
+          setInput(command);
+
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 0);
+        }}
       >
         {label}
       </span>
@@ -1690,6 +1771,7 @@ else:
           $&gt;&nbsp;
         </span>
         <input
+          ref={inputRef}
           disabled={isTyping}
           className="adventure-input"
           style={{
