@@ -262,7 +262,7 @@ function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-function Level4({ onComplete, onBack }) {
+function Level4({ onComplete, onBack, initialScore = 0 }) {
   const [room, setRoom] = useState(ADVENTURE.start);
   const [displayedHistory, setDisplayedHistory] = useState([]);
 
@@ -279,7 +279,7 @@ function Level4({ onComplete, onBack }) {
   const [digitising, setDigitising] = useState(false);
   const [input, setInput] = useState("");
   const [won, setWon] = useState(false);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(initialScore);
   const historyRef = useRef(null);
     
   const isMounted = useRef(true);
@@ -518,6 +518,14 @@ function Level4({ onComplete, onBack }) {
         });
       }
     });
+  }
+
+  function addScore(points) {
+    setScore((s) => s + points);
+  }
+
+  function deductScore(points) {
+    setScore((s) => Math.max(0, s - points));
   }
 
   function loadNewRoom(text) {
@@ -1007,7 +1015,7 @@ else:
         addLine("❌ CONDITION FAILED", "error");
         addLine("> PATH INVALID — LOGIC MISMATCH DETECTED", "system");
         addLine("> RE-EVALUATE THE CONDITION", "system");
-        setScore(s => Math.max(0, s - 10));
+        deductScore(10);
         return;
       }
 
@@ -1221,7 +1229,7 @@ else:
         }
       } else {
         addLine(`You can't go ${dir} from here.`, "error");
-        setScore((s) => Math.max(0, s - 10));
+        deductScore(10);
       }
 
       // ── SOLVE COMMAND ──────────────────
@@ -1267,7 +1275,7 @@ else:
           triggerGlitch(300);
           addLine("❌ Incorrect - try again.", "error");
           addLine("💡 AND=both 1 | OR=any 1 | XOR=different | NAND=NOT AND | NOR=NOT OR", "system");
-          setScore(s => Math.max(0, s - 10));
+          deductScore(10);
         }
 
         return;
@@ -1304,7 +1312,7 @@ else:
         } else {
           triggerGlitch(300);
           addLine("❌ That doesn't break the loop.", "error");
-          setScore((s) => Math.max(0, s - 10));
+          deductScore(10);
         }
 
         return;
@@ -1370,7 +1378,7 @@ else:
             addLine("> ERROR VALUE TOO LOW", "system");
           }
 
-          setScore(s => Math.max(0, s - 10));
+          deductScore(10);
         }
 
         return;
@@ -1417,7 +1425,7 @@ else:
           );
           } else {
             triggerGlitch(300);
-            setScore(s => Math.max(0, s - 10));
+            deductScore(10);
 
             const newAttempts = debugWrongAttempts + 1;
             setDebugWrongAttempts(newAttempts);
@@ -1446,7 +1454,7 @@ else:
         } else {
           triggerGlitch(300);
           addLine("❌ Incorrect solution. Try again.", "error");
-          setScore((s) => Math.max(0, s - 10));
+          deductScore(10);
         }
       } else {
         addLine("Nothing to solve here.", "error");
@@ -1454,7 +1462,7 @@ else:
       // UNKNOWN COMMAND
     } else {
       addLine(`Unknown command: '${raw}'. Type 'help' for commands.`, "error");
-      setScore((s) => Math.max(0, s - 5));
+      deductScore(5);
     }
 
   }
