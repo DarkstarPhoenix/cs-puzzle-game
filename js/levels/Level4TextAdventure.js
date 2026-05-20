@@ -1066,8 +1066,7 @@ else:
 
           const boss = generateFirewallBoss(binaryCode);
           setFirewallBoss(boss);
-          setFirewallAttempts(0);
-
+          
           return runBusySequence(() => 
             loadNewRoom(textToShow)
               .then(() => {                
@@ -1501,7 +1500,7 @@ else:
           <div className="info-box" style={{ textAlign: "left" }}>
             <strong>Commands:</strong>
             <br /><br />
-            <span style={{ color: "var(--accent3)" }}>go north</span> / 
+            <span style={{ color: "var(--accent3)" }}> go north</span> / 
             <span style={{ color: "var(--accent3)" }}> go south</span> / 
             <span style={{ color: "var(--accent3)" }}> go east</span> / 
             <span style={{ color: "var(--accent3)" }}> go west</span>
@@ -1575,6 +1574,22 @@ else:
     );
   }
 
+  const commandStyle = {
+    color: "var(--accent3)",
+    cursor: "pointer",
+  };
+
+  function commandButton(label, command) {
+    return (
+      <span
+        style={commandStyle}
+        onClick={() => setInput(command)}
+      >
+        {label}
+      </span>
+    );
+  }
+
   return (
     <div className="game-screen">
       <div className="game-header">
@@ -1640,12 +1655,15 @@ else:
       </div>
 
       <div className="hint-text">
-        💡 Commands: <span style={{ color: "var(--accent3)" }}>go north</span> /{" "}
-        <span style={{ color: "var(--accent3)" }}>go south</span> /{" "}
-        <span style={{ color: "var(--accent3)" }}>go east</span> /{" "}
-        <span style={{ color: "var(--accent3)" }}>go west</span> /{" "}
-        <span style={{ color: "var(--accent3)" }}>look</span> /{" "}
-        <span style={{ color: "var(--accent3)" }}>solve [code]</span>
+        💡 Commands:{" "}
+        {commandButton("go north", "go north")} /{" "}
+        {commandButton("go south", "go south")} /{" "}
+        {commandButton("go east", "go east")} /{" "}
+        {commandButton("go west", "go west")} /{" "}
+        {commandButton("go firewall", "go firewall")} /{" "}
+        {commandButton("look", "look")} /{" "}
+        {commandButton("solve [code]", "solve ")} /{" "}
+        {commandButton("help", "help")}
       </div>
     </div>
   );
