@@ -284,6 +284,7 @@ function Level4({ onComplete, onBack }) {
   const historyRef = useRef(null);
   const inputRef = useRef(null);
   const activeSequences = useRef(0);
+  const isMounted = useRef(true);
   const [loopCount, setLoopCount] = useState(0);
   const [logicPuzzle, setLogicPuzzle] = useState(null);
   const [logicStage, setLogicStage] = useState(1);
@@ -377,6 +378,25 @@ function Level4({ onComplete, onBack }) {
   }
 
   useEffect(() => {
+    return () => {
+      isMounted.current = false;
+
+      try {
+        typeSound.current.pause();
+        typeSound.current.currentTime = 0;
+
+        deniedSound.current.pause();
+        deniedSound.current.currentTime = 0;
+
+        unlockSound.current.pause();
+        unlockSound.current.currentTime = 0;
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  }, []);  
+
+  useEffect(() => {
     if (historyRef.current) {
       historyRef.current.scrollTo({
         top: historyRef.current.scrollHeight,
@@ -424,6 +444,7 @@ function Level4({ onComplete, onBack }) {
 
             // APPLY GLITCH DURING TYPING
             if (
+              isMounted.current &&
               nextChar &&
               nextChar.trim() &&
               !FAST_MODE &&
