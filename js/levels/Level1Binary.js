@@ -69,6 +69,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
   const [questions] = useState(() => generateBinaryQuestions());
+  const [challengeBits, setChallengeBits] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
   const [qIdx, setQIdx] = useState(0);
   const [answer, setAnswer] = useState("");
   const [answered, setAnswered] = useState(false);
@@ -253,10 +254,25 @@ function Level1({ onComplete, onBack, onAchievement }) {
     playSound("click");
   }
 
+  function toggleChallengeBit(index) {
+    setChallengeBits(bits =>
+      bits.map((bit, i) => i === index ? (bit === 0 ? 1 : 0) : bit)
+    );
+
+    playSound("click");
+  }
+
+  function resetChallengeBits() {
+    setChallengeBits([0, 0, 0, 0, 0, 0, 0, 0]);
+  }
+
   function checkAnswer() {
     if (answered) return;
 
-    const userValue = answer.trim();
+    const userValue =
+      q.type === "dec-to-bin"
+        ? challengeBits.join("").replace(/^0+/, "") || "0"
+        : answer.trim();
     const correct =
       userValue.toLowerCase() === q.answer.toLowerCase();
 
@@ -304,6 +320,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     } else {
       setQIdx(i => i + 1);
       setAnswer("");
+      resetChallengeBits();
       setAnswered(false);
       setLastBonus(null);
 
@@ -888,30 +905,58 @@ function Level1({ onComplete, onBack, onAchievement }) {
           💡 Example: 1010 = 1×8 + 0×4 + 1×2 + 0×1 = 10
         </div>
 
-        <div className="adventure-input-row">
-          <span className="adventure-prompt">
-            {q.type === "dec-to-bin" ? "binary>" : "decimal>"}
-          </span>
-
-          <input
-            ref={inputRef}
-            className="adventure-input"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && answer.trim() && !answered) {
-                checkAnswer();
-              }
+        {q.type === "dec-to-bin" ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(8, 1fr)",
+              gap: 10,
+              marginBottom: 16,
             }}
-            placeholder={
-              q.type === "dec-to-bin"
-                ? "type binary answer..."
-                : "type decimal answer..."
-            }
-            disabled={answered}
-            autoFocus
-          />
-        </div>
+          >
+            {challengeBits.map((bit, index) => (
+              <button
+                key={index}
+                onClick={() => toggleChallengeBit(index)}
+                disabled={answered}
+                style={{
+                  padding: "16px 0",
+                  borderRadius: 10,
+                  border: `1px solid ${bit === 1 ? "var(--accent)" : "var(--border)"}`,
+                  background: bit === 1 ? "rgba(0,245,255,0.16)" : "var(--surface)",
+                  color: bit === 1 ? "var(--accent)" : "var(--text-dim)",
+                  fontSize: "1.6rem",
+                  fontFamily: "monospace",
+                  cursor: answered ? "not-allowed" : "pointer",
+                  boxShadow: bit === 1 ? "0 0 18px rgba(0,245,255,0.45)" : "none",
+                  transform: bit === 1 ? "scale(1.04)" : "scale(1)",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {bit}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="adventure-input-row">
+            <span className="adventure-prompt">decimal&gt;</span>
+
+            <input
+              ref={inputRef}
+              className="adventure-input"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && answer.trim() && !answered) {
+                  checkAnswer();
+                }
+              }}
+              placeholder="type decimal answer..."
+              disabled={answered}
+              autoFocus
+            />
+          </div>
+        )}
 
         {!answered && (
           <button
@@ -927,16 +972,25 @@ function Level1({ onComplete, onBack, onAchievement }) {
           <>
             <div
               className={`feedback-box ${
-                answer.trim().toLowerCase() === q.answer.toLowerCase()
+                (
+                  q.type === "dec-to-bin"
+                    ? (challengeBits.join("").replace(/^0+/, "") || "0")
+                    : answer.trim()
+                ).toLowerCase() === q.answer.toLowerCase()
                   ? "correct"
                   : "wrong"
               }`}
             >
               <strong>
-                {answer.trim().toLowerCase() === q.answer.toLowerCase()
+                {(
+                  q.type === "dec-to-bin"
+                    ? (challengeBits.join("").replace(/^0+/, "") || "0")
+                    : answer.trim()
+                ).toLowerCase() === q.answer.toLowerCase()
                   ? "✅ Correct!"
                   : `❌ Not quite — answer was ${q.answer}`}
               </strong>
+
               <br />
               {q.explanation}
 
