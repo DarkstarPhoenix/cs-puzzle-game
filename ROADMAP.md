@@ -24,10 +24,14 @@
   - [ ] Achievements
   - [ ] Settings
 
-- [ ] Disable TEST_MODE for release
-- [ ] Add Firestore leaderboard
-- [ ] Mobile/tablet UI testing pass
-- [ ] Final balancing pass
+- [ ] Add audio feedback system
+  - [ ] Ensure all clickable buttons have audio feedback
+  - [ ] Add click sound to menu navigation
+  - [ ] Add click sound to tab switches
+  - [ ] Add click sound to Back/Menu buttons
+  - [ ] Add click sound to Next/Start buttons
+  - [ ] Keep correct/wrong sounds for answer feedback
+  - [ ] Check audio does not double-trigger on quiz answers
 
 ---
 
@@ -43,14 +47,12 @@
 - [x] Animated streak feedback
 
 ## To Do
-- [ ] Add live score display
+- [x] Add live score display
   - [ ] Current score
-  - [ ] Max score
-  - [ ] Streak indicator
+  - [x] Streak indicator
 
-- [ ] Improve binary button UI
-  - [ ] Add place values above buttons
-  - [ ] Add selected binary preview
+- [x] Improve binary button UI
+  - [x] Add place values above buttons
 
 - [ ] Review score balancing
 - [ ] Review star/rank thresholds
