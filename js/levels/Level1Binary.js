@@ -82,6 +82,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [practiceMode, setPracticeMode] = useState(4);
   const [practiceSection, setPracticeSection] = useState("sandbox");
   const [practiceTarget, setPracticeTarget] = useState(10);
+  const [totalPulse, setTotalPulse] = useState(false);
 
   const inputRef = useRef(null);
 
@@ -111,7 +112,18 @@ function Level1({ onComplete, onBack, onAchievement }) {
       decimal: value,
       binary: value.toString(2).padStart(practiceMode, "0"),
     })
+    
   );
+  
+  useEffect(() => {
+    setTotalPulse(true);
+
+    const timer = setTimeout(() => {
+      setTotalPulse(false);
+    }, 220);
+
+    return () => clearTimeout(timer);
+  }, [practiceDecimal]);
 
   if (!started) {
     return (
@@ -451,7 +463,16 @@ function Level1({ onComplete, onBack, onAchievement }) {
                 })}
               </div>
 
-              <div className="feedback-box correct">
+              <div
+                className="feedback-box correct"
+                style={{
+                  transform: totalPulse ? "scale(1.03)" : "scale(1)",
+                  boxShadow: totalPulse
+                    ? "0 0 18px rgba(127,255,0,0.45)"
+                    : "none",
+                  transition: "all 0.22s ease",
+                }}
+              >
                 <strong>{practiceBits.join("")}</strong>
                 <br />
                 {practiceWorking} = {practiceDecimal}
