@@ -4,6 +4,10 @@ function randomFrom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
 function generateIfElseQuestions() {
   const questions = [];
 
@@ -19,7 +23,11 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("Too young to vote.")', type: "normal" },
     ],
-    options: ["age > 18", "age >= 18", "age == 18", "age < 18"],
+    options: shuffleArray([
+      "age > 18", 
+      "age >= 18", 
+      "age == 18", 
+      "age < 18"]),
     correctAnswers: ["age >= 18"],
     explanation: "age >= 18 means 18 or older. This is the correct voting-age check.",
   });
@@ -36,7 +44,11 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("Try again.")', type: "normal" },
     ],
-    options: ["score > 100", "score >= 50", "score == 0", "score < 50"],
+    options: shuffleArray([
+      "score > 100", 
+      "score >= 50", 
+      "score == 0", 
+      "score < 50"]),
     correctAnswers: ["score >= 50"],
     explanation: "score >= 50 checks whether the score is 50 or higher.",
   });
@@ -53,7 +65,11 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("Nice weather.")', type: "normal" },
     ],
-    options: ["temperature > 30", "temperature < 30", "temperature == 0", "temperature > 100"],
+    options: shuffleArray([
+      "temperature > 30", 
+      "temperature < 30", 
+      "temperature == 0", 
+      "temperature > 100"]),
     correctAnswers: ["temperature > 30"],
     explanation: "temperature > 30 is true only when the value is above 30.",
   });
@@ -71,7 +87,11 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("Wrong password.")', type: "normal" },
     ],
-    options: ["user_input == password", "user_input = password", "user_input != password", "password < user_input"],
+    options: shuffleArray([
+      "user_input == password", 
+      "user_input = password", 
+      "user_input != password", 
+      "password < user_input"]),
     correctAnswers: ["user_input == password"],
     explanation: "Use == to compare values. A single = is assignment, not comparison.",
   });
@@ -88,7 +108,11 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("Keep playing!")', type: "normal" },
     ],
-    options: ["lives == 0", "lives > 0", "lives >= 1", "lives != 0"],
+    options: shuffleArray([
+      "lives == 0", 
+      "lives > 0", 
+      "lives >= 1", 
+      "lives != 0"]),
     correctAnswers: ["lives == 0"],
     explanation: "lives == 0 checks whether the player has no lives left.",
   });
@@ -107,12 +131,12 @@ function generateIfElseQuestions() {
       { text: "else:", type: "normal" },
       { text: '  print("You are fine!")', type: "normal" },
     ],
-    options: [
+    options: shuffleArray([
       "is_raining and not has_umbrella",
       "is_raining or has_umbrella",
       "not is_raining",
       "has_umbrella == True",
-    ],
+    ]),
     correctAnswers: ["is_raining and not has_umbrella"],
     explanation: "This needs both parts: it is raining AND the user does not have an umbrella.",
   });
