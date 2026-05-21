@@ -89,6 +89,31 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const q = questions[qIdx];
   const progress = (qIdx / questions.length) * 100;
 
+  const difficultyTheme =
+  qIdx < 5
+    ? {
+        border: "var(--accent)",
+        glow: "rgba(0,245,255,0.35)",
+        bg: "rgba(0,245,255,0.08)",
+      }
+    : qIdx < 10
+    ? {
+        border: "#b26cff",
+        glow: "rgba(178,108,255,0.35)",
+        bg: "rgba(178,108,255,0.08)",
+      }
+    : qIdx < 14
+    ? {
+        border: "#ff9f43",
+        glow: "rgba(255,159,67,0.35)",
+        bg: "rgba(255,159,67,0.08)",
+      }
+    : {
+        border: "#ffd700",
+        glow: "rgba(255,215,0,0.4)",
+        bg: "rgba(255,215,0,0.1)",
+      };
+
   const practicePlaceValues =
     practiceMode === 8
       ? [128, 64, 32, 16, 8, 4, 2, 1]
@@ -114,7 +139,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     })
     
   );
-  
+
   useEffect(() => {
     setTotalPulse(true);
 
@@ -712,12 +737,29 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
         </div>
 
-        <div className="code-block" style={{ textAlign: "center" }}>
+        <div
+          className="code-block"
+          style={{
+            textAlign: "center",
+            borderColor: difficultyTheme.border,
+            boxShadow: `0 0 18px ${difficultyTheme.glow}`,
+            background: difficultyTheme.bg,
+            transition: "all 0.3s ease",
+          }}
+        >
           <div style={{ fontSize: "0.75rem", color: "var(--text-dim)", marginBottom: 12 }}>
             {q.type === "dec-to-bin" ? "Decimal" : "Binary"}
           </div>
 
-          <div style={{ fontSize: "3rem", color: "var(--accent)", letterSpacing: 8 }}>
+          <div
+            style={{
+              fontSize: "3rem",
+              color: difficultyTheme.border,
+              letterSpacing: 8,
+              textShadow: `0 0 12px ${difficultyTheme.glow}`,
+              transition: "all 0.3s ease",
+            }}
+          >
             {q.question}
           </div>
 
