@@ -85,6 +85,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [firstCorrect, setFirstCorrect] = useState(false);
   const [practiceBits, setPracticeBits] = useState([0, 0, 0, 0]);
   const [practiceMode, setPracticeMode] = useState(4);
+  const [practiceTarget, setPracticeTarget] = useState(10);
 
   const inputRef = useRef(null);
 
@@ -103,6 +104,8 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const practiceWorking = practiceBits
     .map((bit, index) => `${bit}x${practicePlaceValues[index]}`)
     .join(" + ");
+
+  const practiceMatch = practiceDecimal === practiceTarget;
 
   if (!started) {
     return (
@@ -162,6 +165,17 @@ function Level1({ onComplete, onBack, onAchievement }) {
     textAlign: "center",
   });
 
+  function randomPracticeTarget(bits = practiceMode) {
+
+    const max = bits === 8 ? 255 : 15;
+
+    const value = Math.floor(Math.random() * (max + 1));
+
+    setPracticeTarget(value);
+
+    playSound("click");
+  }
+
   function setPracticeBitMode(bits) {
     setPracticeMode(bits);
 
@@ -172,6 +186,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     }
 
     playSound("click");
+    randomPracticeTarget(bits);
   }
 
   function togglePracticeBit(index) {
@@ -387,16 +402,95 @@ function Level1({ onComplete, onBack, onAchievement }) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: `repeat(${practicePlaceValues.length}, 1fr)`,
             gap: 12,
             marginBottom: 24,
-            color: "var(--text-dim)",
             fontFamily: "monospace",
           }}
         >
-          {practicePlaceValues.map((value) => (
-            <div key={value}>value {value}</div>
-          ))}
+          {practicePlaceValues.map((value, index) => {
+
+            const active = practiceBits[index] === 1;
+
+            return (
+              <div
+                key={value}
+                style={{
+                  padding: "10px 0",
+                  borderRadius: 8,
+                  border: `1px solid ${
+                    active
+                      ? "var(--accent)"
+                      : "var(--border)"
+                  }`,
+                  background:
+                    active
+                      ? "rgba(0,245,255,0.08)"
+                      : "transparent",
+                  color:
+                    active
+                      ? "var(--accent)"
+                      : "var(--text-dim)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {value}
+              </div>
+            );
+          })}
+        </div>
+
+        <div
+          style={{
+            marginTop: 24,
+            marginBottom: 20,
+            padding: 18,
+            border: "1px solid var(--border)",
+            borderRadius: 12,
+            background: "rgba(0,0,0,0.25)",
+          }}
+        >
+
+          <div
+            style={{
+              color: "var(--text-dim)",
+              marginBottom: 10,
+            }}
+          >
+            Convert this decimal number into binary:
+          </div>
+
+          <div
+            style={{
+              fontSize: "2rem",
+              color: "var(--accent)",
+              fontFamily: "'Orbitron', sans-serif",
+              marginBottom: 16,
+            }}
+          >
+            {practiceTarget}
+          </div>
+
+          <div
+            className={`feedback-box ${
+              practiceMatch ? "correct" : "wrong"
+            }`}
+            style={{ marginBottom: 12 }}
+          >
+            <strong>
+              {practiceMatch
+                ? "✅ MATCH!"
+                : "❌ NOT MATCHED YET"}
+            </strong>
+          </div>
+
+          <button
+            className="btn btn-primary"
+            onClick={() => randomPracticeTarget()}
+          >
+            New Number
+          </button>
+
         </div>
 
         <div className="feedback-box correct">
