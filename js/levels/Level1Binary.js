@@ -75,6 +75,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [lastBonus, setLastBonus] = useState(null);
+  const [showStreakBanner, setShowStreakBanner] = useState(false);
   const [mistakes, setMistakes] = useState(0);
   const [done, setDone] = useState(false);
   const [firstCorrect, setFirstCorrect] = useState(false);
@@ -276,6 +277,12 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
       if (bonus > 0) {
         setLastBonus(`🔥 STREAK BONUS +${bonus}`);
+
+        setShowStreakBanner(true);
+
+        setTimeout(() => {
+          setShowStreakBanner(false);
+        }, 1400);
       } else {
         setLastBonus(null);
       }
@@ -711,6 +718,32 @@ function Level1({ onComplete, onBack, onAchievement }) {
             {score} pts · 🔥 {streak}
           </div>
         </div>
+
+        {showStreakBanner && (
+          <div
+            style={{
+              position: "fixed",
+              top: 90,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 999,
+              padding: "16px 28px",
+              borderRadius: 14,
+              border: "2px solid var(--accent3)",
+              background: "rgba(20,10,0,0.92)",
+              color: "var(--accent3)",
+              fontFamily: "'Orbitron', sans-serif",
+              letterSpacing: 2,
+              fontSize: "1rem",
+              boxShadow: "0 0 28px rgba(127,255,0,0.45)",
+              animation: "streakPop 1.4s ease",
+              pointerEvents: "none",
+            }}
+          >
+            🔥 COMBO BONUS<br />
+            <span style={{ fontSize: "1.4rem" }}>{lastBonus}</span>
+          </div>
+        )}
 
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }} />

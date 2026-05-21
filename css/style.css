@@ -5,6 +5,28 @@
   to   { transform: translateX(0);    opacity: 1; }
 }
 
+@keyframes streakPop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px) scale(1.08);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px) scale(0.92);
+  }
+}
+
 :root {
   --bg: #0a0e1a;
   --surface: #0f1629;
@@ -34,8 +56,15 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
-    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,0.015) 2px, rgba(0,245,255,0.015) 4px);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,245,255,0.008) 3px,
+      rgba(0,245,255,0.008) 4px
+    );
+
   pointer-events: none;
   z-index: 0;
 }
