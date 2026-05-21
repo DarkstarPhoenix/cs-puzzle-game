@@ -80,6 +80,8 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [answer, setAnswer] = useState("");
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [lastBonus, setLastBonus] = useState(null);
   const [mistakes, setMistakes] = useState(0);
   const [done, setDone] = useState(false);
   const [firstCorrect, setFirstCorrect] = useState(false);
@@ -231,13 +233,30 @@ function Level1({ onComplete, onBack, onAchievement }) {
     playSound(correct ? "correct" : "wrong");
 
     if (correct) {
-      setScore(s => s + 100);
+      const nextStreak = streak + 1;
+
+      let bonus = 0;
+
+      if (nextStreak === 3) bonus = 50;
+      if (nextStreak === 5) bonus = 100;
+      if (nextStreak > 5) bonus = 25;
+
+      setStreak(nextStreak);
+      setScore(s => s + 100 + bonus);
+
+      if (bonus > 0) {
+        setLastBonus(`🔥 STREAK BONUS +${bonus}`);
+      } else {
+        setLastBonus(null);
+      }
 
       if (!firstCorrect) {
         setFirstCorrect(true);
         if (onAchievement) onAchievement("first_blood");
       }
     } else {
+      setStreak(0);
+      setLastBonus(null);
       setMistakes(m => m + 1);
     }
   }
@@ -249,6 +268,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
       setQIdx(i => i + 1);
       setAnswer("");
       setAnswered(false);
+      setLastBonus(null);
 
       setTimeout(() => {
         inputRef.current?.focus();
@@ -611,7 +631,9 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
           <div className="level-tag">LEVEL 1</div>
           <div className="game-title">Binary to Decimal</div>
-          <div className="score-display">{score} pts</div>
+          <div className="score-display">
+            {score} pts · 🔥 {streak}
+          </div>
         </div>
 
         <div className="progress-bar">
@@ -694,6 +716,16 @@ function Level1({ onComplete, onBack, onAchievement }) {
               </strong>
               <br />
               {q.explanation}
+
+              {lastBonus && (
+                <>
+                  <br />
+                  <br />
+                  <strong style={{ color: "var(--accent3)" }}>
+                    {lastBonus}
+                  </strong>
+                </>
+              )}
             </div>
 
             <button

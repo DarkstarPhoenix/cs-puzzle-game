@@ -265,7 +265,7 @@ function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-const LEVEL_1_MAX_SCORE = 700;
+const LEVEL_1_MAX_SCORE = 1900;
 const LEVEL_2_MAX_SCORE = 700;
 const LEVEL_3_MAX_SCORE = 3360;
 const LEVEL_4_MAX_SCORE = 260;
