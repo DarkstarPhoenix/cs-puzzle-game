@@ -97,7 +97,11 @@
 
 ## Challenge Mode
 - [ ] Expand to 15 questions
-- [ ] Add difficulty tiers
+- [ ] Generate fresh challenge questions each run
+  - Randomised values
+  - Randomised scenarios
+  - Difficulty tiers
+  - Still predictable enough for fair scoring
 - [ ] Add streak system
 - [ ] Add rank/result screen
 - [ ] Improve animations/feedback

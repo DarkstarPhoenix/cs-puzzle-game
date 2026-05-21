@@ -1,136 +1,112 @@
-// ── LEVEL 2 – IF/ELSE QUESTIONS ───────────────
-const IF_ELSE_QUESTIONS = [
-  {
-    context:
-      "🗳️ You're building a voting app. The user entered their age - check if they're old enough to vote.",
+// ── LEVEL 2 – IF/ELSE QUESTIONS GENERATOR───────────────
+// ── LEVEL 2 – IF/ELSE QUESTION GENERATOR ───────────────
+function randomFrom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function generateIfElseQuestions() {
+  const questions = [];
+
+  const age = Math.floor(Math.random() * 8) + 14;
+  questions.push({
+    tier: 1,
+    context: `🗳️ You're building a voting app. The user entered age = ${age}. Check if they are old enough to vote.`,
     code: [
-      { text: "age = 16", type: "normal" },
+      { text: `age = ${age}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("You can vote!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("Too young to vote.")', type: "normal" },
     ],
-    blanks: [""],
-    options: ["age > 18", "age >= 18", "age == 16", "age < 18"],
+    options: ["age > 18", "age >= 18", "age == 18", "age < 18"],
     correctAnswers: ["age >= 18"],
-    explanation:
-      "age >= 18 means 18 OR older. Since age = 16, it goes to the else branch. The >= operator means 'greater than or equal to'.",
-  },
-  {
-    context:
-      "📝 A student just finished their exam. They need 50 or more to pass - write the condition!",
+    explanation: "age >= 18 means 18 or older. This is the correct voting-age check.",
+  });
+
+  const score = Math.floor(Math.random() * 51) + 40;
+  questions.push({
+    tier: 1,
+    context: `📝 A student scored ${score}. They need 50 or more to pass.`,
     code: [
-      { text: "score = 72", type: "normal" },
+      { text: `score = ${score}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("You passed!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("Try again.")', type: "normal" },
     ],
-    blanks: [""],
-    options: ["score > 100", "score >= 50", "score == 72", "score < 50"],
+    options: ["score > 100", "score >= 50", "score == 0", "score < 50"],
     correctAnswers: ["score >= 50"],
-    explanation:
-      "score >= 50 means the student passed if they got 50 or more. score = 72, so this prints 'You passed!'",
-  },
-  {
-    context:
-      "💡 You're coding a smart home app. Check if the lights are on to decide what to display.",
+    explanation: "score >= 50 checks whether the score is 50 or higher.",
+  });
+
+  const temperature = Math.floor(Math.random() * 21) + 20;
+  questions.push({
+    tier: 1,
+    context: `🌡️ A weather app checks if temperature = ${temperature} is hot. The warning threshold is above 30.`,
     code: [
-      { text: "lights_on = False", type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("Room is bright")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("It is dark!")', type: "normal" },
-    ],
-    blanks: [""],
-    options: [
-      "lights_on == True",
-      "lights_on",
-      "not lights_on",
-      "lights_on > 0",
-    ],
-    correctAnswers: ["lights_on == True", "lights_on"],
-    explanation:
-      "lights_on is False, so the condition fails and we get 'It is dark!'. Both 'lights_on == True' and 'lights_on' are valid ways to check a boolean!",
-  },
-  {
-    context:
-      "🌡️ A weather app needs to warn users when it's too hot. Set the threshold at 30 degrees.",
-    code: [
-      { text: "temperature = 35", type: "normal" },
+      { text: `temperature = ${temperature}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("It is hot outside!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("Nice weather.")', type: "normal" },
     ],
-    blanks: [""],
-    options: [
-      "temperature > 30",
-      "temperature < 30",
-      "temperature == 35",
-      "temperature > 100",
-    ],
+    options: ["temperature > 30", "temperature < 30", "temperature == 0", "temperature > 100"],
     correctAnswers: ["temperature > 30"],
-    explanation:
-      "temperature = 35, so temperature > 30 is True and prints 'It is hot outside!'. The > operator means strictly greater than.",
-  },
-  {
-    context:
-      "🔐 You're building a login system. Compare what the user typed with the real password.",
+    explanation: "temperature > 30 is true only when the value is above 30.",
+  });
+
+  const password = randomFrom(["abc123", "dragon", "admin42", "pizza"]);
+  questions.push({
+    tier: 2,
+    context: "🔐 You're building a login system. Compare the user's input with the saved password.",
     code: [
-      { text: "password = 'abc123'", type: "normal" },
-      { text: "user_input = 'abc123'", type: "normal" },
+      { text: `password = '${password}'`, type: "normal" },
+      { text: `user_input = '${password}'`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("Access granted!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("Wrong password.")', type: "normal" },
     ],
-    blanks: [""],
-    options: [
-      "user_input == password",
-      "user_input > password",
-      "user_input = password",
-      "user_input != password",
-    ],
+    options: ["user_input == password", "user_input = password", "user_input != password", "password < user_input"],
     correctAnswers: ["user_input == password"],
-    explanation:
-      "We use == to compare two values. user_input = password would be assignment (a bug!), and != means 'not equal'.",
-  },
-  {
-    context:
-      "🎮 You're coding a game. When the player runs out of lives it's game over - check for it!",
+    explanation: "Use == to compare values. A single = is assignment, not comparison.",
+  });
+
+  const lives = Math.floor(Math.random() * 3);
+  questions.push({
+    tier: 2,
+    context: `🎮 A game checks lives = ${lives}. Game over should happen only when lives is 0.`,
     code: [
-      { text: "lives = 0", type: "normal" },
+      { text: `lives = ${lives}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("Game over!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("Keep playing!")', type: "normal" },
     ],
-    blanks: [""],
     options: ["lives == 0", "lives > 0", "lives >= 1", "lives != 0"],
     correctAnswers: ["lives == 0"],
-    explanation:
-      "lives = 0, so we check lives == 0 which is True — prints 'Game over!'. lives > 0 and lives >= 1 would be False here.",
-  },
-  {
-    context:
-      "🌧️ A weather app needs to warn you if you'll get wet. You need an umbrella when it rains!",
+    explanation: "lives == 0 checks whether the player has no lives left.",
+  });
+
+  const isRaining = Math.random() < 0.5;
+  const hasUmbrella = Math.random() < 0.5;
+  questions.push({
+    tier: 3,
+    context: "🌧️ A weather app warns users if it is raining and they do not have an umbrella.",
     code: [
-      { text: "is_raining = True", type: "normal" },
-      { text: "has_umbrella = False", type: "normal" },
+      { text: `is_raining = ${isRaining ? "True" : "False"}`, type: "normal" },
+      { text: `has_umbrella = ${hasUmbrella ? "True" : "False"}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
       { text: '  print("You will get wet!")', type: "normal" },
       { text: "else:", type: "normal" },
       { text: '  print("You are fine!")', type: "normal" },
     ],
-    blanks: [""],
     options: [
       "is_raining and not has_umbrella",
       "is_raining or has_umbrella",
@@ -138,10 +114,11 @@ const IF_ELSE_QUESTIONS = [
       "has_umbrella == True",
     ],
     correctAnswers: ["is_raining and not has_umbrella"],
-    explanation:
-      "We need BOTH conditions: it's raining AND you don't have an umbrella. 'and' checks both, 'not' flips False to True. This introduces combining conditions!",
-  },
-];
+    explanation: "This needs both parts: it is raining AND the user does not have an umbrella.",
+  });
+
+  return questions.sort(() => Math.random() - 0.5);
+}
 
 // ── LEVEL 2 – IF/ELSE ─────────────────────────
 function Level2({ onComplete, onBack, onAchievement }) {
@@ -154,8 +131,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [mistakes, setMistakes] = useState(0); // ── NEW
   const [firstCorrect, setFirstCorrect] = useState(false); // ── NEW
 
-  const q = IF_ELSE_QUESTIONS[qIdx];
-  const progress = (qIdx / IF_ELSE_QUESTIONS.length) * 100;
+  const [questions] = useState(() => generateIfElseQuestions());
+
+  const q = questions[qIdx];
+  const progress = (qIdx / questions.length) * 100;
 
   function choose(opt) {
     if (answered) return;
@@ -175,7 +154,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   function next() {
-    if (qIdx + 1 >= IF_ELSE_QUESTIONS.length) {
+    if (qIdx + 1 >= questions.length) {
       setDone(true);
     } else {
       setQIdx((i) => i + 1);
@@ -277,7 +256,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
       </div>
 
       <div className="info-box">
-        Question {qIdx + 1} of {IF_ELSE_QUESTIONS.length} — Fill in the blank to
+        Question {qIdx + 1} of {questions.length} — Fill in the blank to
         make the code work correctly
       </div>
 
@@ -362,7 +341,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
           onClick={next}
           style={{ alignSelf: "flex-end" }}
         >
-          {qIdx + 1 >= IF_ELSE_QUESTIONS.length ? "See Results →" : "Next →"}
+          {qIdx + 1 >= questions.length ? "See Results →" : "Next →"}
         </button>
       )}
     </div>
