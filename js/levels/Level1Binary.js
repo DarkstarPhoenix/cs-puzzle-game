@@ -84,12 +84,17 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [done, setDone] = useState(false);
   const [firstCorrect, setFirstCorrect] = useState(false);
   const [practiceBits, setPracticeBits] = useState([0, 0, 0, 0]);
+  const [practiceMode, setPracticeMode] = useState(4);
+
   const inputRef = useRef(null);
 
   const q = questions[qIdx];
   const progress = (qIdx / questions.length) * 100;
 
-  const practicePlaceValues = [8, 4, 2, 1];
+  const practicePlaceValues =
+    practiceMode === 8
+      ? [128, 64, 32, 16, 8, 4, 2, 1]
+      : [8, 4, 2, 1];
 
   const practiceDecimal = practiceBits.reduce((total, bit, index) =>  {
     return total + bit * practicePlaceValues[index];
@@ -156,6 +161,18 @@ function Level1({ onComplete, onBack, onAchievement }) {
     transition: "all 0.2s",
     textAlign: "center",
   });
+
+  function setPracticeBitMode(bits) {
+    setPracticeMode(bits);
+
+    if (bits === 8) {
+      setPracticeBits([0, 0, 0, 0, 0, 0, 0, 0]);
+    } else {
+      setPracticeBits([0, 0, 0, 0]);
+    }
+
+    playSound("click");
+  }
 
   function togglePracticeBit(index) {
     setPracticeBits(bits =>
@@ -282,6 +299,41 @@ function Level1({ onComplete, onBack, onAchievement }) {
           }}
         >
           BINARY PRACTICE
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <button
+            className="btn btn-ghost"
+            onClick={() => setPracticeBitMode(4)}
+            style={{
+              borderColor:
+                practiceMode === 4
+                  ? "var(--accent)"
+                  : "var(--border)",
+            }}
+          >
+            4-BIT
+          </button>
+
+          <button
+            className="btn btn-ghost"
+            onClick={() => setPracticeBitMode(8)}
+            style={{
+              borderColor:
+                practiceMode === 8
+                  ? "var(--accent)"
+                  : "var(--border)",
+            }}
+          >
+            8-BIT
+          </button>
         </div>
 
         <div
