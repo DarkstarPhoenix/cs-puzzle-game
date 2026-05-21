@@ -316,6 +316,41 @@ function Level1({ onComplete, onBack, onAchievement }) {
   if (done) {
     const stars = score >= 500 ? "⭐⭐⭐" : score >= 300 ? "⭐⭐" : "⭐";
 
+    const accuracy = Math.round(
+      ((questions.length - mistakes) / questions.length) * 100
+    );
+
+    const rank =
+      score >= 1800
+        ? {
+            letter: "S",
+            title: "Binary Master",
+            color: "#ffd700",
+          }
+        : score >= 1500
+        ? {
+            letter: "A",
+            title: "System Decoder",
+            color: "var(--accent)",
+          }
+        : score >= 1200
+        ? {
+            letter: "B",
+            title: "Data Technician",
+            color: "#b26cff",
+          }
+        : score >= 800
+        ? {
+            letter: "C",
+            title: "Binary Operator",
+            color: "#ff9f43",
+          }
+        : {
+            letter: "D",
+            title: "Trainee",
+            color: "var(--accent2)",
+          };
+
     return (
       <div className="screen">
         <div className="victory-card">
@@ -325,8 +360,56 @@ function Level1({ onComplete, onBack, onAchievement }) {
             Binary conversion mastered
           </div>
           <div className="victory-score">{score} pts</div>
-          <div style={{ color: "var(--text-dim)", fontSize: "0.8rem", marginBottom: 24 }}>
-            You converted binary values into decimal numbers.
+
+          <div
+            style={{
+              marginBottom: 18,
+              padding: "16px",
+              borderRadius: 12,
+              border: `2px solid ${rank.color}`,
+              background: `${rank.color}15`,
+              boxShadow: `0 0 20px ${rank.color}40`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: "3rem",
+                fontFamily: "'Orbitron', sans-serif",
+                color: rank.color,
+                textShadow: `0 0 18px ${rank.color}`,
+                marginBottom: 6,
+              }}
+            >
+              {rank.letter}
+            </div>
+
+            <div
+              style={{
+                color: rank.color,
+                fontFamily: "'Orbitron', sans-serif",
+                letterSpacing: 2,
+                fontSize: "0.9rem",
+              }}
+            >
+              {rank.title}
+            </div>
+          </div>
+
+          <div
+            style={{
+              color: "var(--text-dim)",
+              fontSize: "0.8rem",
+              marginBottom: 24,
+              lineHeight: 1.8,
+            }}
+          >
+            Binary conversion mastered.
+            <br />
+            Accuracy: {accuracy}%
+            <br />
+            Mistakes: {mistakes}
+            <br />
+            Final Streak: 🔥 {streak}
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
             <button className="btn btn-ghost" onClick={onBack}>
