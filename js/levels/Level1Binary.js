@@ -253,7 +253,24 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
     {tab === "practice" ? (
 
-      <div className="code-block" style={{ textAlign: "center" }}>
+      <>
+          <div className="game-header">
+
+            <button
+              className="btn btn-ghost"
+              style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+              onClick={onBack}
+            >
+              ← Back
+            </button>
+
+            <div className="level-tag">LEVEL 1</div>
+            <div className="game-title">Binary Practice</div>
+            <div className="score-display">Practice</div>
+
+          </div>
+
+          <div className="code-block" style={{ textAlign: "center" }}>
 
         <div
           style={{
@@ -341,6 +358,8 @@ function Level1({ onComplete, onBack, onAchievement }) {
         </div>
 
       </div>
+
+      </>
 
     ) : (
 
