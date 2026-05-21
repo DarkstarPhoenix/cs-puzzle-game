@@ -8,140 +8,178 @@ function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-function generateIfElseQuestions() {
-  const questions = [];
+function makeComparisonQuestion({
+  contextIcon,
+  contextText,
+  variableName,
+  value,
+  threshold,
+  trueMessage,
+  falseMessage,
+  operator,
+}) {
+  const correctCondition = `${variableName} ${operator} ${threshold}`;
 
-  const age = Math.floor(Math.random() * 8) + 14;
-  questions.push({
-    tier: 1,
-    context: `🗳️ You're building a voting app. The user entered age = ${age}. Check if they are old enough to vote.`,
+  const wrongOptions = [
+    `${variableName} > ${threshold}`,
+    `${variableName} >= ${threshold}`,
+    `${variableName} < ${threshold}`,
+    `${variableName} <= ${threshold}`,
+    `${variableName} == ${threshold}`,
+    `${variableName} != ${threshold}`,
+  ].filter((option) => option !== correctCondition);
+
+  return {
+    context: `${contextIcon} ${contextText}`,
     code: [
-      { text: `age = ${age}`, type: "normal" },
+      { text: `${variableName} = ${value}`, type: "normal" },
       { text: "", type: "blank-line" },
       { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("You can vote!")', type: "normal" },
+      { text: `  print("${trueMessage}")`, type: "normal" },
       { text: "else:", type: "normal" },
-      { text: '  print("Too young to vote.")', type: "normal" },
+      { text: `  print("${falseMessage}")`, type: "normal" },
     ],
     options: shuffleArray([
-      "age > 18", 
-      "age >= 18", 
-      "age == 18", 
-      "age < 18"]),
-    correctAnswers: ["age >= 18"],
-    explanation: "age >= 18 means 18 or older. This is the correct voting-age check.",
-  });
-
-  const score = Math.floor(Math.random() * 51) + 40;
-  questions.push({
-    tier: 1,
-    context: `📝 A student scored ${score}. They need 50 or more to pass.`,
-    code: [
-      { text: `score = ${score}`, type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("You passed!")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("Try again.")', type: "normal" },
-    ],
-    options: shuffleArray([
-      "score > 100", 
-      "score >= 50", 
-      "score == 0", 
-      "score < 50"]),
-    correctAnswers: ["score >= 50"],
-    explanation: "score >= 50 checks whether the score is 50 or higher.",
-  });
-
-  const temperature = Math.floor(Math.random() * 21) + 20;
-  questions.push({
-    tier: 1,
-    context: `🌡️ A weather app checks if temperature = ${temperature} is hot. The warning threshold is above 30.`,
-    code: [
-      { text: `temperature = ${temperature}`, type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("It is hot outside!")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("Nice weather.")', type: "normal" },
-    ],
-    options: shuffleArray([
-      "temperature > 30", 
-      "temperature < 30", 
-      "temperature == 0", 
-      "temperature > 100"]),
-    correctAnswers: ["temperature > 30"],
-    explanation: "temperature > 30 is true only when the value is above 30.",
-  });
-
-  const password = randomFrom(["abc123", "dragon", "admin42", "pizza"]);
-  questions.push({
-    tier: 2,
-    context: "🔐 You're building a login system. Compare the user's input with the saved password.",
-    code: [
-      { text: `password = '${password}'`, type: "normal" },
-      { text: `user_input = '${password}'`, type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("Access granted!")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("Wrong password.")', type: "normal" },
-    ],
-    options: shuffleArray([
-      "user_input == password", 
-      "user_input = password", 
-      "user_input != password", 
-      "password < user_input"]),
-    correctAnswers: ["user_input == password"],
-    explanation: "Use == to compare values. A single = is assignment, not comparison.",
-  });
-
-  const lives = Math.floor(Math.random() * 3);
-  questions.push({
-    tier: 2,
-    context: `🎮 A game checks lives = ${lives}. Game over should happen only when lives is 0.`,
-    code: [
-      { text: `lives = ${lives}`, type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("Game over!")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("Keep playing!")', type: "normal" },
-    ],
-    options: shuffleArray([
-      "lives == 0", 
-      "lives > 0", 
-      "lives >= 1", 
-      "lives != 0"]),
-    correctAnswers: ["lives == 0"],
-    explanation: "lives == 0 checks whether the player has no lives left.",
-  });
-
-  const isRaining = Math.random() < 0.5;
-  const hasUmbrella = Math.random() < 0.5;
-  questions.push({
-    tier: 3,
-    context: "🌧️ A weather app warns users if it is raining and they do not have an umbrella.",
-    code: [
-      { text: `is_raining = ${isRaining ? "True" : "False"}`, type: "normal" },
-      { text: `has_umbrella = ${hasUmbrella ? "True" : "False"}`, type: "normal" },
-      { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-      { text: '  print("You will get wet!")', type: "normal" },
-      { text: "else:", type: "normal" },
-      { text: '  print("You are fine!")', type: "normal" },
-    ],
-    options: shuffleArray([
-      "is_raining and not has_umbrella",
-      "is_raining or has_umbrella",
-      "not is_raining",
-      "has_umbrella == True",
+      correctCondition,
+      ...shuffleArray(wrongOptions).slice(0, 3),
     ]),
-    correctAnswers: ["is_raining and not has_umbrella"],
-    explanation: "This needs both parts: it is raining AND the user does not have an umbrella.",
-  });
+    correctAnswers: [correctCondition],
+    explanation: `${correctCondition} is the condition needed for this scenario.`,
+  };
+}
 
-  return questions.sort(() => Math.random() - 0.5);
+function generateIfElseQuestions() {
+  const templates = [
+    () => {
+      const threshold = 18;
+      const value = Math.floor(Math.random() * 10) + 14;
+      const operator = randomFrom([">=", ">"]);
+      return makeComparisonQuestion({
+        contextIcon: "🗳️",
+        contextText: `Voting app: age is ${value}. Choose the condition for being old enough to vote.`,
+        variableName: "age",
+        value,
+        threshold,
+        operator,
+        trueMessage: "You can vote!",
+        falseMessage: "Too young to vote.",
+      });
+    },
+
+    () => {
+      const threshold = randomFrom([40, 50, 60]);
+      const value = Math.floor(Math.random() * 61) + 30;
+      const operator = randomFrom([">=", ">"]);
+      return makeComparisonQuestion({
+        contextIcon: "📝",
+        contextText: `Exam system: score is ${value}. Choose the condition for passing the test.`,
+        variableName: "score",
+        value,
+        threshold,
+        operator,
+        trueMessage: "You passed!",
+        falseMessage: "Try again.",
+      });
+    },
+
+    () => {
+      const threshold = randomFrom([25, 30, 35]);
+      const value = Math.floor(Math.random() * 26) + 15;
+      const operator = randomFrom([">", ">="]);
+      return makeComparisonQuestion({
+        contextIcon: "🌡️",
+        contextText: `Weather app: temperature is ${value}. Choose the condition for hot weather.`,
+        variableName: "temperature",
+        value,
+        threshold,
+        operator,
+        trueMessage: "It is hot outside!",
+        falseMessage: "Nice weather.",
+      });
+    },
+
+    () => {
+      const lives = Math.floor(Math.random() * 4);
+      const correctCondition = randomFrom(["lives == 0", "lives <= 0"]);
+      return {
+        context: `🎮 Game system: lives is ${lives}. Choose the condition for game over.`,
+        code: [
+          { text: `lives = ${lives}`, type: "normal" },
+          { text: "", type: "blank-line" },
+          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
+          { text: '  print("Game over!")', type: "normal" },
+          { text: "else:", type: "normal" },
+          { text: '  print("Keep playing!")', type: "normal" },
+        ],
+        options: shuffleArray([
+          correctCondition,
+          "lives > 0",
+          "lives >= 1",
+          "lives != 0",
+        ]),
+        correctAnswers: [correctCondition],
+        explanation: `${correctCondition} checks whether the player has run out of lives.`,
+      };
+    },
+
+    () => {
+      const password = randomFrom(["abc123", "dragon", "admin42", "pizza"]);
+      const userInput = Math.random() < 0.5 ? password : randomFrom(["wrong", "guest", "test"]);
+      const correctCondition = randomFrom([
+        "user_input == password",
+        "password == user_input",
+      ]);
+
+      return {
+        context: "🔐 Login system: choose the condition that checks whether the password is correct.",
+        code: [
+          { text: `password = '${password}'`, type: "normal" },
+          { text: `user_input = '${userInput}'`, type: "normal" },
+          { text: "", type: "blank-line" },
+          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
+          { text: '  print("Access granted!")', type: "normal" },
+          { text: "else:", type: "normal" },
+          { text: '  print("Wrong password.")', type: "normal" },
+        ],
+        options: shuffleArray([
+          correctCondition,
+          "user_input = password",
+          "user_input != password",
+          "password < user_input",
+        ]),
+        correctAnswers: [correctCondition],
+        explanation: "Use == to compare values. A single = assigns a value and would be a bug.",
+      };
+    },
+
+    () => {
+      const isRaining = Math.random() < 0.5;
+      const hasUmbrella = Math.random() < 0.5;
+
+      return {
+        context: "🌧️ Weather app: warn the user if it is raining and they do not have an umbrella.",
+        code: [
+          { text: `is_raining = ${isRaining ? "True" : "False"}`, type: "normal" },
+          { text: `has_umbrella = ${hasUmbrella ? "True" : "False"}`, type: "normal" },
+          { text: "", type: "blank-line" },
+          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
+          { text: '  print("You will get wet!")', type: "normal" },
+          { text: "else:", type: "normal" },
+          { text: '  print("You are fine!")', type: "normal" },
+        ],
+        options: shuffleArray([
+          "is_raining and not has_umbrella",
+          "is_raining or has_umbrella",
+          "not is_raining",
+          "has_umbrella == True",
+        ]),
+        correctAnswers: ["is_raining and not has_umbrella"],
+        explanation: "This needs both parts: it is raining AND the user does not have an umbrella.",
+      };
+    },
+  ];
+
+  return shuffleArray(templates).map((makeQuestion) => makeQuestion());
 }
 
 // ── LEVEL 2 – IF/ELSE ─────────────────────────

@@ -75,7 +75,7 @@
 
 ---
 
-# Level 2 – If / Else
+# Level 2 – If / Else + Loops
 
 ## Current
 - [x] Challenge questions
@@ -97,11 +97,20 @@
 
 ## Challenge Mode
 - [ ] Expand to 15 questions
-- [ ] Generate fresh challenge questions each run
-  - Randomised values
-  - Randomised scenarios
-  - Difficulty tiers
+- [ ] Add progressive challenge question tiers
+  - [ ] Tier 1: evaluate simple if / else output
+  - [ ] Tier 2: choose missing if condition
+  - [ ] Tier 3: evaluate if / elif / else output
+  - [ ] Tier 4: basic for / while loop output
+  - [ ] Tier 5: break / continue behaviour
+  - [ ] Ensure generated questions remain logically consistent
   - Still predictable enough for fair scoring
+- [ ] Improve randomised question generation
+  - [x] Randomise variable values
+  - [x] Randomise comparison operators
+  - [x] Randomise correct answer logic
+  - [x] Avoid same correct condition every run
+  - [x] Randomise answer button positions
 - [ ] Add streak system
 - [ ] Add rank/result screen
 - [ ] Improve animations/feedback
