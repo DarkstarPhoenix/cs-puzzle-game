@@ -33,6 +33,21 @@
   - [ ] Keep correct/wrong sounds for answer feedback
   - [ ] Check audio does not double-trigger on quiz answers
 
+- [ ] Update README documentation
+  - [ ] Installation/setup instructions
+  - [ ] Firebase hosting instructions
+  - [ ] Controls/gameplay guide
+  - [ ] Level descriptions
+  - [ ] Achievement system overview
+  - [ ] Leaderboard explanation
+  - [ ] Technologies used
+  - [ ] Screenshots/GIFs
+
+- [ ] Disable TEST_MODE for release
+- [ ] Add Firestore leaderboard
+- [ ] Mobile/tablet UI testing pass
+- [ ] Final balancing pass
+
 ---
 
 # Level 1 – Binary to Decimal
@@ -163,7 +178,7 @@
 # Suggested Commit Milestones
 
 ## Next Commits
-- [x] Level 1 score display + binary UI polish
+- [ ] Level 1 score display + binary UI polish
 - [ ] Level 2 practice/challenge refactor
 - [ ] Level 3 result screen + streaks
 - [ ] Level 4 score breakdown
