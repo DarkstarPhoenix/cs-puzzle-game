@@ -394,54 +394,58 @@ function Level1({ onComplete, onBack, onAchievement }) {
                   display: "grid",
                   gridTemplateColumns: `repeat(${practiceBits.length}, 1fr)`,
                   gap: 12,
-                  marginBottom: 16,
-                }}
-              >
-                {practiceBits.map((bit, index) => (
-                  <button
-                    key={index}
-                    onClick={() => togglePracticeBit(index)}
-                    style={{
-                      padding: "18px 0",
-                      borderRadius: 10,
-                      border: `1px solid ${bit === 1 ? "var(--accent)" : "var(--border)"}`,
-                      background: bit === 1 ? "rgba(0,245,255,0.12)" : "var(--surface)",
-                      color: bit === 1 ? "var(--accent)" : "var(--text-dim)",
-                      fontSize: "2rem",
-                      fontFamily: "monospace",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {bit}
-                  </button>
-                ))}
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: `repeat(${practicePlaceValues.length}, 1fr)`,
-                  gap: 12,
                   marginBottom: 24,
-                  fontFamily: "monospace",
                 }}
               >
-                {practicePlaceValues.map((value, index) => {
-                  const active = practiceBits[index] === 1;
+                {practiceBits.map((bit, index) => {
+                  const value = practicePlaceValues[index];
+                  const active = bit === 1;
 
                   return (
                     <div
-                      key={value}
+                      key={index}
                       style={{
-                        padding: "10px 0",
-                        borderRadius: 8,
-                        border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                        background: active ? "rgba(0,245,255,0.08)" : "transparent",
-                        color: active ? "var(--accent)" : "var(--text-dim)",
-                        transition: "all 0.2s",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                        alignItems: "center",
                       }}
                     >
-                      {value}
+                      <div
+                        style={{
+                          width: "100%",
+                          padding: "6px 0",
+                          borderRadius: 8,
+                          border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                          background: active ? "rgba(0,245,255,0.08)" : "transparent",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                          fontFamily: "monospace",
+                          fontSize: "1rem",
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {value}
+                      </div>
+
+                      <button
+                        onClick={() => togglePracticeBit(index)}
+                        style={{
+                          width: "100%",
+                          padding: "18px 0",
+                          borderRadius: 10,
+                          border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                          background: active ? "rgba(0,245,255,0.16)" : "var(--surface)",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                          fontSize: "2rem",
+                          fontFamily: "monospace",
+                          cursor: "pointer",
+                          boxShadow: active ? "0 0 18px rgba(0,245,255,0.45)" : "none",
+                          transform: active ? "scale(1.04)" : "scale(1)",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {bit}
+                      </button>
                     </div>
                   );
                 })}
@@ -466,27 +470,60 @@ function Level1({ onComplete, onBack, onAchievement }) {
                   display: "grid",
                   gridTemplateColumns: `repeat(${practiceBits.length}, 1fr)`,
                   gap: 12,
-                  marginBottom: 16,
+                  marginBottom: 24,
                 }}
               >
-                {practiceBits.map((bit, index) => (
-                  <button
-                    key={index}
-                    onClick={() => togglePracticeBit(index)}
-                    style={{
-                      padding: "18px 0",
-                      borderRadius: 10,
-                      border: `1px solid ${bit === 1 ? "var(--accent)" : "var(--border)"}`,
-                      background: bit === 1 ? "rgba(0,245,255,0.12)" : "var(--surface)",
-                      color: bit === 1 ? "var(--accent)" : "var(--text-dim)",
-                      fontSize: "2rem",
-                      fontFamily: "monospace",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {bit}
-                  </button>
-                ))}
+                {practiceBits.map((bit, index) => {
+                  const value = practicePlaceValues[index];
+                  const active = bit === 1;
+
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          padding: "8px 0",
+                          borderRadius: 8,
+                          border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                          background: active ? "rgba(0,245,255,0.08)" : "transparent",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                          fontFamily: "monospace",
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {value}
+                      </div>
+
+                      <button
+                        onClick={() => togglePracticeBit(index)}
+                        style={{
+                          width: "100%",
+                          padding: "18px 0",
+                          borderRadius: 10,
+                          border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                          background: active ? "rgba(0,245,255,0.16)" : "var(--surface)",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                          fontSize: "2rem",
+                          fontFamily: "monospace",
+                          cursor: "pointer",
+                          boxShadow: active ? "0 0 18px rgba(0,245,255,0.45)" : "none",
+                          transform: active ? "scale(1.04)" : "scale(1)",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {bit}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
 
               <div
