@@ -163,7 +163,7 @@
 # Suggested Commit Milestones
 
 ## Next Commits
-- [ ] Level 1 score display + binary UI polish
+- [x] Level 1 score display + binary UI polish
 - [ ] Level 2 practice/challenge refactor
 - [ ] Level 3 result screen + streaks
 - [ ] Level 4 score breakdown
