@@ -3,70 +3,63 @@ function generateBinaryQuestions() {
   const questions = [];
   const used = new Set();
 
-  // ── 10 BIN → DEC QUESTIONS ──────────────────
-  for (let i = 0; i < 10; i++) {
-
+  function getUniqueNumber(min, max) {
     let num;
 
-    // final binary question = 9 bit firewall prep
-    if (i === 9) {
-      num = Math.floor(Math.random() * 512);
-    }
+    do {
+      num = Math.floor(Math.random() * (max - min + 1)) + min;
+    } while (used.has(num));
 
-    // medium difficulty
-    else if (i >= 5) {
-      num = Math.floor(Math.random() * 256);
-    }
+    used.add(num);
+    return num;
+  }
 
-    // easier opening questions
-    else {
-      num = Math.floor(Math.random() * 16);
-    }
-
-    while (used.has(`bin-${num}`)) {
-      num++;
-    }
-
-    used.add(`bin-${num}`);
-
+  function makeBinToDec(num) {
     const binary = num.toString(2);
 
-    const bits = binary.split("").reverse();
+    const explanationParts = binary
+      .split("")
+      .reverse()
+      .map((bit, idx) => `${bit}×${2 ** idx}`)
+      .reverse();
 
-    const explanationParts = bits.map((bit, idx) => {
-      const value = 2 ** idx;
-      return `${bit}×${value}`;
-    });
-
-    questions.push({
+    return {
       type: "bin-to-dec",
       question: binary,
       answer: String(num),
-      explanation:
-        `${binary} = ` +
-        `${explanationParts.reverse().join(" + ")} = ${num}`,
-    });
+      explanation: `${binary} = ${explanationParts.join(" + ")} = ${num}`,
+    };
   }
 
-  // ── 5 DEC → BIN QUESTIONS ──────────────────
-  for (let i = 0; i < 5; i++) {
-
-    let num = Math.floor(Math.random() * 64) + 1;
-
-    while (used.has(`dec-${num}`)) {
-      num++;
-    }
-
-    used.add(`dec-${num}`);
-
-    questions.push({
+  function makeDecToBin(num) {
+    return {
       type: "dec-to-bin",
       question: String(num),
       answer: num.toString(2),
-      explanation:
-        `${num} in binary is ${num.toString(2)}`,
-    });
+      explanation: `${num} in binary is ${num.toString(2)}`,
+    };
   }
+
+  // Questions 1–5: Beginner binary → decimal
+  questions.push(makeBinToDec(getUniqueNumber(1, 3)));
+  questions.push(makeBinToDec(getUniqueNumber(4, 7)));
+  questions.push(makeBinToDec(getUniqueNumber(8, 15)));
+  questions.push(makeBinToDec(getUniqueNumber(10, 20)));
+  questions.push(makeBinToDec(getUniqueNumber(16, 31)));
+
+  // Questions 6–10: Advanced binary → decimal
+  questions.push(makeBinToDec(getUniqueNumber(32, 63)));
+  questions.push(makeBinToDec(getUniqueNumber(64, 127)));
+  questions.push(makeBinToDec(getUniqueNumber(128, 191)));
+  questions.push(makeBinToDec(getUniqueNumber(192, 255)));
+  questions.push(makeBinToDec(getUniqueNumber(256, 511))); // 9-bit max range
+
+  // Questions 11–15: Decimal → binary
+  questions.push(makeDecToBin(getUniqueNumber(5, 15)));
+  questions.push(makeDecToBin(getUniqueNumber(16, 31)));
+  questions.push(makeDecToBin(getUniqueNumber(32, 63)));
+  questions.push(makeDecToBin(getUniqueNumber(64, 127)));
+  questions.push(makeDecToBin(getUniqueNumber(128, 255)));
 
   return questions;
 }
@@ -641,10 +634,24 @@ function Level1({ onComplete, onBack, onAchievement }) {
         </div>
 
         <div className="info-box">
+
+          <strong>
+            {qIdx < 5
+              ? "Beginner Conversion"
+              : qIdx < 10
+              ? "Advanced Conversion"
+              : qIdx < 14
+              ? "Decimal Reconstruction"
+              : "High Capacity Binary"}
+          </strong>
+
+          <br />
+
           Question {qIdx + 1} of {questions.length} —{" "}
           {q.type === "dec-to-bin"
             ? "Convert this decimal number into binary."
             : "Convert this binary number into decimal."}
+
         </div>
 
         <div className="code-block" style={{ textAlign: "center" }}>
