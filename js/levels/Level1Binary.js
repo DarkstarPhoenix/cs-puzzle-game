@@ -85,6 +85,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const [firstCorrect, setFirstCorrect] = useState(false);
   const [practiceBits, setPracticeBits] = useState([0, 0, 0, 0]);
   const [practiceMode, setPracticeMode] = useState(4);
+  const [practiceSection, setPracticeSection] = useState("sandbox");
   const [practiceTarget, setPracticeTarget] = useState(10);
 
   const inputRef = useRef(null);
@@ -106,6 +107,16 @@ function Level1({ onComplete, onBack, onAchievement }) {
     .join(" + ");
 
   const practiceMatch = practiceDecimal === practiceTarget;
+
+  const practiceTableLimit = practiceMode === 4 ? 16 : 16;
+
+  const practiceTableRows = Array.from(
+    { length: practiceTableLimit },
+    (_, value) => ({
+      decimal: value,
+      binary: value.toString(2).padStart(practiceMode, "0"),
+    })
+  );
 
   if (!started) {
     return (
@@ -163,6 +174,18 @@ function Level1({ onComplete, onBack, onAchievement }) {
     cursor: "pointer",
     transition: "all 0.2s",
     textAlign: "center",
+  });
+
+  const practiceSectionStyle = (active) => ({
+    flex: 1,
+    padding: "8px 10px",
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    borderRadius: 6,
+    background: active ? "rgba(0,245,255,0.08)" : "var(--surface)",
+    color: active ? "var(--accent)" : "var(--text-dim)",
+    fontFamily: "monospace",
+    fontSize: "0.75rem",
+    cursor: "pointer",
   });
 
   function randomPracticeTarget(bits = practiceMode) {
@@ -266,252 +289,318 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
   return (
   <div className="game-screen">
-
     <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-      <button
-        style={tabStyle(tab === "practice")}
-        onClick={() => setTab("practice")}
-      >
+      <button style={tabStyle(tab === "practice")} onClick={() => setTab("practice")}>
         Practice
       </button>
 
-      <button
-        style={tabStyle(tab === "challenge")}
-        onClick={() => setTab("challenge")}
-      >
+      <button style={tabStyle(tab === "challenge")} onClick={() => setTab("challenge")}>
         Challenge
       </button>
     </div>
 
     {tab === "practice" ? (
-
       <>
-          <div className="game-header">
+        <div className="game-header">
+          <button
+            className="btn btn-ghost"
+            style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+            onClick={onBack}
+          >
+            ← Back
+          </button>
+
+          <div className="level-tag">LEVEL 1</div>
+          <div className="game-title">Binary Practice</div>
+          <div className="score-display">Practice</div>
+        </div>
+
+        <div className="code-block" style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "0.65rem",
+              color: "var(--accent)",
+              letterSpacing: 3,
+              marginBottom: 12,
+              fontFamily: "'Orbitron', sans-serif",
+            }}
+          >
+            BINARY PRACTICE
+          </div>
+
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 20 }}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => setPracticeBitMode(4)}
+              style={{ borderColor: practiceMode === 4 ? "var(--accent)" : "var(--border)" }}
+            >
+              4-BIT
+            </button>
 
             <button
               className="btn btn-ghost"
-              style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-              onClick={onBack}
+              onClick={() => setPracticeBitMode(8)}
+              style={{ borderColor: practiceMode === 8 ? "var(--accent)" : "var(--border)" }}
             >
-              ← Back
+              8-BIT
             </button>
-
-            <div className="level-tag">LEVEL 1</div>
-            <div className="game-title">Binary Practice</div>
-            <div className="score-display">Practice</div>
-
           </div>
 
-          <div className="code-block" style={{ textAlign: "center" }}>
-
-        <div
-          style={{
-            fontSize: "0.65rem",
-            color: "var(--accent)",
-            letterSpacing: 3,
-            marginBottom: 12,
-            fontFamily: "'Orbitron', sans-serif",
-          }}
-        >
-          BINARY PRACTICE
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            justifyContent: "center",
-            marginBottom: 20,
-          }}
-        >
-          <button
-            className="btn btn-ghost"
-            onClick={() => setPracticeBitMode(4)}
-            style={{
-              borderColor:
-                practiceMode === 4
-                  ? "var(--accent)"
-                  : "var(--border)",
-            }}
-          >
-            4-BIT
-          </button>
-
-          <button
-            className="btn btn-ghost"
-            onClick={() => setPracticeBitMode(8)}
-            style={{
-              borderColor:
-                practiceMode === 8
-                  ? "var(--accent)"
-                  : "var(--border)",
-            }}
-          >
-            8-BIT
-          </button>
-        </div>
-
-        <div
-          style={{
-            color: "var(--text-dim)",
-            marginBottom: 24,
-            lineHeight: 1.6,
-          }}
-        >
-          Click each bit to toggle it between 0 and 1. Each position has a
-          place value. Add the active values together to get the decimal
-          number.
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          {practiceBits.map((bit, index) => (
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
             <button
-              key={index}
-              onClick={() => togglePracticeBit(index)}
-              style={{
-                padding: "18px 0",
-                borderRadius: 10,
-                border: `1px solid ${
-                  bit === 1 ? "var(--accent)" : "var(--border)"
-                }`,
-                background:
-                  bit === 1
-                    ? "rgba(0,245,255,0.12)"
-                    : "var(--surface)",
-                color:
-                  bit === 1
-                    ? "var(--accent)"
-                    : "var(--text-dim)",
-                fontSize: "2rem",
-                fontFamily: "monospace",
-                cursor: "pointer",
-              }}
+              style={practiceSectionStyle(practiceSection === "sandbox")}
+              onClick={() => setPracticeSection("sandbox")}
             >
-              {bit}
+              Sandbox
             </button>
-          ))}
-        </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${practicePlaceValues.length}, 1fr)`,
-            gap: 12,
-            marginBottom: 24,
-            fontFamily: "monospace",
-          }}
-        >
-          {practicePlaceValues.map((value, index) => {
+            <button
+              style={practiceSectionStyle(practiceSection === "trainer")}
+              onClick={() => setPracticeSection("trainer")}
+            >
+              Decimal Trainer
+            </button>
 
-            const active = practiceBits[index] === 1;
+            <button
+              style={practiceSectionStyle(practiceSection === "table")}
+              onClick={() => setPracticeSection("table")}
+            >
+              Counting Table
+            </button>
+          </div>
 
-            return (
+          {practiceSection === "sandbox" && (
+            <>
+              <div style={{ color: "var(--text-dim)", marginBottom: 24, lineHeight: 1.6 }}>
+                Click each bit to toggle it between 0 and 1. Each position has a
+                place value. Add the active values together to get the decimal number.
+              </div>
+
               <div
-                key={value}
                 style={{
-                  padding: "10px 0",
-                  borderRadius: 8,
-                  border: `1px solid ${
-                    active
-                      ? "var(--accent)"
-                      : "var(--border)"
-                  }`,
-                  background:
-                    active
-                      ? "rgba(0,245,255,0.08)"
-                      : "transparent",
-                  color:
-                    active
-                      ? "var(--accent)"
-                      : "var(--text-dim)",
-                  transition: "all 0.2s",
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${practiceBits.length}, 1fr)`,
+                  gap: 12,
+                  marginBottom: 16,
                 }}
               >
-                {value}
+                {practiceBits.map((bit, index) => (
+                  <button
+                    key={index}
+                    onClick={() => togglePracticeBit(index)}
+                    style={{
+                      padding: "18px 0",
+                      borderRadius: 10,
+                      border: `1px solid ${bit === 1 ? "var(--accent)" : "var(--border)"}`,
+                      background: bit === 1 ? "rgba(0,245,255,0.12)" : "var(--surface)",
+                      color: bit === 1 ? "var(--accent)" : "var(--text-dim)",
+                      fontSize: "2rem",
+                      fontFamily: "monospace",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {bit}
+                  </button>
+                ))}
               </div>
-            );
-          })}
-        </div>
 
-        <div
-          style={{
-            marginTop: 24,
-            marginBottom: 20,
-            padding: 18,
-            border: "1px solid var(--border)",
-            borderRadius: 12,
-            background: "rgba(0,0,0,0.25)",
-          }}
-        >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${practicePlaceValues.length}, 1fr)`,
+                  gap: 12,
+                  marginBottom: 24,
+                  fontFamily: "monospace",
+                }}
+              >
+                {practicePlaceValues.map((value, index) => {
+                  const active = practiceBits[index] === 1;
 
-          <div
-            style={{
-              color: "var(--text-dim)",
-              marginBottom: 10,
-            }}
-          >
-            Convert this decimal number into binary:
+                  return (
+                    <div
+                      key={value}
+                      style={{
+                        padding: "10px 0",
+                        borderRadius: 8,
+                        border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                        background: active ? "rgba(0,245,255,0.08)" : "transparent",
+                        color: active ? "var(--accent)" : "var(--text-dim)",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {value}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="feedback-box correct">
+                <strong>{practiceBits.join("")}</strong>
+                <br />
+                {practiceWorking} = {practiceDecimal}
+              </div>
+            </>
+          )}
+
+          {practiceSection === "trainer" && (
+            <>
+              <div style={{ color: "var(--text-dim)", marginBottom: 24, lineHeight: 1.6 }}>
+                Toggle the bits until the binary value matches the decimal target.
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${practiceBits.length}, 1fr)`,
+                  gap: 12,
+                  marginBottom: 16,
+                }}
+              >
+                {practiceBits.map((bit, index) => (
+                  <button
+                    key={index}
+                    onClick={() => togglePracticeBit(index)}
+                    style={{
+                      padding: "18px 0",
+                      borderRadius: 10,
+                      border: `1px solid ${bit === 1 ? "var(--accent)" : "var(--border)"}`,
+                      background: bit === 1 ? "rgba(0,245,255,0.12)" : "var(--surface)",
+                      color: bit === 1 ? "var(--accent)" : "var(--text-dim)",
+                      fontSize: "2rem",
+                      fontFamily: "monospace",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {bit}
+                  </button>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  marginTop: 24,
+                  marginBottom: 20,
+                  padding: 18,
+                  border: "1px solid var(--border)",
+                  borderRadius: 12,
+                  background: "rgba(0,0,0,0.25)",
+                }}
+              >
+                <div style={{ color: "var(--text-dim)", marginBottom: 10 }}>
+                  Convert this decimal number into binary:
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    color: "var(--accent)",
+                    fontFamily: "'Orbitron', sans-serif",
+                    marginBottom: 16,
+                  }}
+                >
+                  {practiceTarget}
+                </div>
+
+                <div
+                  className={`feedback-box ${practiceMatch ? "correct" : "wrong"}`}
+                  style={{ marginBottom: 12 }}
+                >
+                  <strong>{practiceMatch ? "✅ MATCH!" : "❌ NOT MATCHED YET"}</strong>
+                </div>
+
+                <button className="btn btn-primary" onClick={() => randomPracticeTarget()}>
+                  New Number
+                </button>
+              </div>
+            </>
+          )}
+
+          {practiceSection === "table" && (
+            <div
+              style={{
+                marginTop: 24,
+                padding: 18,
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                background: "rgba(0,0,0,0.25)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--accent)",
+                  letterSpacing: 3,
+                  marginBottom: 12,
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                BINARY COUNTING TABLE
+              </div>
+
+              <div
+                style={{
+                  color: "var(--text-dim)",
+                  fontSize: "0.8rem",
+                  marginBottom: 14,
+                  lineHeight: 1.5,
+                }}
+              >
+                This shows how binary counts upward. Your current value is highlighted.
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                  fontFamily: "monospace",
+                  fontSize: "0.85rem",
+                }}
+              >
+                <div style={{ color: "var(--text-dim)" }}>Binary</div>
+                <div style={{ color: "var(--text-dim)" }}>Decimal</div>
+
+                {practiceTableRows.map((row) => {
+                  const active = row.decimal === practiceDecimal;
+
+                  return (
+                    <React.Fragment key={row.decimal}>
+                      <div
+                        style={{
+                          padding: "6px 8px",
+                          borderRadius: 6,
+                          background: active ? "rgba(0,245,255,0.12)" : "transparent",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                        }}
+                      >
+                        {row.binary}
+                      </div>
+
+                      <div
+                        style={{
+                          padding: "6px 8px",
+                          borderRadius: 6,
+                          background: active ? "rgba(0,245,255,0.12)" : "transparent",
+                          color: active ? "var(--accent)" : "var(--text-dim)",
+                        }}
+                      >
+                        {row.decimal}
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="hint-text" style={{ marginTop: 16 }}>
+            💡 Example: 1010 means 8 + 2 = 10.
           </div>
-
-          <div
-            style={{
-              fontSize: "2rem",
-              color: "var(--accent)",
-              fontFamily: "'Orbitron', sans-serif",
-              marginBottom: 16,
-            }}
-          >
-            {practiceTarget}
-          </div>
-
-          <div
-            className={`feedback-box ${
-              practiceMatch ? "correct" : "wrong"
-            }`}
-            style={{ marginBottom: 12 }}
-          >
-            <strong>
-              {practiceMatch
-                ? "✅ MATCH!"
-                : "❌ NOT MATCHED YET"}
-            </strong>
-          </div>
-
-          <button
-            className="btn btn-primary"
-            onClick={() => randomPracticeTarget()}
-          >
-            New Number
-          </button>
-
         </div>
-
-        <div className="feedback-box correct">
-          <strong>{practiceBits.join("")}</strong>
-          <br />
-          {practiceWorking} = {practiceDecimal}
-        </div>
-
-        <div className="hint-text" style={{ marginTop: 16 }}>
-          💡 Example: 1010 means 8 + 2 = 10.
-        </div>
-
-      </div>
-
       </>
-
     ) : (
-
       <>
         <div className="game-header">
-
           <button
             className="btn btn-ghost"
             style={{ padding: "6px 12px", fontSize: "0.7rem" }}
@@ -523,56 +612,31 @@ function Level1({ onComplete, onBack, onAchievement }) {
           <div className="level-tag">LEVEL 1</div>
           <div className="game-title">Binary to Decimal</div>
           <div className="score-display">{score} pts</div>
-
         </div>
 
         <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
 
         <div className="info-box">
-          Question {qIdx + 1} of {questions.length} — {
-            q.type === "dec-to-bin"
-              ? "Convert this decimal number into binary."
-              : "Convert this binary number into decimal."
-          }
+          Question {qIdx + 1} of {questions.length} —{" "}
+          {q.type === "dec-to-bin"
+            ? "Convert this decimal number into binary."
+            : "Convert this binary number into decimal."}
         </div>
 
         <div className="code-block" style={{ textAlign: "center" }}>
-
-          <div
-            style={{
-              fontSize: "0.75rem",
-              color: "var(--text-dim)",
-              marginBottom: 12,
-            }}
-          >
+          <div style={{ fontSize: "0.75rem", color: "var(--text-dim)", marginBottom: 12 }}>
             {q.type === "dec-to-bin" ? "Decimal" : "Binary"}
           </div>
 
-          <div
-            style={{
-              fontSize: "3rem",
-              color: "var(--accent)",
-              letterSpacing: 8,
-            }}
-          >
+          <div style={{ fontSize: "3rem", color: "var(--accent)", letterSpacing: 8 }}>
             {q.question}
           </div>
 
-          <div
-            style={{
-              marginTop: 14,
-              fontSize: "0.8rem",
-              color: "var(--text-dim)",
-            }}
-          >
-            Use place values: 8, 4, 2, 1 for 4-bit numbers.
+          <div style={{ marginTop: 14, fontSize: "0.8rem", color: "var(--text-dim)" }}>
+            Use place values to calculate the correct answer.
           </div>
-
         </div>
 
         <div className="hint-text">
@@ -580,7 +644,6 @@ function Level1({ onComplete, onBack, onAchievement }) {
         </div>
 
         <div className="adventure-input-row">
-
           <span className="adventure-prompt">
             {q.type === "dec-to-bin" ? "binary>" : "decimal>"}
           </span>
@@ -603,7 +666,6 @@ function Level1({ onComplete, onBack, onAchievement }) {
             disabled={answered}
             autoFocus
           />
-
         </div>
 
         {!answered && (
@@ -617,27 +679,20 @@ function Level1({ onComplete, onBack, onAchievement }) {
         )}
 
         {answered && (
-
           <>
             <div
               className={`feedback-box ${
-                answer.trim().toLowerCase() ===
-                q.answer.toLowerCase()
+                answer.trim().toLowerCase() === q.answer.toLowerCase()
                   ? "correct"
                   : "wrong"
               }`}
             >
               <strong>
-                {
-                  answer.trim().toLowerCase() ===
-                  q.answer.toLowerCase()
-                    ? "✅ Correct!"
-                    : `❌ Not quite — answer was ${q.answer}`
-                }
+                {answer.trim().toLowerCase() === q.answer.toLowerCase()
+                  ? "✅ Correct!"
+                  : `❌ Not quite — answer was ${q.answer}`}
               </strong>
-
               <br />
-
               {q.explanation}
             </div>
 
@@ -646,18 +701,12 @@ function Level1({ onComplete, onBack, onAchievement }) {
               onClick={next}
               style={{ alignSelf: "flex-end" }}
             >
-              {qIdx + 1 >= questions.length
-                ? "See Results →"
-                : "Next →"}
+              {qIdx + 1 >= questions.length ? "See Results →" : "Next →"}
             </button>
           </>
-
         )}
-
       </>
-
     )}
-
   </div>
 );
 }
