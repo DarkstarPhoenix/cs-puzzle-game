@@ -66,6 +66,37 @@ function makeMissingConditionQuestion({
   };
 }
 
+function makeElifOutputQuestion({
+  context,
+  variableLine,
+  ifCondition,
+  elifCondition,
+  ifMessage,
+  elifMessage,
+  elseMessage,
+  correctOutput,
+  explanation,
+}) {
+  return {
+    type: "elif-output",
+    tier: 3,
+    context,
+    code: [
+      { text: variableLine, type: "normal" },
+      { text: "", type: "blank-line" },
+      { text: `if ${ifCondition}:`, type: "normal" },
+      { text: `  print("${ifMessage}")`, type: "normal" },
+      { text: `elif ${elifCondition}:`, type: "normal" },
+      { text: `  print("${elifMessage}")`, type: "normal" },
+      { text: "else:", type: "normal" },
+      { text: `  print("${elseMessage}")`, type: "normal" },
+    ],
+    options: shuffleArray([ifMessage, elifMessage, elseMessage]),
+    correctAnswers: [correctOutput],
+    explanation,
+  };
+}
+
 function generateTier1IfElseQuestions() {
   const questions = [];
 
@@ -223,10 +254,65 @@ function generateTier2MissingConditionQuestions() {
   return shuffleArray(questions);
 }
 
+function generateTier3ElifQuestions() {
+  const questions = [];
+
+  const score = Math.floor(Math.random() * 101);
+  questions.push(
+    makeElifOutputQuestion({
+      context: "🏆 Read the if / elif / else chain. Which grade message is printed?",
+      variableLine: `score = ${score}`,
+      ifCondition: "score >= 70",
+      elifCondition: "score >= 50",
+      ifMessage: "Distinction",
+      elifMessage: "Pass",
+      elseMessage: "Fail",
+      correctOutput:
+        score >= 70 ? "Distinction" : score >= 50 ? "Pass" : "Fail",
+      explanation: `score is ${score}. Python checks from top to bottom and stops at the first TRUE branch.`,
+    })
+  );
+
+  const temperature = Math.floor(Math.random() * 41);
+  questions.push(
+    makeElifOutputQuestion({
+      context: "🌡️ Read the if / elif / else chain. Which weather message is printed?",
+      variableLine: `temperature = ${temperature}`,
+      ifCondition: "temperature >= 30",
+      elifCondition: "temperature <= 10",
+      ifMessage: "Hot",
+      elifMessage: "Cold",
+      elseMessage: "Mild",
+      correctOutput:
+        temperature >= 30 ? "Hot" : temperature <= 10 ? "Cold" : "Mild",
+      explanation: `temperature is ${temperature}. The first true branch is the one that prints.`,
+    })
+  );
+
+  const battery = Math.floor(Math.random() * 101);
+  questions.push(
+    makeElifOutputQuestion({
+      context: "🔋 Read the if / elif / else chain. Which battery warning is printed?",
+      variableLine: `battery = ${battery}`,
+      ifCondition: "battery < 10",
+      elifCondition: "battery < 30",
+      ifMessage: "Critical battery",
+      elifMessage: "Low battery",
+      elseMessage: "Battery OK",
+      correctOutput:
+        battery < 10 ? "Critical battery" : battery < 30 ? "Low battery" : "Battery OK",
+      explanation: `battery is ${battery}. If the first condition is false, Python checks the elif next.`,
+    })
+  );
+
+  return shuffleArray(questions);
+}
+
 function generateIfElseQuestions() {
   return [
     ...generateTier1IfElseQuestions(),
     ...generateTier2MissingConditionQuestions(),
+    ...generateTier3ElifQuestions(),
   ];
 }
 
@@ -369,6 +455,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
         Question {qIdx + 1} of {questions.length} —{" "}
         {q.type === "missing-condition"
           ? "Choose the condition that completes the code"
+          : q.type === "elif-output"
+          ? "Read the if / elif / else chain and choose the output"
           : "Read the code and choose the correct output"}
       </div>
 
