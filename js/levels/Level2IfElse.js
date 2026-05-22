@@ -117,6 +117,26 @@ function makeLoopOutputQuestion({
   };
 }
 
+function makeBreakContinueQuestion({
+  context,
+  codeLines,
+  options,
+  correctOutput,
+  explanation,
+}) {
+  return {
+    type: "break-continue",
+    tier: 5,
+    context,
+    code: codeLines.map((text) =>
+      text === "" ? { text: "", type: "blank-line" } : { text, type: "normal" }
+    ),
+    options: shuffleArray(options),
+    correctAnswers: [correctOutput],
+    explanation,
+  };
+}
+
 function generateTier1IfElseQuestions() {
   const questions = [];
 
@@ -399,6 +419,56 @@ function generateTier4LoopQuestions() {
   return shuffleArray(questions);
 }
 
+function generateTier5BreakContinueQuestions() {
+  const questions = [];
+
+  const stopAt = Math.floor(Math.random() * 3) + 2; // 2 to 4
+
+  questions.push(
+    makeBreakContinueQuestion({
+      context: "🛑 Read the loop. What is the last number printed before break stops the loop?",
+      codeLines: [
+        "for i in range(6):",
+        `  if i == ${stopAt}:`,
+        "    break",
+        "  print(i)",
+      ],
+      options: [
+        String(stopAt - 1),
+        String(stopAt),
+        "5",
+        "6",
+      ],
+      correctOutput: String(stopAt - 1),
+      explanation: `break stops the loop when i == ${stopAt}. Because print(i) comes after the break check, ${stopAt} is not printed. The last printed value is ${stopAt - 1}.`,
+    })
+  );
+
+  const skipAt = Math.floor(Math.random() * 3) + 1; // 1 to 3
+
+  questions.push(
+    makeBreakContinueQuestion({
+      context: "⏭️ Read the loop. Which number is skipped by continue?",
+      codeLines: [
+        "for i in range(5):",
+        `  if i == ${skipAt}:`,
+        "    continue",
+        "  print(i)",
+      ],
+      options: [
+        String(skipAt),
+        String(skipAt - 1),
+        "4",
+        "5",
+      ],
+      correctOutput: String(skipAt),
+      explanation: `continue skips the rest of the current loop cycle. When i == ${skipAt}, print(i) is skipped, so ${skipAt} is not printed.`,
+    })
+  );
+
+  return shuffleArray(questions);
+}
+
 function takeQuestions(questionList, count) {
   return shuffleArray(questionList).slice(0, count);
 }
@@ -408,12 +478,14 @@ function generateIfElseQuestions() {
   const tier2 = generateTier2MissingConditionQuestions();
   const tier3 = generateTier3ElifQuestions();
   const tier4 = generateTier4LoopQuestions();
+  const tier5 = generateTier5BreakContinueQuestions();
 
   return [
     ...takeQuestions(tier1, 5),
     ...takeQuestions(tier2, 5),
     ...takeQuestions(tier3, 3),
     ...takeQuestions(tier4, 1),
+    ...takeQuestions(tier5, 1),
   ];
 }
 
@@ -560,6 +632,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
           ? "Read the if / elif / else chain and choose the output"
           : q.type === "loop-output"
           ? "Read the loop and choose the correct output"
+          : q.type === "break-continue"
+          ? "Read the loop and decide how break or continue changes the output"
           : "Read the code and choose the correct output"}
       </div>
 
