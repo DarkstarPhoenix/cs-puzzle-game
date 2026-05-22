@@ -492,6 +492,7 @@ function generateIfElseQuestions() {
 // ── LEVEL 2 – IF/ELSE ─────────────────────────
 function Level2({ onComplete, onBack, onAchievement }) {
   const [started, setStarted] = useState(false);
+  const [tab, setTab] = useState("practice");
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -533,6 +534,21 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   const isCorrect = answered && q.correctAnswers.includes(selected);
+
+  const tabStyle = (active) => ({
+    flex: 1,
+    padding: "10px 0",
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    borderRadius: 6,
+    background: active ? "rgba(0,245,255,0.08)" : "var(--surface)",
+    color: active ? "var(--accent)" : "var(--text-dim)",
+    fontFamily: "'Orbitron', sans-serif",
+    fontSize: "0.7rem",
+    letterSpacing: 2,
+    cursor: "pointer",
+    transition: "all 0.2s",
+    textAlign: "center",
+  });
 
   if (!started) {
     return (
@@ -608,116 +624,222 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
   return (
     <div className="game-screen">
-      <div className="game-header">
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
         <button
-          className="btn btn-ghost"
-          style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-          onClick={onBack}
-        >
-          ← Back
-        </button>
-        <div className="level-tag">LEVEL 2</div>
-        <div className="game-title">If / Else</div>
-        <div className="score-display">{score} pts</div>
-      </div>
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progress}%` }} />
-      </div>
-
-      <div className="info-box">
-        Question {qIdx + 1} of {questions.length} —{" "}
-        {q.type === "missing-condition"
-          ? "Choose the condition that completes the code"
-          : q.type === "elif-output"
-          ? "Read the if / elif / else chain and choose the output"
-          : q.type === "loop-output"
-          ? "Read the loop and choose the correct output"
-          : q.type === "break-continue"
-          ? "Read the loop and decide how break or continue changes the output"
-          : "Read the code and choose the correct output"}
-      </div>
-
-      <div className="code-block">
-        <div style={{ height: 20 }} />
-        <div
-          style={{
-            fontSize: "0.96rem",
-            color: "var(--text-dim)",
-            marginBottom: 16,
-            paddingBottom: 12,
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
-            lineHeight: 1.5,
+          style={tabStyle(tab === "practice")}
+          onClick={() => {
+            playSound("click");
+            setTab("practice");
           }}
         >
-          {q.context}
-        </div>
-        {q.code.map((line, i) => {
-          if (line.type === "blank-line")
-            return <div key={i} style={{ height: 4 }} />;
-          if (line.type === "has-blank") {
-            const parts = line.text.split("_____");
-
-            return (
-              <div className="code-line" key={i}>
-                <span className="kw">{parts[0]}</span>
-                <span className="blank">{selected || "?"}</span>
-                <span>{parts[1]}</span>
-              </div>
-            );
-          }
-          return (
-            <div className="code-line" key={i}>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: line.text
-                    .replace(
-                      /(if|else|print|True|False|and|or|not)/g,
-                      "<span class='kw'>$1</span>",
-                    )
-                    .replace(/(".*?")/g, "<span class='str'>$1</span>")
-                    .replace(/(\d+)/g, "<span class='num'>$1</span>"),
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="hint-text">
-        💡 Read the condition carefully and decide which branch will run:
-      </div>
-
-      <div className="options-grid">
-        {q.options.map((opt) => {
-          let cls = "option-btn";
-          if (answered) {
-            if (q.correctAnswers.includes(opt)) cls += " correct";
-            else if (opt === selected) cls += " wrong";
-          }
-          return (
-            <button key={opt} className={cls} onClick={() => choose(opt)}>
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-
-      {answered && (
-        <div className={`feedback-box ${isCorrect ? "correct" : "wrong"}`}>
-          <strong>{isCorrect ? "✅ Correct!" : "❌ Not quite!"}</strong>
-          <br />
-          {q.explanation}
-        </div>
-      )}
-
-      {answered && (
-        <button
-          className="btn btn-primary"
-          onClick={next}
-          style={{ alignSelf: "flex-end" }}
-        >
-          {qIdx + 1 >= questions.length ? "See Results →" : "Next →"}
+          Practice
         </button>
+
+        <button
+          style={tabStyle(tab === "challenge")}
+          onClick={() => {
+            playSound("click");
+            setTab("challenge");
+          }}
+        >
+          Challenge
+        </button>
+      </div>
+
+      {tab === "practice" ? (
+        <>
+          <div className="game-header">
+            <button
+              className="btn btn-ghost"
+              style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+              onClick={onBack}
+            >
+              ← Back
+            </button>
+
+            <div className="level-tag">LEVEL 2 · PRACTICE</div>
+            <div className="game-title">If / Else + Loops</div>
+            <div className="score-display">Practice</div>
+          </div>
+
+          <div className="code-block">
+            <div
+              style={{
+                fontSize: "0.65rem",
+                color: "var(--accent)",
+                letterSpacing: 3,
+                marginBottom: 12,
+                fontFamily: "'Orbitron', sans-serif",
+              }}
+            >
+              PRACTICE MODE
+            </div>
+
+            <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
+              Practice lessons will go here.
+              <br /><br />
+              We will add:
+              <br />
+              • if / else explanations
+              <br />
+              • comparison operators
+              <br />
+              • TRUE / FALSE evaluator
+              <br />
+              • AND / OR / NOT examples
+              <br />
+              • loops, break, and continue
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="game-header">
+            <button
+              className="btn btn-ghost"
+              style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+              onClick={onBack}
+            >
+              ← Back
+            </button>
+
+            <div className="level-tag">LEVEL 2</div>
+            <div className="game-title">If / Else + Loops</div>
+            <div className="score-display">{score} pts</div>
+          </div>
+
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          <div className="info-box">
+            Question {qIdx + 1} of {questions.length} —{" "}
+            {q.type === "missing-condition"
+              ? "Choose the condition that completes the code"
+              : q.type === "elif-output"
+              ? "Read the if / elif / else chain and choose the output"
+              : q.type === "loop-output"
+              ? "Read the loop and choose the correct output"
+              : q.type === "break-continue"
+              ? "Read the loop and decide how break or continue changes the output"
+              : "Read the code and choose the correct output"}
+          </div>
+
+          <div className="code-block">
+            <div style={{ height: 20 }} />
+
+            <div
+              style={{
+                fontSize: "0.96rem",
+                color: "var(--text-dim)",
+                marginBottom: 16,
+                paddingBottom: 12,
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                lineHeight: 1.5,
+              }}
+            >
+              {q.context}
+            </div>
+
+            {q.code.map((line, i) => {
+              if (line.type === "blank-line") {
+                return <div key={i} style={{ height: 4 }} />;
+              }
+
+              if (line.type === "has-blank") {
+                const parts = line.text.split("_____");
+
+                return (
+                  <div className="code-line" key={i}>
+                    <span className="kw">{parts[0]}</span>
+                    <span className="blank">{selected || "?"}</span>
+                    <span>{parts[1]}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="code-line" key={i}>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: line.text
+                        .replace(
+                          /(if|elif|else|while|for|break|continue|print|True|False|and|or|not|in|range)/g,
+                          "<span class='kw'>$1</span>"
+                        )
+                        .replace(/(".*?")/g, "<span class='str'>$1</span>")
+                        .replace(/(\d+)/g, "<span class='num'>$1</span>"),
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="hint-text">
+            💡
+            {q.type === "missing-condition"
+              ? " Choose the condition that makes the code behave correctly."
+              : q.type === "elif-output"
+              ? " Python checks conditions from top to bottom."
+              : q.type === "loop-output"
+              ? " Follow the loop carefully and track how values change."
+              : q.type === "break-continue"
+              ? " break stops the loop. continue skips part of the loop."
+              : " Read the condition carefully and decide which branch runs."}
+          </div>
+
+          <div className="options-grid">
+            {q.options.map((opt) => {
+              let cls = "option-btn";
+
+              if (answered) {
+                if (q.correctAnswers.includes(opt)) cls += " correct";
+                else if (opt === selected) cls += " wrong";
+              }
+
+              return (
+                <button
+                  key={opt}
+                  className={cls}
+                  onClick={() => choose(opt)}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
+          {answered && (
+            <div
+              className={`feedback-box ${
+                isCorrect ? "correct" : "wrong"
+              }`}
+            >
+              <strong>
+                {isCorrect ? "✅ Correct!" : "❌ Not quite!"}
+              </strong>
+              <br />
+              {q.explanation}
+            </div>
+          )}
+
+          {answered && (
+            <button
+              className="btn btn-primary"
+              onClick={next}
+              style={{ alignSelf: "flex-end" }}
+            >
+              {qIdx + 1 >= questions.length
+                ? "See Results →"
+                : "Next →"}
+            </button>
+          )}
+        </>
       )}
     </div>
   );
