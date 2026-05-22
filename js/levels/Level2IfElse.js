@@ -308,11 +308,19 @@ function generateTier3ElifQuestions() {
   return shuffleArray(questions);
 }
 
+function takeQuestions(questionList, count) {
+  return shuffleArray(questionList).slice(0, count);
+}
+
 function generateIfElseQuestions() {
+  const tier1 = generateTier1IfElseQuestions();
+  const tier2 = generateTier2MissingConditionQuestions();
+  const tier3 = generateTier3ElifQuestions();
+
   return [
-    ...generateTier1IfElseQuestions(),
-    ...generateTier2MissingConditionQuestions(),
-    ...generateTier3ElifQuestions(),
+    ...takeQuestions(tier1, 5),
+    ...takeQuestions(tier2, 5),
+    ...takeQuestions(tier3, 3),
   ];
 }
 
