@@ -97,6 +97,26 @@ function makeElifOutputQuestion({
   };
 }
 
+function makeLoopOutputQuestion({
+  context,
+  codeLines,
+  options,
+  correctOutput,
+  explanation,
+}) {
+  return {
+    type: "loop-output",
+    tier: 4,
+    context,
+    code: codeLines.map((text) =>
+      text === "" ? { text: "", type: "blank-line" } : { text, type: "normal" }
+    ),
+    options: shuffleArray(options),
+    correctAnswers: [correctOutput],
+    explanation,
+  };
+}
+
 function generateTier1IfElseQuestions() {
   const questions = [];
 
@@ -308,6 +328,77 @@ function generateTier3ElifQuestions() {
   return shuffleArray(questions);
 }
 
+function generateTier4LoopQuestions() {
+  const questions = [];
+
+  const limit = Math.floor(Math.random() * 3) + 3; // 3 to 5
+  questions.push(
+    makeLoopOutputQuestion({
+      context: "🔁 Read the for loop. What is printed last?",
+      codeLines: [
+        `for i in range(${limit}):`,
+        `  print(i)`,
+      ],
+      options: ["0", "1", String(limit - 1), String(limit)],
+      correctOutput: String(limit - 1),
+      explanation: `range(${limit}) starts at 0 and stops before ${limit}, so the last printed value is ${limit - 1}.`,
+    })
+  );
+
+  const start = Math.floor(Math.random() * 3) + 1; // 1 to 3
+  const end = start + 3;
+  questions.push(
+    makeLoopOutputQuestion({
+      context: "🔁 Read the while loop. What is printed last?",
+      codeLines: [
+        `count = ${start}`,
+        "",
+        `while count < ${end}:`,
+        `  print(count)`,
+        `  count += 1`,
+      ],
+      options: [
+        String(start),
+        String(end - 1),
+        String(end),
+        String(start + 1),
+      ],
+      correctOutput: String(end - 1),
+      explanation: `The loop runs while count is less than ${end}. It stops before ${end}, so the last printed value is ${end - 1}.`,
+    })
+  );
+
+  const totalLimit = Math.floor(Math.random() * 3) + 3; // 3 to 5
+  const total = Array.from({ length: totalLimit }, (_, i) => i).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  questions.push(
+    makeLoopOutputQuestion({
+      context: "➕ Read the loop. What value is printed after the loop finishes?",
+      codeLines: [
+        "total = 0",
+        "",
+        `for num in range(${totalLimit}):`,
+        "  total += num",
+        "",
+        "print(total)",
+      ],
+      options: [
+        String(total),
+        String(totalLimit),
+        String(totalLimit - 1),
+        String(total + totalLimit),
+      ],
+      correctOutput: String(total),
+      explanation: `range(${totalLimit}) gives 0 to ${totalLimit - 1}. Adding those values gives total = ${total}.`,
+    })
+  );
+
+  return shuffleArray(questions);
+}
+
 function takeQuestions(questionList, count) {
   return shuffleArray(questionList).slice(0, count);
 }
@@ -316,11 +407,13 @@ function generateIfElseQuestions() {
   const tier1 = generateTier1IfElseQuestions();
   const tier2 = generateTier2MissingConditionQuestions();
   const tier3 = generateTier3ElifQuestions();
+  const tier4 = generateTier4LoopQuestions();
 
   return [
     ...takeQuestions(tier1, 5),
     ...takeQuestions(tier2, 5),
     ...takeQuestions(tier3, 3),
+    ...takeQuestions(tier4, 1),
   ];
 }
 
@@ -465,6 +558,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
           ? "Choose the condition that completes the code"
           : q.type === "elif-output"
           ? "Read the if / elif / else chain and choose the output"
+          : q.type === "loop-output"
+          ? "Read the loop and choose the correct output"
           : "Read the code and choose the correct output"}
       </div>
 
