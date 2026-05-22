@@ -498,6 +498,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [logicA, setLogicA] = useState(true);
   const [logicB, setLogicB] = useState(false);
   const [logicOperator, setLogicOperator] = useState("and");
+  const [loopRange, setLoopRange] = useState(5);
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -563,6 +564,11 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   const logicResult = evaluateLogicCondition();
+
+  const loopValues = Array.from(
+    { length: loopRange },
+    (_, i) => i
+  );
 
   const operatorDescriptions = {
     ">": "Greater than",
@@ -1017,18 +1023,72 @@ function Level2({ onComplete, onBack, onAchievement }) {
                 PRACTICE MODULE 3 · LOOPS
               </div>
 
-              <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
-                Learn how loops repeat code using:
+              <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                A loop repeats code. In Python,{" "}
+                <span style={{ color: "var(--accent)" }}>range(n)</span> starts at 0 and
+                stops before n.
+              </div>
+
+              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                range value
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={loopRange}
+                  onChange={(e) => setLoopRange(Math.max(1, Number(e.target.value)))}
+                  className="adventure-input"
+                  style={{
+                    marginTop: 6,
+                    marginBottom: 16,
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    padding: 10,
+                    width: "100%",
+                    background: "var(--surface)",
+                  }}
+                />
+              </label>
+
+              <div className="code-block" style={{ marginBottom: 16 }}>
+                <div className="code-line">
+                  <span className="kw">for</span>{" "}
+                  <span className="var">i</span>{" "}
+                  <span className="kw">in</span>{" "}
+                  <span className="kw">range</span>
+                  <span>(</span>
+                  <span className="num">{loopRange}</span>
+                  <span>):</span>
+                </div>
+
+                <div className="code-line">
+                  &nbsp;&nbsp;<span className="kw">print</span>
+                  <span>(</span>
+                  <span className="var">i</span>
+                  <span>)</span>
+                </div>
+              </div>
+
+              <div className="info-box">
+                This loop prints:
                 <br /><br />
-                • for loops
+                <span style={{ color: "var(--accent)", fontSize: "1rem" }}>
+                  {loopValues.join(", ")}
+                </span>
+              </div>
+
+              <div
+                className="feedback-box correct"
+                style={{ marginBottom: 16 }}
+              >
+                <strong>Last value printed: {loopValues[loopValues.length - 1]}</strong>
                 <br />
-                • while loops
-                <br />
-                • break
-                <br />
-                • continue
-                <br /><br />
-                Interactive loop practice coming later.
+                range({loopRange}) stops before {loopRange}, so it ends at{" "}
+                {loopValues[loopValues.length - 1]}.
+              </div>
+
+              <div className="hint-text">
+                💡 This is why range(5) prints 0, 1, 2, 3, 4 — not 5.
               </div>
             </div>
           )}
