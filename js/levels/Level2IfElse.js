@@ -495,6 +495,9 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [practiceValue, setPracticeValue] = useState(18);
   const [practiceOperator, setPracticeOperator] = useState(">=");
   const [practiceTarget, setPracticeTarget] = useState(18);
+  const [logicA, setLogicA] = useState(true);
+  const [logicB, setLogicB] = useState(false);
+  const [logicOperator, setLogicOperator] = useState("and");
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -549,6 +552,17 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   const practiceResult = evaluatePracticeCondition();
+
+  function evaluateLogicCondition() {
+    if (logicOperator === "and") return logicA && logicB;
+    if (logicOperator === "or") return logicA || logicB;
+    if (logicOperator === "not A") return !logicA;
+    if (logicOperator === "not B") return !logicB;
+
+    return false;
+  }
+
+  const logicResult = evaluateLogicCondition();
 
   const operatorDescriptions = {
     ">": "Greater than",
@@ -879,16 +893,112 @@ function Level2({ onComplete, onBack, onAchievement }) {
                 PRACTICE MODULE 2 · BOOLEAN LOGIC
               </div>
 
-              <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
-                Learn how Python combines conditions using:
-                <br /><br />
-                • and
+              <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                Boolean logic lets Python combine conditions.
                 <br />
-                • or
+                <span style={{ color: "var(--accent)" }}>and</span> means both must be TRUE.
                 <br />
-                • not
-                <br /><br />
-                Interactive logic examples coming next.
+                <span style={{ color: "var(--accent)" }}>or</span> means at least one must be TRUE.
+                <br />
+                <span style={{ color: "var(--accent)" }}>not</span> flips TRUE to FALSE, or FALSE to TRUE.
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                <button
+                  className={`btn ${logicA ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => {
+                    playSound("click");
+                    setLogicA((v) => !v);
+                  }}
+                >
+                  A = {logicA ? "TRUE" : "FALSE"}
+                </button>
+
+                <button
+                  className={`btn ${logicB ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => {
+                    playSound("click");
+                    setLogicB((v) => !v);
+                  }}
+                >
+                  B = {logicB ? "TRUE" : "FALSE"}
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+                {["and", "or", "not A", "not B"].map((op) => (
+                  <button
+                    key={op}
+                    className={`btn ${logicOperator === op ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => {
+                      playSound("click");
+                      setLogicOperator(op);
+                    }}
+                    style={{ padding: "8px 14px", fontSize: "0.7rem" }}
+                  >
+                    {op}
+                  </button>
+                ))}
+              </div>
+
+              <div className="code-block" style={{ marginBottom: 16 }}>
+                <div className="code-line">
+                  <span className="var">A</span> ={" "}
+                  <span className="kw">{logicA ? "True" : "False"}</span>
+                </div>
+
+                <div className="code-line">
+                  <span className="var">B</span> ={" "}
+                  <span className="kw">{logicB ? "True" : "False"}</span>
+                </div>
+
+                <div className="code-line">
+                  <span className="kw">if</span>{" "}
+                  {logicOperator === "not A" ? (
+                    <>
+                      <span className="kw">not</span>{" "}
+                      <span className="var">A</span>:
+                    </>
+                  ) : logicOperator === "not B" ? (
+                    <>
+                      <span className="kw">not</span>{" "}
+                      <span className="var">B</span>:
+                    </>
+                  ) : (
+                    <>
+                      <span className="var">A</span>{" "}
+                      <span className="kw">{logicOperator}</span>{" "}
+                      <span className="var">B</span>:
+                    </>
+                  )}
+                </div>
+
+                <div className="code-line">
+                  &nbsp;&nbsp;<span className="kw">print</span>
+                  <span className="str">("Condition is TRUE")</span>
+                </div>
+
+                <div className="code-line">
+                  <span className="kw">else</span>:
+                </div>
+
+                <div className="code-line">
+                  &nbsp;&nbsp;<span className="kw">print</span>
+                  <span className="str">("Condition is FALSE")</span>
+                </div>
+              </div>
+
+              <div
+                className={`feedback-box ${logicResult ? "correct" : "wrong"}`}
+                style={{ marginBottom: 16 }}
+              >
+                <strong>{logicResult ? "TRUE" : "FALSE"}</strong>
+                <br />
+                This condition evaluates to {logicResult ? "true" : "false"}.
+              </div>
+
+              <div className="hint-text">
+                💡 Try all combinations of A and B to see how boolean logic changes the result.
               </div>
             </div>
           )}
