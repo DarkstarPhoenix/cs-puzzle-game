@@ -499,6 +499,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [logicB, setLogicB] = useState(false);
   const [logicOperator, setLogicOperator] = useState("and");
   const [loopRange, setLoopRange] = useState(5);
+  const [whileLimit, setWhileLimit] = useState(5);
+  const [loopTab, setLoopTab] = useState("for");
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -570,6 +572,12 @@ function Level2({ onComplete, onBack, onAchievement }) {
     (_, i) => i
   );
 
+  const whileValues = [];
+
+  for (let i = 0; i < whileLimit; i++) {
+    whileValues.push(i);
+  }
+
   const operatorDescriptions = {
     ">": "Greater than",
     "<": "Less than",
@@ -603,6 +611,19 @@ function Level2({ onComplete, onBack, onAchievement }) {
     color: active ? "var(--accent)" : "var(--text-dim)",
     fontFamily: "monospace",
     fontSize: "0.75rem",
+    cursor: "pointer",
+  });
+
+  const loopTabStyle = (active) => ({
+    padding: "10px 24px",
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    borderBottom: active ? "3px solid var(--accent)" : "1px solid var(--border)",
+    borderRadius: "8px 8px 0 0",
+    background: active ? "rgba(0,245,255,0.10)" : "var(--surface)",
+    color: active ? "var(--accent)" : "var(--text-dim)",
+    fontFamily: "'Orbitron', sans-serif",
+    fontSize: "0.7rem",
+    letterSpacing: 2,
     cursor: "pointer",
   });
 
@@ -1023,73 +1044,186 @@ function Level2({ onComplete, onBack, onAchievement }) {
                 PRACTICE MODULE 3 · LOOPS
               </div>
 
-              <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
-                A loop repeats code. In Python,{" "}
-                <span style={{ color: "var(--accent)" }}>range(n)</span> starts at 0 and
-                stops before n.
-              </div>
-
-              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
-                range value
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={loopRange}
-                  onChange={(e) => setLoopRange(Math.max(1, Number(e.target.value)))}
-                  className="adventure-input"
-                  style={{
-                    marginTop: 6,
-                    marginBottom: 16,
-                    border: "1px solid var(--border)",
-                    borderRadius: 6,
-                    padding: 10,
-                    width: "100%",
-                    background: "var(--surface)",
+              <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                <button
+                  style={loopTabStyle(loopTab === "for")}
+                  onClick={() => {
+                    playSound("click");
+                    setLoopTab("for");
                   }}
-                />
-              </label>
+                >
+                  For Loops
+                </button>
 
-              <div className="code-block" style={{ marginBottom: 16 }}>
-                <div className="code-line">
-                  <span className="kw">for</span>{" "}
-                  <span className="var">i</span>{" "}
-                  <span className="kw">in</span>{" "}
-                  <span className="kw">range</span>
-                  <span>(</span>
-                  <span className="num">{loopRange}</span>
-                  <span>):</span>
-                </div>
-
-                <div className="code-line">
-                  &nbsp;&nbsp;<span className="kw">print</span>
-                  <span>(</span>
-                  <span className="var">i</span>
-                  <span>)</span>
-                </div>
+                <button
+                  style={loopTabStyle(loopTab === "while")}
+                  onClick={() => {
+                    playSound("click");
+                    setLoopTab("while");
+                  }}
+                >
+                  While Loops
+                </button>
               </div>
 
-              <div className="info-box">
-                This loop prints:
-                <br /><br />
-                <span style={{ color: "var(--accent)", fontSize: "1rem" }}>
-                  {loopValues.join(", ")}
-                </span>
-              </div>
+              {loopTab === "for" && (
+                <>
+                  <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                    A loop repeats code. In Python,{" "}
+                    <span style={{ color: "var(--accent)" }}>range(n)</span> starts at 0 and
+                    stops before n.
+                  </div>
 
-              <div
-                className="feedback-box correct"
-                style={{ marginBottom: 16 }}
-              >
-                <strong>Last value printed: {loopValues[loopValues.length - 1]}</strong>
-                <br />
-                range({loopRange}) stops before {loopRange}, so it ends at{" "}
-                {loopValues[loopValues.length - 1]}.
-              </div>
+                  <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                    range value
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={loopRange}
+                      onChange={(e) => setLoopRange(Math.max(1, Number(e.target.value)))}
+                      className="adventure-input"
+                      style={{
+                        marginTop: 6,
+                        marginBottom: 16,
+                        border: "1px solid var(--border)",
+                        borderRadius: 6,
+                        padding: 10,
+                        width: "100%",
+                        background: "var(--surface)",
+                      }}
+                    />
+                  </label>
 
-              <div className="hint-text">
-                💡 This is why range(5) prints 0, 1, 2, 3, 4 — not 5.
-              </div>
+                  <div className="code-block" style={{ marginBottom: 16 }}>
+                    <div className="code-line">
+                      <span className="kw">for</span>{" "}
+                      <span className="var">i</span>{" "}
+                      <span className="kw">in</span>{" "}
+                      <span className="kw">range</span>
+                      <span>(</span>
+                      <span className="num">{loopRange}</span>
+                      <span>):</span>
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;<span className="kw">print</span>
+                      <span>(</span>
+                      <span className="var">i</span>
+                      <span>)</span>
+                    </div>
+                  </div>
+
+                  <div className="info-box">
+                    This loop prints:
+                    <br /><br />
+                    <span style={{ color: "var(--accent)", fontSize: "1rem" }}>
+                      {loopValues.join(", ")}
+                    </span>
+                  </div>
+
+                  <div
+                    className="feedback-box correct"
+                    style={{ marginBottom: 16 }}
+                  >
+                    <strong>Last value printed: {loopValues[loopValues.length - 1]}</strong>
+                    <br />
+                    range({loopRange}) stops before {loopRange}, so it ends at{" "}
+                    {loopValues[loopValues.length - 1]}.
+                  </div>
+
+                  <div className="hint-text">
+                    💡 This is why range(5) prints 0, 1, 2, 3, 4 — not 5.
+                  </div>
+                </>
+              )}
+
+              {loopTab === "while" && (
+                <>
+                  <div
+                    style={{
+                      fontSize: "0.65rem",
+                      color: "var(--accent)",
+                      letterSpacing: 3,
+                      marginBottom: 12,
+                      fontFamily: "'Orbitron', sans-serif",
+                    }}
+                  >
+                    WHILE LOOP VISUALISER
+                  </div>
+
+                  <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                    A <span style={{ color: "var(--accent)" }}>while</span> loop repeats while a
+                    condition is TRUE.
+                    <br />
+                    The loop stops when the condition becomes FALSE.
+                  </div>
+
+                  <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                    while limit
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={whileLimit}
+                      onChange={(e) => setWhileLimit(Math.max(1, Number(e.target.value)))}
+                      className="adventure-input"
+                      style={{
+                        marginTop: 6,
+                        marginBottom: 16,
+                        border: "1px solid var(--border)",
+                        borderRadius: 6,
+                        padding: 10,
+                        width: "100%",
+                        background: "var(--surface)",
+                      }}
+                    />
+                  </label>
+
+                  <div className="code-block" style={{ marginBottom: 16 }}>
+                    <div className="code-line">
+                      <span className="var">count</span> ={" "}
+                      <span className="num">0</span>
+                    </div>
+
+                    <div className="code-line">
+                      <span className="kw">while</span>{" "}
+                      <span className="var">count</span>{" "}
+                      <span className="kw">&lt;</span>{" "}
+                      <span className="num">{whileLimit}</span>:
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;<span className="kw">print</span>
+                      <span>(</span>
+                      <span className="var">count</span>
+                      <span>)</span>
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;<span className="var">count</span>{" "}
+                      <span className="kw">+=</span>{" "}
+                      <span className="num">1</span>
+                    </div>
+                  </div>
+
+                  <div className="info-box">
+                    This while loop prints:
+                    <br /><br />
+                    <span style={{ color: "var(--accent)", fontSize: "1rem" }}>
+                      {whileValues.join(", ")}
+                    </span>
+                  </div>
+
+                  <div className="feedback-box correct">
+                    <strong>Loop stops when count reaches {whileLimit}</strong>
+                    <br />
+                    The condition count &lt; {whileLimit} becomes FALSE when count is{" "}
+                    {whileLimit}.
+                  </div>
+                </>
+              )}
+
             </div>
           )}
         </>
