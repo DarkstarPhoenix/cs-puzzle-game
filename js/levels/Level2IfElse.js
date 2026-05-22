@@ -1,5 +1,6 @@
 // ── LEVEL 2 – IF/ELSE QUESTIONS GENERATOR───────────────
 // ── LEVEL 2 – IF/ELSE QUESTION GENERATOR ───────────────
+// ── LEVEL 2 – IF / ELSE + LOOPS QUESTION GENERATOR ───────────────
 function randomFrom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
@@ -8,33 +9,50 @@ function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-function makeComparisonQuestion({
-  contextIcon,
-  contextText,
-  variableName,
-  value,
-  threshold,
+function makeIfElseOutputQuestion({
+  context,
+  variableLine,
+  condition,
   trueMessage,
   falseMessage,
-  operator,
+  correctOutput,
+  explanation,
 }) {
-  const correctCondition = `${variableName} ${operator} ${threshold}`;
-
-  const wrongOptions = [
-    `${variableName} > ${threshold}`,
-    `${variableName} >= ${threshold}`,
-    `${variableName} < ${threshold}`,
-    `${variableName} <= ${threshold}`,
-    `${variableName} == ${threshold}`,
-    `${variableName} != ${threshold}`,
-  ].filter((option) => option !== correctCondition);
-
   return {
-    context: `${contextIcon} ${contextText}`,
+    type: "if-else-output",
+    tier: 1,
+    context,
     code: [
-      { text: `${variableName} = ${value}`, type: "normal" },
+      { text: variableLine, type: "normal" },
       { text: "", type: "blank-line" },
-      { text: "if _____ :", type: "has-blank", blankIdx: 0 },
+      { text: `if ${condition}:`, type: "normal" },
+      { text: `  print("${trueMessage}")`, type: "normal" },
+      { text: "else:", type: "normal" },
+      { text: `  print("${falseMessage}")`, type: "normal" },
+    ],
+    options: shuffleArray([trueMessage, falseMessage]),
+    correctAnswers: [correctOutput],
+    explanation,
+  };
+}
+
+function makeMissingConditionQuestion({
+  context,
+  variableLine,
+  correctCondition,
+  trueMessage,
+  falseMessage,
+  wrongOptions,
+  explanation,
+}) {
+  return {
+    type: "missing-condition",
+    tier: 2,
+    context,
+    code: [
+      { text: variableLine, type: "normal" },
+      { text: "", type: "blank-line" },
+      { text: "if _____:", type: "has-blank", blankIdx: 0 },
       { text: `  print("${trueMessage}")`, type: "normal" },
       { text: "else:", type: "normal" },
       { text: `  print("${falseMessage}")`, type: "normal" },
@@ -44,142 +62,172 @@ function makeComparisonQuestion({
       ...shuffleArray(wrongOptions).slice(0, 3),
     ]),
     correctAnswers: [correctCondition],
-    explanation: `${correctCondition} is the condition needed for this scenario.`,
+    explanation,
   };
 }
 
+function generateTier1IfElseQuestions() {
+  const questions = [];
+
+  const age = Math.floor(Math.random() * 8) + 14;
+  questions.push(
+    makeIfElseOutputQuestion({
+      context: "🗳️ Read the code. Which message will be printed?",
+      variableLine: `age = ${age}`,
+      condition: "age >= 18",
+      trueMessage: "You can vote!",
+      falseMessage: "Too young to vote.",
+      correctOutput: age >= 18 ? "You can vote!" : "Too young to vote.",
+      explanation: `age is ${age}. The condition age >= 18 is ${
+        age >= 18 ? "TRUE, so the if branch runs." : "FALSE, so the else branch runs."
+      }`,
+    })
+  );
+
+  const score = Math.floor(Math.random() * 61) + 30;
+  questions.push(
+    makeIfElseOutputQuestion({
+      context: "📝 Read the code. Which message will be printed?",
+      variableLine: `score = ${score}`,
+      condition: "score >= 50",
+      trueMessage: "You passed!",
+      falseMessage: "Try again.",
+      correctOutput: score >= 50 ? "You passed!" : "Try again.",
+      explanation: `score is ${score}. The condition score >= 50 is ${
+        score >= 50 ? "TRUE, so the if branch runs." : "FALSE, so the else branch runs."
+      }`,
+    })
+  );
+
+  const temperature = Math.floor(Math.random() * 26) + 15;
+  questions.push(
+    makeIfElseOutputQuestion({
+      context: "🌡️ Read the code. Which message will be printed?",
+      variableLine: `temperature = ${temperature}`,
+      condition: "temperature > 30",
+      trueMessage: "It is hot outside!",
+      falseMessage: "Nice weather.",
+      correctOutput: temperature > 30 ? "It is hot outside!" : "Nice weather.",
+      explanation: `temperature is ${temperature}. The condition temperature > 30 is ${
+        temperature > 30 ? "TRUE, so the if branch runs." : "FALSE, so the else branch runs."
+      }`,
+    })
+  );
+
+  const lives = Math.floor(Math.random() * 4);
+  questions.push(
+    makeIfElseOutputQuestion({
+      context: "🎮 Read the code. Which message will be printed?",
+      variableLine: `lives = ${lives}`,
+      condition: "lives == 0",
+      trueMessage: "Game over!",
+      falseMessage: "Keep playing!",
+      correctOutput: lives === 0 ? "Game over!" : "Keep playing!",
+      explanation: `lives is ${lives}. The condition lives == 0 is ${
+        lives === 0 ? "TRUE, so the if branch runs." : "FALSE, so the else branch runs."
+      }`,
+    })
+  );
+
+  const battery = Math.floor(Math.random() * 101);
+  questions.push(
+    makeIfElseOutputQuestion({
+      context: "🔋 Read the code. Which message will be printed?",
+      variableLine: `battery = ${battery}`,
+      condition: "battery < 20",
+      trueMessage: "Low battery!",
+      falseMessage: "Battery OK.",
+      correctOutput: battery < 20 ? "Low battery!" : "Battery OK.",
+      explanation: `battery is ${battery}. The condition battery < 20 is ${
+        battery < 20 ? "TRUE, so the if branch runs." : "FALSE, so the else branch runs."
+      }`,
+    })
+  );
+
+  return shuffleArray(questions);
+}
+
+function generateTier2MissingConditionQuestions() {
+  const questions = [];
+
+  const score = Math.floor(Math.random() * 61) + 30;
+  questions.push(
+    makeMissingConditionQuestion({
+      context: "📝 Choose the condition that passes the student when score is 50 or more.",
+      variableLine: `score = ${score}`,
+      correctCondition: "score >= 50",
+      trueMessage: "You passed!",
+      falseMessage: "Try again.",
+      wrongOptions: ["score > 100", "score < 50", "score == 0", "score != 50"],
+      explanation: "score >= 50 means the student passes with 50 or more.",
+    })
+  );
+
+  const age = Math.floor(Math.random() * 8) + 14;
+  questions.push(
+    makeMissingConditionQuestion({
+      context: "🗳️ Choose the condition that allows voting from age 18 upwards.",
+      variableLine: `age = ${age}`,
+      correctCondition: "age >= 18",
+      trueMessage: "You can vote!",
+      falseMessage: "Too young to vote.",
+      wrongOptions: ["age > 18", "age < 18", "age == 16", "age != 18"],
+      explanation: "age >= 18 includes 18 and every age above 18.",
+    })
+  );
+
+  const temperature = Math.floor(Math.random() * 26) + 15;
+  questions.push(
+    makeMissingConditionQuestion({
+      context: "🌡️ Choose the condition that detects hot weather above 30 degrees.",
+      variableLine: `temperature = ${temperature}`,
+      correctCondition: "temperature > 30",
+      trueMessage: "It is hot outside!",
+      falseMessage: "Nice weather.",
+      wrongOptions: [
+        "temperature < 30",
+        "temperature == 30",
+        "temperature > 100",
+        "temperature != 30",
+      ],
+      explanation: "temperature > 30 is true only when the temperature is above 30.",
+    })
+  );
+
+  const battery = Math.floor(Math.random() * 101);
+  questions.push(
+    makeMissingConditionQuestion({
+      context: "🔋 Choose the condition that detects a low battery below 20%.",
+      variableLine: `battery = ${battery}`,
+      correctCondition: "battery < 20",
+      trueMessage: "Low battery!",
+      falseMessage: "Battery OK.",
+      wrongOptions: ["battery > 20", "battery == 100", "battery >= 20", "battery != 20"],
+      explanation: "battery < 20 means the warning appears only below 20%.",
+    })
+  );
+
+  const lives = Math.floor(Math.random() * 4);
+  questions.push(
+    makeMissingConditionQuestion({
+      context: "🎮 Choose the condition that triggers game over when the player has no lives.",
+      variableLine: `lives = ${lives}`,
+      correctCondition: "lives == 0",
+      trueMessage: "Game over!",
+      falseMessage: "Keep playing!",
+      wrongOptions: ["lives > 0", "lives >= 1", "lives != 0", "lives < 0"],
+      explanation: "lives == 0 checks whether the player has exactly zero lives.",
+    })
+  );
+
+  return shuffleArray(questions);
+}
+
 function generateIfElseQuestions() {
-  const templates = [
-    () => {
-      const threshold = 18;
-      const value = Math.floor(Math.random() * 10) + 14;
-      const operator = randomFrom([">=", ">"]);
-      return makeComparisonQuestion({
-        contextIcon: "🗳️",
-        contextText: `Voting app: age is ${value}. Choose the condition for being old enough to vote.`,
-        variableName: "age",
-        value,
-        threshold,
-        operator,
-        trueMessage: "You can vote!",
-        falseMessage: "Too young to vote.",
-      });
-    },
-
-    () => {
-      const threshold = randomFrom([40, 50, 60]);
-      const value = Math.floor(Math.random() * 61) + 30;
-      const operator = randomFrom([">=", ">"]);
-      return makeComparisonQuestion({
-        contextIcon: "📝",
-        contextText: `Exam system: score is ${value}. Choose the condition for passing the test.`,
-        variableName: "score",
-        value,
-        threshold,
-        operator,
-        trueMessage: "You passed!",
-        falseMessage: "Try again.",
-      });
-    },
-
-    () => {
-      const threshold = randomFrom([25, 30, 35]);
-      const value = Math.floor(Math.random() * 26) + 15;
-      const operator = randomFrom([">", ">="]);
-      return makeComparisonQuestion({
-        contextIcon: "🌡️",
-        contextText: `Weather app: temperature is ${value}. Choose the condition for hot weather.`,
-        variableName: "temperature",
-        value,
-        threshold,
-        operator,
-        trueMessage: "It is hot outside!",
-        falseMessage: "Nice weather.",
-      });
-    },
-
-    () => {
-      const lives = Math.floor(Math.random() * 4);
-      const correctCondition = randomFrom(["lives == 0", "lives <= 0"]);
-      return {
-        context: `🎮 Game system: lives is ${lives}. Choose the condition for game over.`,
-        code: [
-          { text: `lives = ${lives}`, type: "normal" },
-          { text: "", type: "blank-line" },
-          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-          { text: '  print("Game over!")', type: "normal" },
-          { text: "else:", type: "normal" },
-          { text: '  print("Keep playing!")', type: "normal" },
-        ],
-        options: shuffleArray([
-          correctCondition,
-          "lives > 0",
-          "lives >= 1",
-          "lives != 0",
-        ]),
-        correctAnswers: [correctCondition],
-        explanation: `${correctCondition} checks whether the player has run out of lives.`,
-      };
-    },
-
-    () => {
-      const password = randomFrom(["abc123", "dragon", "admin42", "pizza"]);
-      const userInput = Math.random() < 0.5 ? password : randomFrom(["wrong", "guest", "test"]);
-      const correctCondition = randomFrom([
-        "user_input == password",
-        "password == user_input",
-      ]);
-
-      return {
-        context: "🔐 Login system: choose the condition that checks whether the password is correct.",
-        code: [
-          { text: `password = '${password}'`, type: "normal" },
-          { text: `user_input = '${userInput}'`, type: "normal" },
-          { text: "", type: "blank-line" },
-          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-          { text: '  print("Access granted!")', type: "normal" },
-          { text: "else:", type: "normal" },
-          { text: '  print("Wrong password.")', type: "normal" },
-        ],
-        options: shuffleArray([
-          correctCondition,
-          "user_input = password",
-          "user_input != password",
-          "password < user_input",
-        ]),
-        correctAnswers: [correctCondition],
-        explanation: "Use == to compare values. A single = assigns a value and would be a bug.",
-      };
-    },
-
-    () => {
-      const isRaining = Math.random() < 0.5;
-      const hasUmbrella = Math.random() < 0.5;
-
-      return {
-        context: "🌧️ Weather app: warn the user if it is raining and they do not have an umbrella.",
-        code: [
-          { text: `is_raining = ${isRaining ? "True" : "False"}`, type: "normal" },
-          { text: `has_umbrella = ${hasUmbrella ? "True" : "False"}`, type: "normal" },
-          { text: "", type: "blank-line" },
-          { text: "if _____ :", type: "has-blank", blankIdx: 0 },
-          { text: '  print("You will get wet!")', type: "normal" },
-          { text: "else:", type: "normal" },
-          { text: '  print("You are fine!")', type: "normal" },
-        ],
-        options: shuffleArray([
-          "is_raining and not has_umbrella",
-          "is_raining or has_umbrella",
-          "not is_raining",
-          "has_umbrella == True",
-        ]),
-        correctAnswers: ["is_raining and not has_umbrella"],
-        explanation: "This needs both parts: it is raining AND the user does not have an umbrella.",
-      };
-    },
+  return [
+    ...generateTier1IfElseQuestions(),
+    ...generateTier2MissingConditionQuestions(),
   ];
-
-  return shuffleArray(templates).map((makeQuestion) => makeQuestion());
 }
 
 // ── LEVEL 2 – IF/ELSE ─────────────────────────
@@ -234,13 +282,13 @@ function Level2({ onComplete, onBack, onAchievement }) {
           <div className="victory-title">IF / ELSE</div>
 
           <div style={{ color: "var(--text-dim)", marginBottom: 16 }}>
-            Complete Python if/else statements by choosing the condition that makes the code behave correctly.
+            Read Python if/else statements and determine which output the program will produce.
           </div>
 
           <div className="info-box" style={{ textAlign: "left" }}>
             <strong>How it works:</strong>
             <br /><br />
-            Read the scenario, inspect the Python code, then choose the missing condition.
+            Read the scenario, inspect the Python code, then choose the message that will be printed.
             <br /><br />
             Example:
             <br />
@@ -318,8 +366,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
       </div>
 
       <div className="info-box">
-        Question {qIdx + 1} of {questions.length} — Fill in the blank to
-        make the code work correctly
+        Question {qIdx + 1} of {questions.length} —{" "}
+        {q.type === "missing-condition"
+          ? "Choose the condition that completes the code"
+          : "Read the code and choose the correct output"}
       </div>
 
       <div className="code-block">
@@ -341,11 +391,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
             return <div key={i} style={{ height: 4 }} />;
           if (line.type === "has-blank") {
             const parts = line.text.split("_____");
+
             return (
               <div className="code-line" key={i}>
-                <span className="kw">
-                  {parts[0].includes("if") ? "if " : parts[0]}
-                </span>
+                <span className="kw">{parts[0]}</span>
                 <span className="blank">{selected || "?"}</span>
                 <span>{parts[1]}</span>
               </div>
@@ -370,8 +419,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
       </div>
 
       <div className="hint-text">
-        💡 Pick the condition that goes inside the{" "}
-        <span style={{ color: "var(--accent)" }}>if</span> statement:
+        💡 Read the condition carefully and decide which branch will run:
       </div>
 
       <div className="options-grid">
