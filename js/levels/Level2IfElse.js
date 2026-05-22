@@ -1,5 +1,3 @@
-// ── LEVEL 2 – IF/ELSE QUESTIONS GENERATOR───────────────
-// ── LEVEL 2 – IF/ELSE QUESTION GENERATOR ───────────────
 // ── LEVEL 2 – IF / ELSE + LOOPS QUESTION GENERATOR ───────────────
 function randomFrom(list) {
   return list[Math.floor(Math.random() * list.length)];
@@ -493,6 +491,9 @@ function generateIfElseQuestions() {
 function Level2({ onComplete, onBack, onAchievement }) {
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
+  const [practiceValue, setPracticeValue] = useState(18);
+  const [practiceOperator, setPracticeOperator] = useState(">=");
+  const [practiceTarget, setPracticeTarget] = useState(18);
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -534,6 +535,19 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   const isCorrect = answered && q.correctAnswers.includes(selected);
+
+  function evaluatePracticeCondition() {
+    if (practiceOperator === ">") return practiceValue > practiceTarget;
+    if (practiceOperator === "<") return practiceValue < practiceTarget;
+    if (practiceOperator === ">=") return practiceValue >= practiceTarget;
+    if (practiceOperator === "<=") return practiceValue <= practiceTarget;
+    if (practiceOperator === "==") return practiceValue === practiceTarget;
+    if (practiceOperator === "!=") return practiceValue !== practiceTarget;
+
+    return false;
+  }
+
+  const practiceResult = evaluatePracticeCondition();
 
   const tabStyle = (active) => ({
     flex: 1,
@@ -673,23 +687,111 @@ function Level2({ onComplete, onBack, onAchievement }) {
                 fontFamily: "'Orbitron', sans-serif",
               }}
             >
-              PRACTICE MODE
+              PRACTICE MODULE 1 · TRUE / FALSE
             </div>
 
-            <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
-              Practice lessons will go here.
-              <br /><br />
-              We will add:
+            <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+              An <span style={{ color: "var(--accent)" }}>if</span> statement checks
+              whether a condition is TRUE or FALSE.
               <br />
-              • if / else explanations
+              If the condition is TRUE, the indented code runs. If it is FALSE, Python
+              skips to the <span style={{ color: "var(--accent)" }}>else</span> block.
+            </div>
+
+            <div className="info-box">
+              Try changing the numbers and operator below to see the condition update live.
+            </div>
+
+            <div className="code-block" style={{ marginBottom: 16 }}>
+              <div className="code-line">
+                <span className="var">value</span> ={" "}
+                <span className="num">{practiceValue}</span>
+              </div>
+
+              <div className="code-line">
+                <span className="kw">if</span>{" "}
+                <span className="var">value</span>{" "}
+                <span className="kw">{practiceOperator}</span>{" "}
+                <span className="num">{practiceTarget}</span>:
+              </div>
+
+              <div className="code-line">
+                &nbsp;&nbsp;<span className="kw">print</span>
+                <span className="str">("Condition is TRUE")</span>
+              </div>
+
+              <div className="code-line">
+                <span className="kw">else</span>:
+              </div>
+
+              <div className="code-line">
+                &nbsp;&nbsp;<span className="kw">print</span>
+                <span className="str">("Condition is FALSE")</span>
+              </div>
+            </div>
+
+            <div
+              className={`feedback-box ${practiceResult ? "correct" : "wrong"}`}
+              style={{ marginBottom: 20 }}
+            >
+              <strong>{practiceResult ? "TRUE" : "FALSE"}</strong>
               <br />
-              • comparison operators
-              <br />
-              • TRUE / FALSE evaluator
-              <br />
-              • AND / OR / NOT examples
-              <br />
-              • loops, break, and continue
+              value {practiceOperator} {practiceTarget} is{" "}
+              {practiceResult ? "true" : "false"} when value = {practiceValue}.
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                Value
+                <input
+                  type="number"
+                  value={practiceValue}
+                  onChange={(e) => setPracticeValue(Number(e.target.value))}
+                  className="adventure-input"
+                  style={{
+                    marginTop: 6,
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    padding: 10,
+                    width: "100%",
+                    background: "var(--surface)",
+                  }}
+                />
+              </label>
+
+              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                Target
+                <input
+                  type="number"
+                  value={practiceTarget}
+                  onChange={(e) => setPracticeTarget(Number(e.target.value))}
+                  className="adventure-input"
+                  style={{
+                    marginTop: 6,
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    padding: 10,
+                    width: "100%",
+                    background: "var(--surface)",
+                  }}
+                />
+              </label>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>
+              {[">", "<", ">=", "<=", "==", "!="].map((op) => (
+                <button
+                  key={op}
+                  className={`btn ${practiceOperator === op ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => {
+                    playSound("click");
+                    setPracticeOperator(op);
+                  }}
+                  style={{ padding: "8px 14px", fontSize: "0.7rem" }}
+                >
+                  {op}
+                </button>
+              ))}
             </div>
           </div>
         </>

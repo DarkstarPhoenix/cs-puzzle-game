@@ -85,7 +85,7 @@
 - [x] Achievement integration
 
 ## To Do
-- [ ] Add Practice / Challenge tabs
+- [x] Add Practice / Challenge tabs
 
 ## Practice Mode
 - [ ] Explain if statements
@@ -98,11 +98,11 @@
 ## Challenge Mode
 - [ ] Expand to 15 questions
 - [ ] Add progressive challenge question tiers
-  - [ ] Tier 1: evaluate simple if / else output
-  - [ ] Tier 2: choose missing if condition
-  - [ ] Tier 3: evaluate if / elif / else output
-  - [ ] Tier 4: basic for / while loop output
-  - [ ] Tier 5: break / continue behaviour
+  - [x] Tier 1: evaluate simple if / else output
+  - [x] Tier 2: choose missing if condition
+  - [x] Tier 3: evaluate if / elif / else output
+  - [x] Tier 4: basic for / while loop output
+  - [x] Tier 5: break / continue behaviour
   - [ ] Ensure generated questions remain logically consistent
   - Still predictable enough for fair scoring
 - [ ] Improve randomised question generation
