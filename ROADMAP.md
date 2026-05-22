@@ -88,10 +88,10 @@
 - [x] Add Practice / Challenge tabs
 
 ## Practice Mode
-- [ ] Explain if statements
-- [ ] Explain else statements
-- [ ] Explain comparison operators
-- [ ] Interactive TRUE/FALSE evaluator
+- [x] Explain if statements
+- [x] Explain else statements
+- [x] Explain comparison operators
+- [x] Interactive TRUE/FALSE evaluator
 - [ ] AND / OR / NOT examples
 - [ ] Mini loop + break examples
 

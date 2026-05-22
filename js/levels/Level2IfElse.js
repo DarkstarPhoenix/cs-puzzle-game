@@ -491,6 +491,7 @@ function generateIfElseQuestions() {
 function Level2({ onComplete, onBack, onAchievement }) {
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
+  const [practiceSection, setPracticeSection] = useState("basics");
   const [practiceValue, setPracticeValue] = useState(18);
   const [practiceOperator, setPracticeOperator] = useState(">=");
   const [practiceTarget, setPracticeTarget] = useState(18);
@@ -571,6 +572,18 @@ function Level2({ onComplete, onBack, onAchievement }) {
     cursor: "pointer",
     transition: "all 0.2s",
     textAlign: "center",
+  });
+
+  const practiceSectionStyle = (active) => ({
+    flex: 1,
+    padding: "8px 10px",
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    borderRadius: 6,
+    background: active ? "rgba(0,245,255,0.08)" : "var(--surface)",
+    color: active ? "var(--accent)" : "var(--text-dim)",
+    fontFamily: "monospace",
+    fontSize: "0.75rem",
+    cursor: "pointer",
   });
 
   if (!started) {
@@ -686,137 +699,229 @@ function Level2({ onComplete, onBack, onAchievement }) {
             <div className="score-display">Practice</div>
           </div>
 
-          <div className="code-block">
-            <div
-              style={{
-                fontSize: "0.65rem",
-                color: "var(--accent)",
-                letterSpacing: 3,
-                marginBottom: 12,
-                fontFamily: "'Orbitron', sans-serif",
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            <button
+              style={practiceSectionStyle(practiceSection === "basics")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("basics");
               }}
             >
-              PRACTICE MODULE 1 · TRUE / FALSE
-            </div>
+              Basics
+            </button>
 
-            <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
-              An <span style={{ color: "var(--accent)" }}>if</span> statement checks
-              whether a condition is TRUE or FALSE.
-              <br />
-              If the condition is TRUE, the indented code runs. If it is FALSE, Python
-              skips to the <span style={{ color: "var(--accent)" }}>else</span> block.
-            </div>
-
-            <div className="info-box">
-              Try changing the numbers and operator below to see the condition update live.
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
-                Value
-                <input
-                  type="number"
-                  value={practiceValue}
-                  onChange={(e) => setPracticeValue(Number(e.target.value))}
-                  className="adventure-input"
-                  style={{
-                    marginTop: 6,
-                    border: "1px solid var(--border)",
-                    borderRadius: 6,
-                    padding: 10,
-                    width: "100%",
-                    background: "var(--surface)",
-                  }}
-                />
-              </label>
-
-              <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
-                Target
-                <input
-                  type="number"
-                  value={practiceTarget}
-                  onChange={(e) => setPracticeTarget(Number(e.target.value))}
-                  className="adventure-input"
-                  style={{
-                    marginTop: 6,
-                    border: "1px solid var(--border)",
-                    borderRadius: 6,
-                    padding: 10,
-                    width: "100%",
-                    background: "var(--surface)",
-                  }}
-                />
-              </label>
-            </div>
-
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16, marginBottom: 16 }}>
-              {[">", "<", ">=", "<=", "==", "!="].map((op) => (
-                <button
-                  key={op}
-                  className={`btn ${practiceOperator === op ? "btn-primary" : "btn-ghost"}`}
-                  onClick={() => {
-                    playSound("click");
-                    setPracticeOperator(op);
-                  }}
-                  style={{ padding: "8px 14px", fontSize: "0.7rem" }}
-                >
-                  {op}
-                </button>
-              ))}
-            </div>
-
-            <div className="code-block" style={{ marginBottom: 16 }}>
-              <div className="code-line">
-                <span className="var">value</span> ={" "}
-                <span className="num">{practiceValue}</span>
-              </div>
-
-              <div className="code-line">
-                <span className="kw">if</span>{" "}
-                <span className="var">value</span>{" "}
-                <span className="kw">{practiceOperator}</span>{" "}
-                <span className="num">{practiceTarget}</span>:
-              </div>
-
-              <div className="code-line">
-                &nbsp;&nbsp;<span className="kw">print</span>
-                <span className="str">("Condition is TRUE")</span>
-              </div>
-
-              <div className="code-line">
-                <span className="kw">else</span>:
-              </div>
-
-              <div className="code-line">
-                &nbsp;&nbsp;<span className="kw">print</span>
-                <span className="str">("Condition is FALSE")</span>
-              </div>
-            </div>
-
-            <div
-              className={`feedback-box ${practiceResult ? "correct" : "wrong"}`}
-              style={{ marginBottom: 16 }}
+            <button
+              style={practiceSectionStyle(practiceSection === "logic")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("logic");
+              }}
             >
-              <strong>{practiceResult ? "TRUE" : "FALSE"}</strong>
-              <br />
-              value {practiceOperator} {practiceTarget} is{" "}
-              {practiceResult ? "true" : "false"} when value = {practiceValue}.
-            </div>
+              Logic
+            </button>
 
-            <div className="info-box" style={{ marginBottom: 16 }}>
-              <strong>{practiceOperator}</strong> means:
-              <br />
-              {operatorDescriptions[practiceOperator]}
-            </div>
-
-            <div className="hint-text">
-              💡 Quick Practice: Which operator would make{" "}
-              <span style={{ color: "var(--accent)" }}>
-                {practiceValue} __ {practiceTarget}
-              </span>{" "}
-              TRUE?
-            </div>
+            <button
+              style={practiceSectionStyle(practiceSection === "loops")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("loops");
+              }}
+            >
+              Loops
+            </button>
           </div>
+
+          {practiceSection === "basics" && (
+            <div className="code-block">
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--accent)",
+                  letterSpacing: 3,
+                  marginBottom: 12,
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                PRACTICE MODULE 1 · TRUE / FALSE
+              </div>
+
+              <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                An <span style={{ color: "var(--accent)" }}>if</span> statement checks
+                whether a condition is TRUE or FALSE.
+                <br />
+                If the condition is TRUE, the indented code runs. If it is FALSE, Python
+                skips to the <span style={{ color: "var(--accent)" }}>else</span> block.
+              </div>
+
+              <div className="info-box">
+                Try changing the numbers and operator below to see the condition update live.
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                  Value
+                  <input
+                    type="number"
+                    value={practiceValue}
+                    onChange={(e) => setPracticeValue(Number(e.target.value))}
+                    className="adventure-input"
+                    style={{
+                      marginTop: 6,
+                      border: "1px solid var(--border)",
+                      borderRadius: 6,
+                      padding: 10,
+                      width: "100%",
+                      background: "var(--surface)",
+                    }}
+                  />
+                </label>
+
+                <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                  Target
+                  <input
+                    type="number"
+                    value={practiceTarget}
+                    onChange={(e) => setPracticeTarget(Number(e.target.value))}
+                    className="adventure-input"
+                    style={{
+                      marginTop: 6,
+                      border: "1px solid var(--border)",
+                      borderRadius: 6,
+                      padding: 10,
+                      width: "100%",
+                      background: "var(--surface)",
+                    }}
+                  />
+                </label>
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16, marginBottom: 16 }}>
+                {[">", "<", ">=", "<=", "==", "!="].map((op) => (
+                  <button
+                    key={op}
+                    className={`btn ${practiceOperator === op ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => {
+                      playSound("click");
+                      setPracticeOperator(op);
+                    }}
+                    style={{ padding: "8px 14px", fontSize: "0.7rem" }}
+                  >
+                    {op}
+                  </button>
+                ))}
+              </div>
+
+              <div className="code-block" style={{ marginBottom: 16 }}>
+                <div className="code-line">
+                  <span className="var">value</span> ={" "}
+                  <span className="num">{practiceValue}</span>
+                </div>
+
+                <div className="code-line">
+                  <span className="kw">if</span>{" "}
+                  <span className="var">value</span>{" "}
+                  <span className="kw">{practiceOperator}</span>{" "}
+                  <span className="num">{practiceTarget}</span>:
+                </div>
+
+                <div className="code-line">
+                  &nbsp;&nbsp;<span className="kw">print</span>
+                  <span className="str">("Condition is TRUE")</span>
+                </div>
+
+                <div className="code-line">
+                  <span className="kw">else</span>:
+                </div>
+
+                <div className="code-line">
+                  &nbsp;&nbsp;<span className="kw">print</span>
+                  <span className="str">("Condition is FALSE")</span>
+                </div>
+              </div>
+
+              <div
+                className={`feedback-box ${practiceResult ? "correct" : "wrong"}`}
+                style={{ marginBottom: 16 }}
+              >
+                <strong>{practiceResult ? "TRUE" : "FALSE"}</strong>
+                <br />
+                value {practiceOperator} {practiceTarget} is{" "}
+                {practiceResult ? "true" : "false"} when value = {practiceValue}.
+              </div>
+
+              <div className="info-box" style={{ marginBottom: 16 }}>
+                <strong>{practiceOperator}</strong> means:
+                <br />
+                {operatorDescriptions[practiceOperator]}
+              </div>
+
+              <div className="hint-text">
+                💡 Quick Practice: Which operator would make{" "}
+                <span style={{ color: "var(--accent)" }}>
+                  {practiceValue} __ {practiceTarget}
+                </span>{" "}
+                TRUE?
+              </div>
+            </div>
+          )}
+
+          {practiceSection === "logic" && (
+            <div className="code-block">
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--accent)",
+                  letterSpacing: 3,
+                  marginBottom: 12,
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                PRACTICE MODULE 2 · BOOLEAN LOGIC
+              </div>
+
+              <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
+                Learn how Python combines conditions using:
+                <br /><br />
+                • and
+                <br />
+                • or
+                <br />
+                • not
+                <br /><br />
+                Interactive logic examples coming next.
+              </div>
+            </div>
+          )}
+
+          {practiceSection === "loops" && (
+            <div className="code-block">
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--accent)",
+                  letterSpacing: 3,
+                  marginBottom: 12,
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                PRACTICE MODULE 3 · LOOPS
+              </div>
+
+              <div style={{ color: "var(--text-dim)", lineHeight: 1.7 }}>
+                Learn how loops repeat code using:
+                <br /><br />
+                • for loops
+                <br />
+                • while loops
+                <br />
+                • break
+                <br />
+                • continue
+                <br /><br />
+                Interactive loop practice coming later.
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <>
