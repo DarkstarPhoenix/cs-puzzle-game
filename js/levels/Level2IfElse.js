@@ -549,6 +549,15 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
   const practiceResult = evaluatePracticeCondition();
 
+  const operatorDescriptions = {
+    ">": "Greater than",
+    "<": "Less than",
+    ">=": "Greater than or equal to",
+    "<=": "Less than or equal to",
+    "==": "Equal to",
+    "!=": "Not equal to",
+  };
+
   const tabStyle = (active) => ({
     flex: 1,
     padding: "10px 0",
@@ -702,44 +711,6 @@ function Level2({ onComplete, onBack, onAchievement }) {
               Try changing the numbers and operator below to see the condition update live.
             </div>
 
-            <div className="code-block" style={{ marginBottom: 16 }}>
-              <div className="code-line">
-                <span className="var">value</span> ={" "}
-                <span className="num">{practiceValue}</span>
-              </div>
-
-              <div className="code-line">
-                <span className="kw">if</span>{" "}
-                <span className="var">value</span>{" "}
-                <span className="kw">{practiceOperator}</span>{" "}
-                <span className="num">{practiceTarget}</span>:
-              </div>
-
-              <div className="code-line">
-                &nbsp;&nbsp;<span className="kw">print</span>
-                <span className="str">("Condition is TRUE")</span>
-              </div>
-
-              <div className="code-line">
-                <span className="kw">else</span>:
-              </div>
-
-              <div className="code-line">
-                &nbsp;&nbsp;<span className="kw">print</span>
-                <span className="str">("Condition is FALSE")</span>
-              </div>
-            </div>
-
-            <div
-              className={`feedback-box ${practiceResult ? "correct" : "wrong"}`}
-              style={{ marginBottom: 20 }}
-            >
-              <strong>{practiceResult ? "TRUE" : "FALSE"}</strong>
-              <br />
-              value {practiceOperator} {practiceTarget} is{" "}
-              {practiceResult ? "true" : "false"} when value = {practiceValue}.
-            </div>
-
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
                 Value
@@ -778,7 +749,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
               </label>
             </div>
 
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16, marginBottom: 16 }}>
               {[">", "<", ">=", "<=", "==", "!="].map((op) => (
                 <button
                   key={op}
@@ -792,6 +763,58 @@ function Level2({ onComplete, onBack, onAchievement }) {
                   {op}
                 </button>
               ))}
+            </div>
+
+            <div className="code-block" style={{ marginBottom: 16 }}>
+              <div className="code-line">
+                <span className="var">value</span> ={" "}
+                <span className="num">{practiceValue}</span>
+              </div>
+
+              <div className="code-line">
+                <span className="kw">if</span>{" "}
+                <span className="var">value</span>{" "}
+                <span className="kw">{practiceOperator}</span>{" "}
+                <span className="num">{practiceTarget}</span>:
+              </div>
+
+              <div className="code-line">
+                &nbsp;&nbsp;<span className="kw">print</span>
+                <span className="str">("Condition is TRUE")</span>
+              </div>
+
+              <div className="code-line">
+                <span className="kw">else</span>:
+              </div>
+
+              <div className="code-line">
+                &nbsp;&nbsp;<span className="kw">print</span>
+                <span className="str">("Condition is FALSE")</span>
+              </div>
+            </div>
+
+            <div
+              className={`feedback-box ${practiceResult ? "correct" : "wrong"}`}
+              style={{ marginBottom: 16 }}
+            >
+              <strong>{practiceResult ? "TRUE" : "FALSE"}</strong>
+              <br />
+              value {practiceOperator} {practiceTarget} is{" "}
+              {practiceResult ? "true" : "false"} when value = {practiceValue}.
+            </div>
+
+            <div className="info-box" style={{ marginBottom: 16 }}>
+              <strong>{practiceOperator}</strong> means:
+              <br />
+              {operatorDescriptions[practiceOperator]}
+            </div>
+
+            <div className="hint-text">
+              💡 Quick Practice: Which operator would make{" "}
+              <span style={{ color: "var(--accent)" }}>
+                {practiceValue} __ {practiceTarget}
+              </span>{" "}
+              TRUE?
             </div>
           </div>
         </>
