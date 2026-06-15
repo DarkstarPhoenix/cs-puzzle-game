@@ -725,9 +725,46 @@ function Level2({ onComplete, onBack, onAchievement }) {
         <div className="victory-card">
           <div className="victory-title">LEVEL COMPLETE!</div>
           <div className="stars">{stars}</div>
-          <div style={{ color: "var(--text-dim)", marginBottom: 8 }}>
-            If / Else mastered
+
+          <div
+            style={{
+              border: `2px solid ${rank.color}`,
+              borderRadius: 16,
+              padding: "16px",
+              marginBottom: 20,
+              background: "rgba(0,0,0,0.15)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "3.5rem",
+                fontWeight: "bold",
+                color: rank.color,
+                lineHeight: 1,
+                marginBottom: 10,
+              }}
+            >
+              {rank.letter}
+            </div>
+
+            <div
+              style={{
+                color: rank.color,
+                fontFamily: "'Orbitron', sans-serif",
+                fontSize: "1rem",
+                marginBottom: 16,
+              }}
+            >
+              {rank.title}
+            </div>
+
+            <div style={{ color: "var(--text-dim)" }}>
+              Accuracy: {accuracy}%
+              <br />
+              Mistakes: {mistakes}
+            </div>
           </div>
+
           <div className="victory-score">{score} pts</div>
           <div
             style={{
