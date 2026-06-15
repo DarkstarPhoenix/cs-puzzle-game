@@ -500,6 +500,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [logicOperator, setLogicOperator] = useState("and");
   const [loopRange, setLoopRange] = useState(5);
   const [whileLimit, setWhileLimit] = useState(5);
+  const [breakPoint, setBreakPoint] = useState(5);
+  const [breakMode, setBreakMode] = useState("break");
   const [loopTab, setLoopTab] = useState("for");
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -577,6 +579,22 @@ function Level2({ onComplete, onBack, onAchievement }) {
   for (let i = 0; i < whileLimit; i++) {
     whileValues.push(i);
   }
+
+  const breakValues = [];
+
+  for (let i = 0; i < 10; i++) {
+    if (breakMode === "break" && i === breakPoint) {
+      break;
+    }
+
+    if (breakMode === "continue" && i === breakPoint) {
+      continue;
+    }
+
+    breakValues.push(i);
+  }
+
+
 
   const operatorDescriptions = {
     ">": "Greater than",
@@ -1064,6 +1082,16 @@ function Level2({ onComplete, onBack, onAchievement }) {
                 >
                   While Loops
                 </button>
+
+                <button
+                  style={loopTabStyle(loopTab === "break")}
+                  onClick={() => {
+                    playSound("click");
+                    setLoopTab("break");
+                  }}
+                >
+                  Break / Continue
+                </button>
               </div>
 
               {loopTab === "for" && (
@@ -1220,6 +1248,130 @@ function Level2({ onComplete, onBack, onAchievement }) {
                     <br />
                     The condition count &lt; {whileLimit} becomes FALSE when count is{" "}
                     {whileLimit}.
+                  </div>
+                </>
+              )}
+
+              {loopTab === "break" && (
+                <>
+                  <div style={{ color: "var(--text-dim)", lineHeight: 1.7, marginBottom: 20 }}>
+                    <span style={{ color: "var(--accent)" }}>break</span> stops a loop early.
+                    <br />
+                    <span style={{ color: "var(--accent)" }}>continue</span> skips the current loop cycle and moves to the next one.
+                  </div>
+
+                  <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                    <button
+                      className={`btn ${breakMode === "break" ? "btn-primary" : "btn-ghost"}`}
+                      onClick={() => {
+                        playSound("click");
+                        setBreakMode("break");
+                      }}
+                    >
+                      break
+                    </button>
+
+                    <button
+                      className={`btn ${breakMode === "continue" ? "btn-primary" : "btn-ghost"}`}
+                      onClick={() => {
+                        playSound("click");
+                        setBreakMode("continue");
+                      }}
+                    >
+                      continue
+                    </button>
+                  </div>
+
+                  <label style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
+                    Stop / Skip Value
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={breakPoint}
+                      onChange={(e) =>
+                        setBreakPoint(Math.min(9, Math.max(0, Number(e.target.value))))
+                      }
+                      className="adventure-input"
+                      style={{
+                        marginTop: 6,
+                        marginBottom: 16,
+                        border: "1px solid var(--border)",
+                        borderRadius: 6,
+                        padding: 10,
+                        width: "100%",
+                        background: "var(--surface)",
+                      }}
+                    />
+                  </label>
+
+                  <div className="code-block" style={{ marginBottom: 16 }}>
+                    <div className="code-line">
+                      <span className="kw">for</span>{" "}
+                      <span className="var">i</span>{" "}
+                      <span className="kw">in</span>{" "}
+                      <span className="kw">range</span>
+                      <span>(</span>
+                      <span className="num">10</span>
+                      <span>):</span>
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;<span className="kw">if</span>{" "}
+                      <span className="var">i</span>{" "}
+                      <span className="kw">==</span>{" "}
+                      <span className="num">{breakPoint}</span>:
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span className="kw">{breakMode}</span>
+                    </div>
+
+                    <div className="code-line">
+                      &nbsp;&nbsp;<span className="kw">print</span>
+                      <span>(</span>
+                      <span className="var">i</span>
+                      <span>)</span>
+                    </div>
+                  </div>
+
+                  <div className="info-box">
+                    This loop prints:
+                    <br /><br />
+                    <span style={{ color: "var(--accent)", fontSize: "1rem" }}>
+                      {breakValues.length > 0 ? breakValues.join(", ") : "Nothing"}
+                    </span>
+                  </div>
+
+                  <div
+                    className="info-box"
+                    style={{ marginTop: 12, marginBottom: 16 }}
+                  >
+                    <strong>
+                      {breakMode === "break"
+                        ? `Loop terminated at: ${breakPoint}`
+                        : `Skipped value: ${breakPoint}`}
+                    </strong>
+                  </div>
+
+                  <div
+                    className={`feedback-box ${
+                      breakMode === "break" ? "wrong" : "correct"
+                    }`}
+                  >
+                    <strong>
+                      {breakMode === "break"
+                        ? `Loop stops at ${breakPoint}`
+                        : `${breakPoint} is skipped`}
+                    </strong>
+                    <br />
+                    {breakMode === "break"
+                      ? `When i becomes ${breakPoint}, break stops the loop before print(i) runs.`
+                      : `When i becomes ${breakPoint}, continue skips print(i), then the loop carries on.`}
+                  </div>
+
+                  <div className="hint-text" style={{ marginTop: 16 }}>
+                    💡 Try switching between break and continue with the same trigger value.
                   </div>
                 </>
               )}

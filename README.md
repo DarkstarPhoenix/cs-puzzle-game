@@ -23,8 +23,8 @@ However if this doesn't work. Open folder in VS Code and ensure "Live Server" Ex
 Level 1 – Binary to Decimal  
 Users are shown a binary number and must convert it into its decimal equivalent. Answers are entered using the input field provided. Immediate feedback is given for correct and incorrect responses.
 
-Level 2 – If/Else Logic  
-Users are presented with simple conditional statements. Based on the given values, they must determine the correct outcome and select the appropriate answer.
+Level 2 – If / Else + Loops  
+Users learn how Python if/else statements, comparison operators, boolean logic, and loops work. Practice mode includes interactive TRUE/FALSE, AND/OR/NOT, for loop, and while loop visualisers. Challenge mode uses 15 progressively harder questions covering if/else outputs, missing conditions, if/elif/else chains, loops, and break/continue behaviour.
 
 Level 3 – Logic Gates  
 Users interact with logic gate diagrams and must determine the output based on the inputs. This level introduces AND, OR, NOT, NAND, NOR, and XOR gates.

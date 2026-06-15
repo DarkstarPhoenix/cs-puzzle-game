@@ -93,7 +93,7 @@
 - [x] Explain comparison operators
 - [x] Interactive TRUE/FALSE evaluator
 - [x] AND / OR / NOT examples
-- [ ] Mini loop + break examples
+- [x] Mini loop + break examples
 
 ## Challenge Mode
 - [x] Expand to 15 questions
