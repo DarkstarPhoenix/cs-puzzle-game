@@ -63,14 +63,14 @@
 
 ## To Do
 - [x] Add live score display
-  - [ ] Current score
+  - [x] Current score
   - [x] Streak indicator
 
 - [x] Improve binary button UI
   - [x] Add place values above buttons
 
 - [ ] Review score balancing
-- [ ] Review star/rank thresholds
+- [x] Review star/rank thresholds
 - [ ] Extract reusable bit-button component
 
 ---
@@ -114,9 +114,9 @@
   - [x] Randomise correct answer logic
   - [x] Avoid same correct condition every run
   - [x] Randomise answer button positions
-- [ ] Add streak system
+- [x] Add streak system
 - [x] Add rank/result screen
-- [ ] Improve animations/feedback
+- [x] Improve animations/feedback
 
 ## Results Screen
 - [x] Rank grading system

@@ -3,7 +3,7 @@ This is an interactive educational game designed to introduce core computer scie
 
 The game is divided into four levels, each focusing on a key topic:
 • Level 1 – Binary to Decimal conversion  
-• Level 2 – If/Else logic  
+• Level 2 – If/Else logic + Loops
 • Level 3 – Logic Gates  
 • Level 4 – Text-based adventure integrating all concepts  
 
