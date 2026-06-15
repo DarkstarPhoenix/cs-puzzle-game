@@ -508,6 +508,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [highestStreak, setHighestStreak] = useState(0);
   const [lastBonus, setLastBonus] = useState(null);
   const [showStreakBanner, setShowStreakBanner] = useState(false);
   const [done, setDone] = useState(false);
@@ -530,6 +531,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
     if (correct) {
       const nextStreak = streak + 1;
+      setHighestStreak((best) => Math.max(best, nextStreak));
       let bonus = 0;
 
       if (nextStreak === 3) bonus = 50;
@@ -807,6 +809,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
             Accuracy: {accuracy}%
             <br />
             Mistakes: {mistakes}
+            <br />
+              Highest Streak: 🔥 {highestStreak}
           </div>
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
