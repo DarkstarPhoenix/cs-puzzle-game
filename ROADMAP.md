@@ -93,7 +93,10 @@
 - [x] Explain comparison operators
 - [x] Interactive TRUE/FALSE evaluator
 - [x] AND / OR / NOT examples
-- [x] Mini loop + break examples
+- [x] Interactive For Loop visualiser
+- [x] Interactive While Loop visualiser
+- [x] Interactive Break visualiser
+- [x] Interactive Continue visualiser
 
 ## Challenge Mode
 - [x] Expand to 15 questions
@@ -112,8 +115,14 @@
   - [x] Avoid same correct condition every run
   - [x] Randomise answer button positions
 - [ ] Add streak system
-- [ ] Add rank/result screen
+- [x] Add rank/result screen
 - [ ] Improve animations/feedback
+
+## Results Screen
+- [x] Rank grading system
+- [x] Accuracy tracking
+- [x] Mistake tracking
+- [x] Rank card UI
 
 ---
 
