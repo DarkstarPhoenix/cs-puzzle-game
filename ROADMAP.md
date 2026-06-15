@@ -92,18 +92,18 @@
 - [x] Explain else statements
 - [x] Explain comparison operators
 - [x] Interactive TRUE/FALSE evaluator
-- [ ] AND / OR / NOT examples
+- [x] AND / OR / NOT examples
 - [ ] Mini loop + break examples
 
 ## Challenge Mode
-- [ ] Expand to 15 questions
+- [x] Expand to 15 questions
 - [ ] Add progressive challenge question tiers
   - [x] Tier 1: evaluate simple if / else output
   - [x] Tier 2: choose missing if condition
   - [x] Tier 3: evaluate if / elif / else output
   - [x] Tier 4: basic for / while loop output
   - [x] Tier 5: break / continue behaviour
-  - [ ] Ensure generated questions remain logically consistent
+  - [x] Ensure generated questions remain logically consistent
   - Still predictable enough for fair scoring
 - [ ] Improve randomised question generation
   - [x] Randomise variable values
