@@ -712,34 +712,32 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   if (done) {
-    const maxScore = questions.length * 100;
-    const scorePercent = Math.round((score / maxScore) * 100);
     const accuracy = Math.round(
       ((questions.length - mistakes) / questions.length) * 100
     );
 
-    const stars = scorePercent >= 90 ? "⭐⭐⭐" : scorePercent >= 60 ? "⭐⭐" : "⭐";
+    const stars = score >= 1600 ? "⭐⭐⭐" : score >= 1000 ? "⭐⭐" : "⭐";
 
     const rank =
-      scorePercent >= 90
+      score >= 1800
         ? {
             letter: "S",
             title: "Condition Master",
             color: "#ffd700",
           }
-        : scorePercent >= 75
+        : score >= 1500
         ? {
             letter: "A",
             title: "Logic Controller",
             color: "var(--accent)",
           }
-        : scorePercent >= 60
+        : score >= 1200
         ? {
             letter: "B",
             title: "Branch Builder",
             color: "#b26cff",
           }
-        : scorePercent >= 40
+        : score >= 800
         ? {
             letter: "C",
             title: "Code Apprentice",
