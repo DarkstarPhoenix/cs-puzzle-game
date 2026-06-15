@@ -507,6 +507,9 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [lastBonus, setLastBonus] = useState(null);
+  const [showStreakBanner, setShowStreakBanner] = useState(false);
   const [done, setDone] = useState(false);
   const [mistakes, setMistakes] = useState(0); // ── NEW
   const [firstCorrect, setFirstCorrect] = useState(false); // ── NEW
@@ -518,18 +521,43 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
   function choose(opt) {
     if (answered) return;
-    playSound(q.correctAnswers.includes(opt) ? "correct" : "wrong"); // ── NEW
+
+    const correct = q.correctAnswers.includes(opt);
+
+    playSound(correct ? "correct" : "wrong");
     setSelected(opt);
     setAnswered(true);
-    if (q.correctAnswers.includes(opt)) {
-      setScore((s) => s + 100);
-      // ── First Blood achievement ──
+
+    if (correct) {
+      const nextStreak = streak + 1;
+      let bonus = 0;
+
+      if (nextStreak === 3) bonus = 50;
+      if (nextStreak === 5) bonus = 100;
+      if (nextStreak > 5) bonus = 25;
+
+      setStreak(nextStreak);
+      setScore((s) => s + 100 + bonus);
+
+      if (bonus > 0) {
+        setLastBonus(`🔥 STREAK BONUS +${bonus}`);
+        setShowStreakBanner(true);
+
+        setTimeout(() => {
+          setShowStreakBanner(false);
+        }, 1400);
+      } else {
+        setLastBonus(null);
+      }
+
       if (!firstCorrect) {
         setFirstCorrect(true);
         onAchievement("first_blood");
       }
     } else {
-      setMistakes((m) => m + 1); // ── NEW
+      setStreak(0);
+      setLastBonus(null);
+      setMistakes((m) => m + 1);
     }
   }
 
@@ -726,22 +754,29 @@ function Level2({ onComplete, onBack, onAchievement }) {
           <div className="victory-title">LEVEL COMPLETE!</div>
           <div className="stars">{stars}</div>
 
+          <div style={{ color: "var(--text-dim)", marginBottom: 8 }}>
+            Python logic and loops complete
+          </div>
+
+          <div className="victory-score">{score} pts</div>
+
           <div
             style={{
-              border: `2px solid ${rank.color}`,
-              borderRadius: 16,
+              marginBottom: 18,
               padding: "16px",
-              marginBottom: 20,
-              background: "rgba(0,0,0,0.15)",
+              borderRadius: 12,
+              border: `2px solid ${rank.color}`,
+              background: `${rank.color}15`,
+              boxShadow: `0 0 20px ${rank.color}40`,
             }}
           >
             <div
               style={{
-                fontSize: "3.5rem",
-                fontWeight: "bold",
+                fontSize: "3rem",
+                fontFamily: "'Orbitron', sans-serif",
                 color: rank.color,
-                lineHeight: 1,
-                marginBottom: 10,
+                textShadow: `0 0 18px ${rank.color}`,
+                marginBottom: 6,
               }}
             >
               {rank.letter}
@@ -751,30 +786,29 @@ function Level2({ onComplete, onBack, onAchievement }) {
               style={{
                 color: rank.color,
                 fontFamily: "'Orbitron', sans-serif",
-                fontSize: "1rem",
-                marginBottom: 16,
+                letterSpacing: 2,
+                fontSize: "0.9rem",
               }}
             >
               {rank.title}
             </div>
-
-            <div style={{ color: "var(--text-dim)" }}>
-              Accuracy: {accuracy}%
-              <br />
-              Mistakes: {mistakes}
-            </div>
           </div>
 
-          <div className="victory-score">{score} pts</div>
           <div
             style={{
               color: "var(--text-dim)",
               fontSize: "0.8rem",
               marginBottom: 24,
+              lineHeight: 1.8,
             }}
           >
-            You correctly matched boolean conditions to expected outputs 🎉
+            Python logic and loops complete.
+            <br />
+            Accuracy: {accuracy}%
+            <br />
+            Mistakes: {mistakes}
           </div>
+
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
             <button className="btn btn-ghost" onClick={onBack}>
               ← Menu
@@ -1478,8 +1512,38 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
             <div className="level-tag">LEVEL 2</div>
             <div className="game-title">If / Else + Loops</div>
-            <div className="score-display">{score} pts</div>
+            <div className="score-display">
+              {score} pts · 🔥 {streak}
+            </div>
           </div>
+
+          {showStreakBanner && (
+            <div
+              style={{
+                position: "fixed",
+                top: 90,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 999,
+                padding: "16px 28px",
+                borderRadius: 14,
+                border: "2px solid var(--accent3)",
+                background: "rgba(20,10,0,0.92)",
+                color: "var(--accent3)",
+                fontFamily: "'Orbitron', sans-serif",
+                letterSpacing: 2,
+                fontSize: "1rem",
+                boxShadow: "0 0 28px rgba(127,255,0,0.45)",
+                pointerEvents: "none",
+              }}
+            >
+              🔥 COMBO BONUS
+              <br />
+              <span style={{ fontSize: "1.4rem" }}>
+                {lastBonus}
+              </span>
+            </div>
+          )}
 
           <div className="progress-bar">
             <div
