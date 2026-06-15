@@ -682,7 +682,44 @@ function Level2({ onComplete, onBack, onAchievement }) {
   }
 
   if (done) {
-    const stars = score >= 300 ? "⭐⭐⭐" : score >= 200 ? "⭐⭐" : "⭐";
+    const maxScore = questions.length * 100;
+    const scorePercent = Math.round((score / maxScore) * 100);
+    const accuracy = Math.round(
+      ((questions.length - mistakes) / questions.length) * 100
+    );
+
+    const stars = scorePercent >= 90 ? "⭐⭐⭐" : scorePercent >= 60 ? "⭐⭐" : "⭐";
+
+    const rank =
+      scorePercent >= 90
+        ? {
+            letter: "S",
+            title: "Condition Master",
+            color: "#ffd700",
+          }
+        : scorePercent >= 75
+        ? {
+            letter: "A",
+            title: "Logic Controller",
+            color: "var(--accent)",
+          }
+        : scorePercent >= 60
+        ? {
+            letter: "B",
+            title: "Branch Builder",
+            color: "#b26cff",
+          }
+        : scorePercent >= 40
+        ? {
+            letter: "C",
+            title: "Code Apprentice",
+            color: "#ff9f43",
+          }
+        : {
+            letter: "D",
+            title: "Syntax Trainee",
+            color: "var(--accent2)",
+          };
     return (
       <div className="screen">
         <div className="victory-card">
@@ -1348,9 +1385,21 @@ function Level2({ onComplete, onBack, onAchievement }) {
                     style={{ marginTop: 12, marginBottom: 16 }}
                   >
                     <strong>
-                      {breakMode === "break"
-                        ? `Loop terminated at: ${breakPoint}`
-                        : `Skipped value: ${breakPoint}`}
+                      {breakMode === "break" ? (
+                        <>
+                          Loop terminated at:{" "}
+                          <span style={{ color: "var(--accent2)" }}>
+                            {breakPoint}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          Skipped value:{" "}
+                          <span style={{ color: "var(--accent)" }}>
+                            {breakPoint}
+                          </span>
+                        </>
+                      )}
                     </strong>
                   </div>
 
