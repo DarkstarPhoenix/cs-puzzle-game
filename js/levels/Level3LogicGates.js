@@ -736,6 +736,8 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
   const [answered, setAnswered] = useState(false);
   const [selected, setSelected] = useState(null);
   const [score, setScore]       = useState(0);
+  const [streak, setStreak]     = useState(0);
+  const [highestStreak, setHighestStreak] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [done, setDone]         = useState(false);
   const [firstCorrect, setFirstCorrect] = useState(false);
@@ -759,12 +761,24 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
     setAnswered(true);
     playSound(correct ? "correct" : "wrong");
     if (correct) {
-      setScore(s => s + (p.tier * 80));
+      const nextStreak = streak + 1;
+
+      setStreak(nextStreak);
+      setHighestStreak((best) => Math.max(best, nextStreak));
+
+      let bonus = 0;
+
+      if (nextStreak === 3) bonus = 50;
+      if (nextStreak === 5) bonus = 100;
+      if (nextStreak > 5) bonus = 25;
+
+      setScore(s => s + (p.tier * 80) + bonus);
       if (!firstCorrect) {
         setFirstCorrect(true);
         if (onAchievement) onAchievement("first_blood");
       }
     } else {
+      setStreak(0);
       setMistakes(m => m + 1);
     }
   }
@@ -785,6 +799,18 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
           <div className="stars">{stars}</div>
           <div style={{ color: "var(--text-dim)", marginBottom: 8 }}>Logic Gates mastered</div>
           <div className="victory-score">{score} pts</div>
+          <div
+            style={{
+              color: "var(--text-dim)",
+              fontSize: "0.8rem",
+              marginBottom: 16,
+              lineHeight: 1.8,
+            }}
+          >
+            Mistakes: {mistakes}
+            <br />
+            Highest Streak: 🔥 {highestStreak}
+          </div>
           <div style={{ color: "var(--text-dim)", fontSize: "0.8rem", marginBottom: 24 }}>
             {pct >= 80
               ? "Excellent — you can trace signals through complex circuits!"
@@ -812,7 +838,9 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
         </button>
         <div className="level-tag">LEVEL 3 · CHALLENGE</div>
         <div className="game-title">Logic Gates</div>
-        <div className="score-display">{score} pts</div>
+        <div className="score-display">
+          {score} pts · 🔥 {streak}
+        </div>
       </div>
  
       <div className="progress-bar">
