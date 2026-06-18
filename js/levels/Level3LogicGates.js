@@ -792,6 +792,14 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
     const maxScore = puzzles.reduce((s, q) => s + q.tier * 80, 0);
     const pct   = Math.round(score / maxScore * 100);
     const stars = pct >= 90 ? "⭐⭐⭐" : pct >= 60 ? "⭐⭐" : "⭐";
+
+    let rank = "Novice";
+
+    if (pct >= 95) rank = "Logic Master";
+    else if (pct >= 85) rank = "Circuit Expert";
+    else if (pct >= 70) rank = "Gate Technician";
+    else if (pct >= 50) rank = "Signal Apprentice";
+
     return (
       <div className="screen">
         <div className="victory-card">
@@ -801,16 +809,30 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
           <div className="victory-score">{score} pts</div>
           <div
             style={{
+              fontSize: "1rem",
+              color: "var(--accent3)",
+              marginBottom: 12,
+              letterSpacing: 2,
+              fontFamily: "'Orbitron', sans-serif",
+            }}
+          >
+            Rank: {rank}
+          </div>
+          <div
+            style={{
               color: "var(--text-dim)",
               fontSize: "0.8rem",
               marginBottom: 16,
               lineHeight: 1.8,
             }}
           >
+            Score: {pct}%
+            <br />
             Mistakes: {mistakes}
             <br />
             Highest Streak: 🔥 {highestStreak}
           </div>
+          
           <div style={{ color: "var(--text-dim)", fontSize: "0.8rem", marginBottom: 24 }}>
             {pct >= 80
               ? "Excellent — you can trace signals through complex circuits!"
