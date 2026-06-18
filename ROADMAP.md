@@ -138,10 +138,19 @@
 - [x] Score system
 
 ## To Do
-- [ ] Add final rank screen
-- [ ] Add streak/combo system
-- [ ] Add live score + max score display
-- [ ] Improve UI consistency with Level 1
+- [x] Add final rank screen
+- [x] Add streak/combo system
+- [x] Add live score display
+  - [x] Current score
+  - [x] Streak indicator
+
+- [ ] Educational polish
+  - [ ] Review gate selector styling
+  - [ ] Review output panel sizing
+  - [ ] Review input helper text ("click")
+  - [ ] Align Practice/Challenge spacing with Levels 1 and 2
+
+- [ ] Improve UI consistency with Level 1 and Level 2
 - [ ] Review score balancing
 
 ---
@@ -202,7 +211,7 @@
 ## Next Commits
 - [ ] Level 1 score display + binary UI polish
 - [ ] Level 2 practice/challenge refactor
-- [ ] Level 3 result screen + streaks
+- [x] Level 3 result screen + streaks
 - [ ] Level 4 score breakdown
 - [ ] localStorage save system
 - [ ] Leaderboard integration
