@@ -241,16 +241,14 @@ function GateDiagram({ gateId, inputA, inputB, output, onToggleA, onToggleB }) {
  
   const [pulseKey, setPulseKey] = React.useState(0);
   React.useEffect(() => { setPulseKey(k => k + 1); }, [output]);
-  const [showHint, setShowHint] = React.useState(true);
-  React.useEffect(() => { const t = setTimeout(() => setShowHint(false), 3000); return () => clearTimeout(t); }, []);
- 
+   
   return (
     <>
       <style>{`
         @keyframes outputPulse { 0%{r:6;opacity:1} 40%{r:11;opacity:0.5} 100%{r:6;opacity:1} }
         .output-pulse { animation: outputPulse 0.35s ease-out; }
-        .hint-fade { transition: opacity 1s ease; }
-      `}</style>
+        `}
+      </style>
       <svg width="100%" viewBox="0 0 680 160" style={{ marginBottom: 16, display: "block" }}>
  
         {/* Input A wire */}
@@ -265,10 +263,7 @@ function GateDiagram({ gateId, inputA, inputB, output, onToggleA, onToggleB }) {
             style={{ pointerEvents: "none" }}>{inputA}</text>
         </g>
         <text x={gx-106} y={midA+4} textAnchor="end" fontSize={12} fontFamily="monospace" fill="var(--text-dim)">A</text>
-        <text x={gx-90} y={midA+22} textAnchor="middle" fontSize={10} fontFamily="monospace"
-          fill="var(--text-dim)" opacity={showHint ? 0.7 : 0} className="hint-fade"
-          style={{ pointerEvents: "none" }}>click</text>
- 
+
         {/* Input B wire */}
         {!isSingle && (
           <>
@@ -283,9 +278,7 @@ function GateDiagram({ gateId, inputA, inputB, output, onToggleA, onToggleB }) {
                 style={{ pointerEvents: "none" }}>{inputB}</text>
             </g>
             <text x={gx-106} y={midB+4} textAnchor="end" fontSize={12} fontFamily="monospace" fill="var(--text-dim)">B</text>
-            <text x={gx-90} y={midB+22} textAnchor="middle" fontSize={10} fontFamily="monospace"
-              fill="var(--text-dim)" opacity={showHint ? 0.7 : 0} className="hint-fade"
-              style={{ pointerEvents: "none" }}>click</text>
+            
           </>
         )}
  
@@ -596,12 +589,16 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
         {GATE_DATA.map((g, i) => (
           <button key={g.id} onClick={() => selectGate(i)} style={{
-            padding: "6px 16px", borderRadius: 999,
+            padding: "8px 16px", 
+            borderRadius: 999,
             border: `1px solid ${gateIdx===i ? "var(--accent)" : "var(--border)"}`,
             background: gateIdx===i ? "rgba(0,245,255,0.1)" : "var(--surface)",
             color: gateIdx===i ? "var(--accent)" : "var(--text-dim)",
-            fontFamily: "monospace", fontSize: "0.8rem",
-            cursor: "pointer", transition: "all 0.2s",
+            fontFamily: "monospace", 
+            fontSize: "0.75rem", 
+            letterSpacing: 1,
+            cursor: "pointer", 
+            transition: "all 0.2s",
           }}>{g.id}</button>
         ))}
       </div>
@@ -634,7 +631,7 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
  
       {/* Live output bar */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 16,
+        display: "flex", alignItems: "center", gap: 12,
         padding: "12px 16px", borderRadius: 8,
         background: "var(--surface)",
         border: `1px solid ${output ? "var(--accent3)" : "var(--accent2)"}`,
@@ -642,9 +639,13 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
       }}>
         <div style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>Output</div>
         <div style={{
-          fontSize: "2rem", fontWeight: 700, fontFamily: "monospace",
+          fontSize: "1.5rem", 
+          fontWeight: 700, 
+          fontFamily: "monospace",
           color: output ? "var(--accent3)" : "var(--accent2)",
-          transition: "color 0.2s", minWidth: 28, textAlign: "center",
+          transition: "color 0.2s", 
+          minWidth: 28, 
+          textAlign: "center",
         }}>{output}</div>
         <div style={{ color: "var(--text-dim)", fontSize: "0.8rem" }}>
           {output ? "HIGH — current flows" : "LOW — no current"}
