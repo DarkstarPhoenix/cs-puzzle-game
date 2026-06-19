@@ -20,11 +20,25 @@ To use the artefact, open the application in a web browser. The user will be pre
 
 However if this doesn't work. Open folder in VS Code and ensure "Live Server" Extension is installed. Right click index.html, and click "Open with Live Server"
 
-Level 1 – Binary to Decimal  
-Users are shown a binary number and must convert it into its decimal equivalent. Answers are entered using the input field provided. Immediate feedback is given for correct and incorrect responses.
+Level 1 – Binary to Decimal
 
-Level 2 – If / Else + Loops  
-Users learn how Python if/else statements, comparison operators, boolean logic, and loops work. Practice mode includes interactive TRUE/FALSE, AND/OR/NOT, for loop, and while loop visualisers. Challenge mode uses 15 progressively harder questions covering if/else outputs, missing conditions, if/elif/else chains, loops, and break/continue behaviour.
+Users learn how binary numbers are converted into decimal values through an interactive practice mode. Visual place values, binary toggles, and worked examples help explain the conversion process.
+
+Challenge mode presents progressively harder binary and decimal conversion questions, rewarding streaks, scores, and ranks based on performance.
+
+Level 2 – If / Else + Loops
+
+Users learn how Python conditional statements, comparison operators, boolean logic, and loops work.
+
+Practice mode includes:
+• If / Else examples
+• Comparison operators
+• AND / OR / NOT logic
+• Interactive For Loop visualiser
+• Interactive While Loop visualiser
+• Break and Continue demonstrations
+
+Challenge mode contains 15 progressively harder questions covering condition evaluation, branching logic, loops, and program flow. Players earn points, build streaks, and receive a final rank based on their performance.
 
 Level 3 – Logic Gates
 

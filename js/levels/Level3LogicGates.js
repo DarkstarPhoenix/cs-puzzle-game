@@ -74,6 +74,10 @@ function getTruthRows(gate) {
     [1, 1, gate.fn(1, 1)],
   ];
 }
+
+function shuffleLevel3Array(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
  
 // ── SVG GATE BODY PATH ────────────────────────
 function gateBodyPath(id, gx, gy, gw, gh, cx, cy) {
@@ -747,6 +751,10 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
  
   const puzzles = VERIFIED_PUZZLES;
   const p = puzzles[pIdx];
+
+  const shuffledOptions = React.useMemo(() => {
+    return p.options ? shuffleLevel3Array(p.options) : null;
+  }, [pIdx]);
  
   const isChain         = p.type === "output" && p.gate2 !== undefined && p.gate3 === undefined;
   const isThreeChain    = p.type === "output" && p.gate3 !== undefined;
@@ -974,7 +982,7 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
               : "Which gate produces this output?"}
           </div>
           <div className="options-grid">
-            {p.options.map(g => {
+            {shuffledOptions.map(g => {
               let cls = "option-btn";
               if (answered) {
                 if (g === p.answer) cls += " correct";
