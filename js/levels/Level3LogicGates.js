@@ -76,7 +76,14 @@ function getTruthRows(gate) {
 }
 
 function shuffleLevel3Array(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+  const shuffled = [...array];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
 }
  
 // ── SVG GATE BODY PATH ────────────────────────
@@ -223,6 +230,22 @@ const VERIFIED_PUZZLES = [
     explain: "Work backwards: NOT gives 0 only when its input is 1.  So gate 1 must output 1.  AND(0,1)=0 ✗  NOR(0,1)=0 ✗  OR(0,1)=1 ✓.  OR outputs 1 whenever at least one input is 1.",
   },
 ];
+
+function generateLevel3Puzzles() {
+  const tier1 = VERIFIED_PUZZLES.filter((p) => p.tier === 1);
+  const tier2 = VERIFIED_PUZZLES.filter((p) => p.tier === 2);
+  const tier3 = VERIFIED_PUZZLES.filter((p) => p.tier === 3);
+  const tier4 = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
+  const tier5 = VERIFIED_PUZZLES.filter((p) => p.tier === 5);
+
+  return [
+    ...shuffleLevel3Array(tier1),
+    ...shuffleLevel3Array(tier2),
+    ...shuffleLevel3Array(tier3),
+    ...shuffleLevel3Array(tier4),
+    ...shuffleLevel3Array(tier5),
+  ];
+}
  
 // SVG COMPONENTS
 const WIRE_ON      = "#1D9E75";
@@ -749,11 +772,15 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
   const [done, setDone]         = useState(false);
   const [firstCorrect, setFirstCorrect] = useState(false);
  
-  const puzzles = VERIFIED_PUZZLES;
+  const [puzzles] = useState(() => generateLevel3Puzzles());
   const p = puzzles[pIdx];
 
   const shuffledOptions = React.useMemo(() => {
     return p.options ? shuffleLevel3Array(p.options) : null;
+  }, [pIdx]);
+
+  const shuffledBinaryOptions = React.useMemo(() => {
+    return shuffleLevel3Array([0, 1]);
   }, [pIdx]);
  
   const isChain         = p.type === "output" && p.gate2 !== undefined && p.gate3 === undefined;
@@ -998,7 +1025,7 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
         <>
           <div className="hint-text">What is the final output?</div>
           <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-            {[0, 1].map(v => {
+            {shuffledBinaryOptions.map(v => {
               let cls = "option-btn";
               if (answered) {
                 if (v === p.answer) cls += " correct";
