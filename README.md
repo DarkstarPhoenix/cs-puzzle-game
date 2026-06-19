@@ -26,8 +26,26 @@ Users are shown a binary number and must convert it into its decimal equivalent.
 Level 2 – If / Else + Loops  
 Users learn how Python if/else statements, comparison operators, boolean logic, and loops work. Practice mode includes interactive TRUE/FALSE, AND/OR/NOT, for loop, and while loop visualisers. Challenge mode uses 15 progressively harder questions covering if/else outputs, missing conditions, if/elif/else chains, loops, and break/continue behaviour.
 
-Level 3 – Logic Gates  
-Users interact with logic gate diagrams and must determine the output based on the inputs. This level introduces AND, OR, NOT, NAND, NOR, and XOR gates.
+Level 3 – Logic Gates
+
+Users learn how digital logic circuits process binary inputs to produce outputs. Practice mode includes interactive gate diagrams where users can toggle inputs and instantly see how the output changes. Each gate also includes a truth table and real-world examples to reinforce understanding.
+
+The level introduces:
+• AND gates
+• OR gates
+• NOT gates
+• NAND gates
+• NOR gates
+• XOR gates
+
+Challenge mode contains 15 progressively more difficult puzzles covering:
+• Single-gate output evaluation
+• Multi-gate circuit tracing
+• Logic chain analysis
+• Identifying missing gates
+• Working backwards through circuits
+
+Players earn points through correct answers, build score multipliers through streaks, and receive a final rank based on their overall performance.
 
 Level 4 – Text Adventure  
 Users navigate a system using text commands such as:
