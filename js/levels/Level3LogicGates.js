@@ -85,6 +85,10 @@ function shuffleLevel3Array(array) {
 
   return shuffled;
 }
+
+function randomBit() {
+  return Math.random() < 0.5 ? 0 : 1;
+}
  
 // ── SVG GATE BODY PATH ────────────────────────
 function gateBodyPath(id, gx, gy, gw, gh, cx, cy) {
@@ -232,19 +236,41 @@ const VERIFIED_PUZZLES = [
 ];
 
 function generateLevel3Puzzles() {
-  const tier1 = VERIFIED_PUZZLES.filter((p) => p.tier === 1);
+  const tier1 = generateTier1Level3Questions();
   const tier2 = VERIFIED_PUZZLES.filter((p) => p.tier === 2);
   const tier3 = VERIFIED_PUZZLES.filter((p) => p.tier === 3);
   const tier4 = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
   const tier5 = VERIFIED_PUZZLES.filter((p) => p.tier === 5);
 
   return [
-    ...shuffleLevel3Array(tier1),
+    ...tier1,
     ...shuffleLevel3Array(tier2),
     ...shuffleLevel3Array(tier3),
     ...shuffleLevel3Array(tier4),
     ...shuffleLevel3Array(tier5),
   ];
+}
+
+function generateTier1Level3Questions() {
+  const gates = ["AND", "OR", "XOR", "NAND", "NOR"];
+
+  return shuffleLevel3Array(gates).slice(0, 3).map((gateId) => {
+    const a = randomBit();
+    const b = randomBit();
+    const answer = computeGateValue(gateId, a, b);
+
+    return {
+      tier: 1,
+      label: "Easy",
+      type: "output",
+      gate1: gateId,
+      a,
+      b,
+      answer,
+      desc: `A = ${a}, B = ${b}  →  ${gateId} gate  →  output?`,
+      explain: `${gateId}(${a},${b}) = ${answer}.`,
+    };
+  });
 }
  
 // SVG COMPONENTS
