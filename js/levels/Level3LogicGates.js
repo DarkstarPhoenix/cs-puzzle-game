@@ -89,6 +89,14 @@ function shuffleLevel3Array(array) {
 function randomBit() {
   return Math.random() < 0.5 ? 0 : 1;
 }
+
+function pickRandom(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function createQuestionSignature(...parts) {
+  return parts.join("|");
+}
  
 // ── SVG GATE BODY PATH ────────────────────────
 function gateBodyPath(id, gx, gy, gw, gh, cx, cy) {
@@ -237,15 +245,15 @@ const VERIFIED_PUZZLES = [
 
 function generateLevel3Puzzles() {
   const tier1 = generateTier1Level3Questions();
-  const tier2 = VERIFIED_PUZZLES.filter((p) => p.tier === 2);
-  const tier3 = VERIFIED_PUZZLES.filter((p) => p.tier === 3);
+  const tier2 = generateTier2Level3Questions();
+  const tier3 = generateTier3Level3Questions();
   const tier4 = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
   const tier5 = VERIFIED_PUZZLES.filter((p) => p.tier === 5);
 
   return [
     ...tier1,
-    ...shuffleLevel3Array(tier2),
-    ...shuffleLevel3Array(tier3),
+    ...tier2,
+    ...tier3,
     ...shuffleLevel3Array(tier4),
     ...shuffleLevel3Array(tier5),
   ];
@@ -271,6 +279,108 @@ function generateTier1Level3Questions() {
       explain: `${gateId}(${a},${b}) = ${answer}.`,
     };
   });
+}
+
+function generateTier2Level3Questions() {
+  const firstGates = ["AND", "OR", "XOR", "NAND", "NOR"];
+  const secondGates = ["NOT", "AND", "OR", "XOR"];
+  const questions = [];
+  const usedQuestions = new Set();
+
+  while (questions.length < 4) {
+    const gate1 = pickRandom(firstGates);
+    const gate2 = pickRandom(secondGates);
+
+    const a = randomBit();
+    const b = randomBit();
+    const cInput = gate2 === "NOT" ? null : randomBit();
+
+    const signature = createQuestionSignature(gate1, gate2, a, b, cInput);
+
+    if (usedQuestions.has(signature)) continue;
+
+    usedQuestions.add(signature);
+
+    const step1 = computeGateValue(gate1, a, b);
+    const answer =
+      gate2 === "NOT"
+        ? computeGateValue(gate2, step1)
+        : computeGateValue(gate2, step1, cInput);
+
+    questions.push({
+      tier: 2,
+      label: "Medium",
+      type: "output",
+      gate1,
+      gate2,
+      a,
+      b,
+      cInput,
+      answer,
+      desc:
+        gate2 === "NOT"
+          ? `A = ${a}, B = ${b}  →  ${gate1}  →  NOT  →  output?`
+          : `A = ${a}, B = ${b}  →  ${gate1}  →  then ${gate2} with C = ${cInput}  →  output?`,
+      explain:
+        gate2 === "NOT"
+          ? `Step 1: ${gate1}(${a},${b}) = ${step1}. Step 2: NOT(${step1}) = ${answer}. Final = ${answer}.`
+          : `Step 1: ${gate1}(${a},${b}) = ${step1}. Step 2: ${gate2}(${step1},${cInput}) = ${answer}. Final = ${answer}.`,
+    });
+  }
+
+  return questions;
+}
+
+function generateTier3Level3Questions() {
+  const gate1Options = ["AND", "OR", "XOR", "NAND", "NOR"];
+  const gate2Options = ["AND", "OR", "XOR"];
+  const gate3Options = ["AND", "OR", "XOR"];
+  const questions = [];
+  const usedQuestions = new Set();
+
+  while (questions.length < 3) {
+    const gate1 = pickRandom(gate1Options);
+    const gate2 = pickRandom(gate2Options);
+    const gate3 = pickRandom(gate3Options);
+
+    const a = randomBit();
+    const b = randomBit();
+    const cInput = randomBit();
+
+    const signature = createQuestionSignature(
+      gate1,
+      gate2,
+      gate3,
+      a,
+      b,
+      cInput
+    );
+
+    if (usedQuestions.has(signature)) continue;
+
+    usedQuestions.add(signature);
+
+    const step1 = computeGateValue(gate1, a, b);
+    const step2 = computeGateValue(gate2, step1, cInput);
+    const answer = computeGateValue(gate3, step2, 1);
+
+    questions.push({
+      tier: 3,
+      label: "Hard",
+      type: "output",
+      gate1,
+      gate2,
+      gate3,
+      a,
+      b,
+      cInput,
+      answer,
+      desc: `A=${a}, B=${b} → ${gate1} → ${gate2} with C=${cInput} → ${gate3} with D=1 → output?`,
+      explain: `Step 1: ${gate1}(${a},${b}) = ${step1}. Step 2: ${gate2}(${step1},${cInput}) = ${step2}. Step 3: ${gate3}(${step2},1) = ${answer}. Final = ${answer}.`,
+    });
+  }
+
+  return questions;
 }
  
 // SVG COMPONENTS
