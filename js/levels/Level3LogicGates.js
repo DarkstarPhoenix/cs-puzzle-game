@@ -243,18 +243,20 @@ const VERIFIED_PUZZLES = [
   },
 ];
 
+const TIER4_IDENTIFY_BANK = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
+
 function generateLevel3Puzzles() {
   const tier1 = generateTier1Level3Questions();
   const tier2 = generateTier2Level3Questions();
   const tier3 = generateTier3Level3Questions();
-  const tier4 = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
+  const tier4 = generateTier4Level3Questions();
   const tier5 = VERIFIED_PUZZLES.filter((p) => p.tier === 5);
 
   return [
     ...tier1,
     ...tier2,
     ...tier3,
-    ...shuffleLevel3Array(tier4),
+    ...tier4,
     ...shuffleLevel3Array(tier5),
   ];
 }
@@ -381,6 +383,10 @@ function generateTier3Level3Questions() {
   }
 
   return questions;
+}
+
+function generateTier4Level3Questions() {
+  return shuffleLevel3Array(TIER4_IDENTIFY_BANK).slice(0, 3);
 }
  
 // SVG COMPONENTS
