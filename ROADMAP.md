@@ -150,6 +150,13 @@
   - [ ] Review input helper text ("click")
   - [ ] Align Practice/Challenge spacing with Levels 1 and 2
 
+- [x] Procedural challenge generation
+  - [x] Tier 1 procedural
+  - [x] Tier 2 procedural
+  - [x] Tier 3 procedural
+  - [x] Random Tier 4 selection
+  - [x] Random Tier 5 order
+
 - [ ] Improve UI consistency with Level 1 and Level 2
 - [ ] Review score balancing
 
