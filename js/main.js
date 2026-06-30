@@ -148,6 +148,14 @@ const LEVELS = [
     color: "#7fff00",
     difficulty: "Hard",
   },
+  {
+    id: "leaderboard",
+    name: "Leaderboard",
+    icon: "🏆",
+    desc: "View the highest scores from all players",
+    color: "#ffd700",
+    difficulty: "Global",
+  },
 ];
 
 // ══════════════════════════════════════════════
@@ -209,6 +217,7 @@ function HomeScreen({
   completedLevels,
   scores,
   onSelectLevel,
+  onLeaderboard,
   unlockedAchievements,
 }) {
 
@@ -247,7 +256,11 @@ function HomeScreen({
               style={{ "--card-color": lvl.color }}
               onClick={() => {
                 if (!locked) {
-                  onSelectLevel(lvl.id);
+                  if (lvl.id === "leaderboard") {
+                    onLeaderboard();
+                  } else {
+                    onSelectLevel(lvl.id);
+                  }
                 }
               }}
             >
@@ -257,7 +270,9 @@ function HomeScreen({
                   ? "🟢 Easy"
                   : lvl.difficulty === "Medium"
                     ? "🟡 Medium"
-                    : "🔴 Hard"}
+                    : lvl.difficulty === "Hard"
+                      ? "🔴 Hard"
+                      : "🏆 Global"}
               </div>
               <div className="level-icon">{lvl.icon}</div>
               <div className="level-name">{lvl.name}</div>
@@ -345,6 +360,28 @@ function HomeScreen({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function LeaderboardScreen({ onBack }) {
+  return (
+    <div className="screen">
+      <div className="victory-card">
+        <div className="victory-title">GLOBAL LEADERBOARD</div>
+
+        <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
+          Top completed game scores will appear here.
+        </div>
+
+        <div className="code-block" style={{ textAlign: "center" }}>
+          Loading leaderboard...
+        </div>
+
+        <button className="btn btn-ghost" onClick={onBack}>
+          ← Back
+        </button>
+      </div>
     </div>
   );
 }
@@ -506,6 +543,7 @@ function App() {
           scores={scores}
           unlockedAchievements={unlockedAchievements}
           onSelectLevel={(id) => setScreen(`level${id}`)}
+          onLeaderboard={() => setScreen("leaderboard")}
         />
       )}
       {screen === "level1" && (
@@ -535,6 +573,9 @@ function App() {
           onComplete={(pts) => completeLevel(4, pts)}
           onBack={() => setScreen("home")}
         />
+      )}
+      {screen === "leaderboard" && (
+        <LeaderboardScreen onBack={() => setScreen("home")} />
       )}
       {toastQueue.length > 0 && (
         <AchievementToast achievement={toastQueue[0]} onDone={dismissToast} />
