@@ -276,7 +276,7 @@ const TOTAL_GAME_MAX_SCORE =
   LEVEL_3_MAX_SCORE +
   LEVEL_4_MAX_SCORE;
 
-function Level4({ onComplete, onBack, initialScore = 0 }) {
+function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   const [room, setRoom] = useState(ADVENTURE.start);
   const [displayedHistory, setDisplayedHistory] = useState([]);
 
@@ -1718,7 +1718,11 @@ else:
                   await window.CSLeaderboard.submitScore(playerName, score);
 
                   setScoreSubmitted(true);
-                  setSubmitStatus("Score submitted successfully!");
+                  setTimeout(() => {
+                    if (onScoreSubmitted) {
+                      onScoreSubmitted(playerName || "Player", score);
+                    }
+                  }, 800);
                 } catch (err) {
                   console.error(err);
                   setSubmitStatus("Unable to submit score. Please try again.");

@@ -530,9 +530,11 @@ function App() {
   const [screen, setScreen] = useState("start");
   const [completedLevels, setCompletedLevels] = useState([]);
   const [scores, setScores] = useState({});
-  // ── NEW ──
+  
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [toastQueue, setToastQueue] = useState([]);
+
+  const [lastSubmittedScore, setLastSubmittedScore] = useState(null);
 
   // BACKGROUND MUSIC
   const musicRef = useRef(null);
@@ -710,6 +712,10 @@ function App() {
         <Level4
           onComplete={(pts) => completeLevel(4, pts)}
           onBack={() => setScreen("home")}
+          onScoreSubmitted={(name, score) => {
+            setLastSubmittedScore({ name, score });
+            setScreen("leaderboard");
+          }}
         />
       )}
       {screen === "leaderboard" && (
