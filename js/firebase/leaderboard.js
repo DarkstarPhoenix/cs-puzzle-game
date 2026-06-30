@@ -11,17 +11,23 @@ import {
 
 const LEADERBOARD_COLLECTION = "leaderboard";
 
-// Submit a completed game score
 export async function submitScore(name, score) {
   console.log("submitScore()", { name, score });
 
   // Firestore write will be added next.
 }
 
-// Retrieve the top leaderboard scores
 export async function getTopScores(limit = 10) {
-  console.log("getTopScores()", { limit });
+  const leaderboardQuery = query(
+    collection(db, LEADERBOARD_COLLECTION),
+    orderBy("score", "desc"),
+    firestoreLimit(limit)
+  );
 
-  // Firestore read will be added next.
-  return [];
+  const snapshot = await getDocs(leaderboardQuery);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 }
