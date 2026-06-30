@@ -1715,12 +1715,16 @@ else:
                 try {
                   setSubmitStatus("Submitting score...");
 
-                  await window.CSLeaderboard.submitScore(playerName, score);
+                  const entryId = await window.CSLeaderboard.submitScore(playerName, score);
 
                   setScoreSubmitted(true);
                   setTimeout(() => {
                     if (onScoreSubmitted) {
-                      onScoreSubmitted(playerName || "Player", score);
+                      onScoreSubmitted(
+                        entryId,
+                        playerName || "Player",
+                        score
+                      );
                     }
                   }, 800);
                 } catch (err) {

@@ -712,8 +712,12 @@ function App() {
         <Level4
           onComplete={(pts) => completeLevel(4, pts)}
           onBack={() => setScreen("home")}
-          onScoreSubmitted={(name, score) => {
-            setLastSubmittedScore({ name, score });
+          onScoreSubmitted={(id, name, score) => {
+            setLastSubmittedScore({
+              id,
+              name,
+              score,
+            });
             setScreen("leaderboard");
           }}
         />
