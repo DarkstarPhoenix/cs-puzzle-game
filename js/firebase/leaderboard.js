@@ -44,8 +44,31 @@ export async function getTopScores(limit = 10) {
   }));
 }
 
+export async function getRankForScore(score) {
+  const cleanScore = Number(score);
+
+  if (!Number.isFinite(cleanScore)) {
+    throw new Error("Invalid leaderboard score");
+  }
+
+  const higherScoresQuery = query(
+    collection(db, LEADERBOARD_COLLECTION),
+    orderBy("score", "desc")
+  );
+
+  const snapshot = await getDocs(higherScoresQuery);
+
+  const higherScoreCount = snapshot.docs.filter((doc) => {
+    const entry = doc.data();
+    return Number(entry.score) > cleanScore;
+  }).length;
+
+  return higherScoreCount + 1;
+}
+
 window.CSLeaderboard = {
   submitScore,
   getTopScores,
+  getRankForScore,
 };
 
