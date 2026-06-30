@@ -425,6 +425,26 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
     return `${mins}:${String(secs).padStart(2, "0")}`;
   }
 
+  function getRankMessage(rank) {
+    if (rank === 11) {
+      return "You're only one place away from the Top 10!";
+    }
+
+    if (rank <= 20) {
+      return "Keep going — the Top 10 is within reach!";
+    }
+
+    if (rank <= 50) {
+      return "Nice work! Keep practising to climb the leaderboard.";
+    }
+
+    if (rank <= 100) {
+      return "Every run helps. See if you can beat your best score!";
+    }
+
+    return "Keep learning, keep improving, and climb the leaderboard!";
+  }
+
   return (
     <div className="screen">
       <div className="victory-card">
@@ -457,9 +477,9 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "60px 1fr 90px 70px",
+                  gridTemplateColumns: "1fr 2fr 1fr 1fr",
                   gap: 10,
-                  padding: "0 0 10px 0",
+                  padding: "0 8px 10px 8px",
                   color: "var(--text-dim)",
                   fontSize: "0.75rem",
                   letterSpacing: 1,
@@ -467,10 +487,10 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                   marginBottom: 8,
                 }}
               >
-                <div>Rank</div>
-                <div>Player</div>
-                <div style={{ textAlign: "right" }}>Score</div>
-                <div style={{ textAlign: "right" }}>Time</div>
+                <div style={{ textAlign: "center" }}>Rank</div>
+                <div style={{ textAlign: "center" }}>Player</div>
+                <div style={{ textAlign: "center" }}>Score</div>
+                <div style={{ textAlign: "center" }}>Time</div>
               </div>
               
               {scores.map((entry, index) => {
@@ -481,7 +501,7 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                   key={entry.id}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "70px 1fr 90px 70px",
+                    gridTemplateColumns: "1fr 2fr 1fr 1fr",
                     alignItems: "center",
                     borderBottom: "1px solid var(--border)",
                     minHeight: 64,
@@ -499,11 +519,21 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                     padding: "10px 8px",
                   }}
                 >
-                  <div style={{ color: "var(--accent4)" }}>
+                  <div
+                    style={{
+                      color: "var(--accent4)",
+                      textAlign: "center",
+                    }}
+                  >
                     {rankLabel(index)}
                   </div>
 
-                  <div style={{ color: "var(--text)" }}>
+                  <div
+                    style={{
+                      color: "var(--text)",
+                      textAlign: "center",
+                    }}
+                  >
                     {entry.name}
                       {isSubmittedEntry && (
                         <span style={{ color: "var(--accent3)", marginLeft: 10, fontSize: "0.7rem" }}>
@@ -512,10 +542,20 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                       )}
                   </div>
 
-                  <div style={{ color: "var(--accent)", textAlign: "right" }}>
+                  <div
+                    style={{
+                      color: "var(--accent)",
+                      textAlign: "center",
+                    }}
+                  >
                     {entry.score.toLocaleString()}
                   </div>
-                  <div style={{ color: "var(--text-dim)", textAlign: "right" }}>
+                  <div
+                    style={{
+                      color: "var(--text-dim)",
+                      textAlign: "center",
+                    }}
+                  >
                     {formatTime(entry.completionTimeSeconds)}
                   </div>
                 </div>
@@ -549,20 +589,53 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "80px 1fr 100px",
+                  gridTemplateColumns: "1fr 2fr 1fr 1fr",
                   gap: 10,
                   alignItems: "center",
                 }}
               >
-                <div style={{ color: "var(--accent4)" }}>
+                <div
+                  style={{
+                    color: "var(--accent4)",
+                    textAlign: "center",
+                  }}
+                >
                   #{submittedRank.rank}
                 </div>
 
-                <div>{submittedRank.name}</div>
+                <div style={{ textAlign: "center" }}>
+                  {submittedRank.name}
+                </div>
 
-                <div style={{ color: "var(--accent)", textAlign: "right" }}>
+                <div
+                  style={{
+                    color: "var(--accent)",
+                    textAlign: "center",
+                  }}
+                >
                   {Number(submittedRank.score).toLocaleString()}
                 </div>
+
+                <div
+                  style={{
+                    color: "var(--text-dim)",
+                    textAlign: "center",
+                  }}
+                >
+                  {formatTime(submittedRank.completionTimeSeconds)}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  marginTop: 18,
+                  color: "var(--text-dim)",
+                  textAlign: "center",
+                  fontSize: "0.8rem",
+                  lineHeight: 1.5,
+                }}
+              >
+                {getRankMessage(submittedRank.rank)}
               </div>
             </div>
           )}
