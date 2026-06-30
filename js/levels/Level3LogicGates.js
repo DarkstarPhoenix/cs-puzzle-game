@@ -1284,22 +1284,3 @@ function Level3Wrapper({ onComplete, onBack, onAchievement }) {
     </div>
   );
 }
-
-function computeGate(gate, a, b) {
-  switch (gate) {
-    case "AND":
-      return a & b;
-    case "OR":
-      return a | b;
-    case "NOT":
-      return a === 1 ? 0 : 1;
-    case "XOR":
-      return a ^ b;
-    case "NAND":
-      return (a & b) === 1 ? 0 : 1;
-    case "NOR":
-      return (a | b) === 1 ? 0 : 1;
-    default:
-      return 0;
-  }
-}
