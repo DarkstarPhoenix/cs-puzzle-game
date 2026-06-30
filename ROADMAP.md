@@ -136,6 +136,12 @@
 - [x] 15 challenge puzzles
 - [x] Difficulty tiers
 - [x] Score system
+- [x] Procedural challenge generation
+  - [x] Tier 1 procedural
+  - [x] Tier 2 procedural
+  - [x] Tier 3 procedural
+  - [x] Random Tier 4 selection
+  - [x] Random Tier 5 order
 
 ## To Do
 - [x] Add final rank screen
@@ -149,13 +155,12 @@
   - [ ] Review output panel sizing
   - [ ] Review input helper text ("click")
   - [ ] Align Practice/Challenge spacing with Levels 1 and 2
+  
+- [ ] Expand challenge question banks
+  - [ ] Add more Tier 4 identify questions
+  - [ ] Add more Tier 5 reverse-logic questions
 
-- [x] Procedural challenge generation
-  - [x] Tier 1 procedural
-  - [x] Tier 2 procedural
-  - [x] Tier 3 procedural
-  - [x] Random Tier 4 selection
-  - [x] Random Tier 5 order
+
 
 - [ ] Improve UI consistency with Level 1 and Level 2
 - [ ] Review score balancing
