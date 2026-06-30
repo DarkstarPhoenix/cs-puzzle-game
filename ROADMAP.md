@@ -199,10 +199,16 @@
 # Future Features
 
 ## Leaderboard
-- [ ] Firebase leaderboard
+
+- [x] Firebase project configured
+- [x] Firestore connection
+- [x] Read helper
+- [x] Write helper
+- [x] Navigation screen
+- [ ] Live leaderboard display
 - [ ] Player name entry
-- [ ] Global high scores
-- [ ] Session stats
+- [ ] Submit final score after Level 4
+- [ ] Global leaderboard UI polish
 
 ## Audio
 - [ ] More SFX variety
@@ -215,6 +221,13 @@
 - [ ] Additional achievements
 - [ ] Better responsive layout
 - [ ] Save/resume support
+
+### Victory Screen Polish
+- [ ] Review and redesign the final victory screen.
+- [ ] Remove the outdated "42 / loops + 1" explanation (no longer matches the current firewall puzzle).
+- [ ] Decide whether to relocate or replace the Hitchhiker's Guide reference.
+- [ ] Improve the end-of-game flow leading into leaderboard submission.
+- [ ] Add a stronger "Game Complete" congratulatory message.
 
 ---
 

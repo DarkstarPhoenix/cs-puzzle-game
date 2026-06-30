@@ -297,6 +297,11 @@ function Level4({ onComplete, onBack, initialScore = 0 }) {
   
   const [score, setScore] = useState(initialScore);
   const [levelStartTime, setLevelStartTime] = useState(null);
+
+  const [playerName, setPlayerName] = useState("");
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
+
   const historyRef = useRef(null);
   const inputRef = useRef(null);
     
@@ -1686,15 +1691,54 @@ else:
             classic programming joke! (Also the answer to life, the universe and
             everything 😄)
           </div>
+          <div style={{ marginBottom: 18 }}>
+            <input
+              className="adventure-input"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              maxLength={20}
+              placeholder="Enter name for leaderboard"
+              style={{
+                width: "100%",
+                border: "1px solid var(--border)",
+                borderRadius: 8,
+                padding: 12,
+                background: "var(--surface)",
+                marginBottom: 10,
+                textAlign: "center",
+              }}
+            />
+
+            <button
+              className="btn btn-primary"
+              onClick={async () => {
+                try {
+                  setSubmitStatus("Submitting score...");
+
+                  await window.CSLeaderboard.submitScore(playerName, score);
+
+                  setScoreSubmitted(true);
+                  setSubmitStatus("Score submitted successfully!");
+                } catch (err) {
+                  console.error(err);
+                  setSubmitStatus("Unable to submit score. Please try again.");
+                }
+              }}
+              disabled={scoreSubmitted}
+            >
+              {scoreSubmitted ? "Submitted" : "Submit Score"}
+            </button>
+
+            {submitStatus && (
+              <div style={{ color: "var(--text-dim)", fontSize: "0.8rem", marginTop: 10 }}>
+                {submitStatus}
+              </div>
+            )}
+          </div>
+
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
             <button className="btn btn-ghost" onClick={onBack}>
               ← Menu
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => onComplete(score)}
-            >
-              Next Level →
             </button>
           </div>
         </div>
