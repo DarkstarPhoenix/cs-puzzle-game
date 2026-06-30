@@ -371,6 +371,33 @@ function HomeScreen({
 }
 
 function LeaderboardScreen({ onBack }) {
+  const [scores, setScores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadScores() {
+      try {
+        const results = await window.CSLeaderboard.getTopScores(10);
+        setScores(results);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load leaderboard.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadScores();
+  }, []);
+
+  function rankLabel(index) {
+    if (index === 0) return "🥇 1";
+    if (index === 1) return "🥈 2";
+    if (index === 2) return "🥉 3";
+    return String(index + 1);
+  }
+
   return (
     <div className="screen">
       <div className="victory-card">
@@ -378,11 +405,72 @@ function LeaderboardScreen({ onBack }) {
         <div className="victory-title">GLOBAL LEADERBOARD</div>
 
         <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
-          Top completed game scores will appear here.
+          Top completed game scores
         </div>
 
-        <div className="code-block" style={{ textAlign: "center" }}>
-          Loading leaderboard...
+        <div className="code-block" style={{ textAlign: "left" }}>
+          {loading && <div style={{ textAlign: "center" }}>Loading leaderboard...</div>}
+
+          {!loading && error && (
+            <div style={{ color: "var(--accent2)", textAlign: "center" }}>
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && scores.length === 0 && (
+            <div style={{ textAlign: "center", color: "var(--text-dim)" }}>
+              No scores have been submitted yet.
+
+              Be the first to escape the CS Puzzle Game!
+            </div>
+          )}
+
+          {!loading && !error && scores.length > 0 && (
+            <div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "60px 1fr 90px",
+                  gap: 10,
+                  padding: "0 0 10px 0",
+                  color: "var(--text-dim)",
+                  fontSize: "0.75rem",
+                  letterSpacing: 1,
+                  borderBottom: "1px solid var(--border)",
+                  marginBottom: 8,
+                }}
+              >
+                <div>Rank</div>
+                <div>Player</div>
+                <div style={{ textAlign: "right" }}>Score</div>
+              </div>
+              {scores.map((entry, index) => (
+                <div
+                  key={entry.id}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "60px 1fr 90px",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: "1px solid var(--border)",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ color: "var(--accent4)" }}>
+                    {rankLabel(index)}
+                  </div>
+
+                  <div style={{ color: "var(--text)" }}>
+                    {entry.name}
+                  </div>
+
+                  <div style={{ color: "var(--accent)", textAlign: "right" }}>
+                    {entry.score.toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <button className="btn btn-ghost" onClick={onBack}>
