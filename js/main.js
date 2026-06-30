@@ -265,14 +265,20 @@ function HomeScreen({
               }}
             >
               <div className="level-num">
-                LEVEL {lvl.id} ·{" "}
-                {lvl.difficulty === "Easy"
-                  ? "🟢 Easy"
-                  : lvl.difficulty === "Medium"
-                    ? "🟡 Medium"
-                    : lvl.difficulty === "Hard"
-                      ? "🔴 Hard"
-                      : "🏆 Global"}
+                {lvl.id === "leaderboard"
+                  ? "🏆 GLOBAL LEADERBOARD"
+                  : (
+                    <>
+                      LEVEL {lvl.id} ·{" "}
+                      {lvl.difficulty === "Easy"
+                        ? "🟢 Easy"
+                        : lvl.difficulty === "Medium"
+                          ? "🟡 Medium"
+                          : lvl.difficulty === "Hard"
+                            ? "🔴 Hard"
+                            : "🏆 Global"}
+                    </>
+                  )}
               </div>
               <div className="level-icon">{lvl.icon}</div>
               <div className="level-name">{lvl.name}</div>
@@ -368,6 +374,7 @@ function LeaderboardScreen({ onBack }) {
   return (
     <div className="screen">
       <div className="victory-card">
+        <div style={{ fontSize: "3rem", marginBottom: 12 }}>🏆</div>
         <div className="victory-title">GLOBAL LEADERBOARD</div>
 
         <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
