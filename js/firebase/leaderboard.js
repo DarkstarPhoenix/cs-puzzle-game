@@ -12,9 +12,21 @@ import {
 const LEADERBOARD_COLLECTION = "leaderboard";
 
 export async function submitScore(name, score) {
-  console.log("submitScore()", { name, score });
+  const cleanName = String(name || "Player").trim().slice(0, 20) || "Player";
+  const cleanScore = Number(score);
 
-  // Firestore write will be added next.
+  if (!Number.isFinite(cleanScore)) {
+    throw new Error("Invalid leaderboard score");
+  }
+
+  const docRef = await addDoc(collection(db, LEADERBOARD_COLLECTION), {
+    name: cleanName,
+    score: cleanScore,
+    completedAt: serverTimestamp(),
+    version: "1.0",
+  });
+
+  return docRef.id;
 }
 
 export async function getTopScores(limit = 10) {
@@ -31,3 +43,4 @@ export async function getTopScores(limit = 10) {
     ...doc.data(),
   }));
 }
+
