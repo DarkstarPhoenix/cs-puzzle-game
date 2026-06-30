@@ -44,3 +44,8 @@ export async function getTopScores(limit = 10) {
   }));
 }
 
+window.CSLeaderboard = {
+  submitScore,
+  getTopScores,
+};
+
