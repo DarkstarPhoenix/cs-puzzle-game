@@ -387,12 +387,17 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [submittedRank, setSubmittedRank] = useState(null);
 
   useEffect(() => {
     async function loadScores() {
       try {
         const results = await window.CSLeaderboard.getTopScores(10);
         setScores(results);
+        if (submittedEntry?.id) {
+          const rankResult = await window.CSLeaderboard.getRankForEntry(submittedEntry.id);
+          setSubmittedRank(rankResult);
+        }
       } catch (err) {
         console.error(err);
         setError("Unable to load leaderboard.");
@@ -433,7 +438,7 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
           {!loading && !error && scores.length === 0 && (
             <div style={{ textAlign: "center", color: "var(--text-dim)" }}>
               No scores have been submitted yet.
-
+              <br />
               Be the first to escape the CS Puzzle Game!
             </div>
           )}
@@ -505,6 +510,48 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
             </div>
           )}
         </div>
+
+        {submittedRank &&
+          !scores.some((entry) => entry.id === submittedRank.id) && (
+            <div
+              className="code-block"
+              style={{
+                textAlign: "left",
+                borderColor: "var(--accent3)",
+                boxShadow: "0 0 18px rgba(127,255,0,0.12)",
+              }}
+            >
+              <div
+                style={{
+                  color: "var(--accent3)",
+                  fontSize: "0.75rem",
+                  letterSpacing: 2,
+                  marginBottom: 12,
+                }}
+              >
+                YOUR RANK
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "80px 1fr 100px",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ color: "var(--accent4)" }}>
+                  #{submittedRank.rank}
+                </div>
+
+                <div>{submittedRank.name}</div>
+
+                <div style={{ color: "var(--accent)", textAlign: "right" }}>
+                  {Number(submittedRank.score).toLocaleString()}
+                </div>
+              </div>
+            </div>
+          )}
 
         <button className="btn btn-ghost" onClick={onBack}>
           ← Back

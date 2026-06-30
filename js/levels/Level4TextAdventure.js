@@ -1,3 +1,18 @@
+// =====================================================
+// DEVELOPMENT / DEBUG OPTIONS
+// =====================================================
+
+// Skip directly to the Game Complete screen.
+const DEBUG_SKIP_TO_SCORE = true; // Set to true to skip Level 4 and jump straight to the score submission screen.
+
+// Score shown on the Game Complete screen.
+const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
+
+// Enable faster text output (already exists)
+const FAST_MODE = true;
+
+
+
 // ── LEVEL 4 – TEXT ADVENTURE ──────────────────
 // Each room contains:
 // enterFirst -> text shown first time entering
@@ -340,7 +355,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   });
 
-  const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
+  //const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
+
+  // Debug only:
+  // true  = skip Level 4 and jump straight to the score submission screen.
+  // false = play Level 4 normally.
+  //const DEBUG_SKIP_TO_SCORE = true;
+  //const DEBUG_SCORE = 250;
   const CHAR_SPEED = FAST_MODE ? 0 : 28;
   const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
@@ -445,6 +466,16 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     });
 
   }, [started]);
+
+  useEffect(() => {
+    if (!DEBUG_SKIP_TO_SCORE) return;
+
+    setScore(DEBUG_SCORE);
+    setWon(true);
+
+    // Optional: if any other state should be reset to match a real completion,
+    // do it here.
+  }, []);
 
   const typingQueue = useRef(Promise.resolve());
 
