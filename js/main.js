@@ -383,7 +383,7 @@ function HomeScreen({
   );
 }
 
-function LeaderboardScreen({ onBack }) {
+function LeaderboardScreen({ onBack, submittedEntry }) {
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -457,16 +457,30 @@ function LeaderboardScreen({ onBack }) {
                 <div>Player</div>
                 <div style={{ textAlign: "right" }}>Score</div>
               </div>
-              {scores.map((entry, index) => (
+              {scores.map((entry, index) => {
+                const isSubmittedEntry = submittedEntry && entry.id === submittedEntry.id;
+
+                return (
                 <div
                   key={entry.id}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "60px 1fr 90px",
-                    gap: 10,
-                    padding: "10px 0",
-                    borderBottom: "1px solid var(--border)",
+                    gridTemplateColumns: "120px 1fr 120px",
                     alignItems: "center",
+                    borderBottom: "1px solid var(--border)",
+                    minHeight: 64,
+
+                    background: isSubmittedEntry
+                      ? "rgba(127,255,0,0.08)"
+                      : "transparent",
+
+                    boxShadow: isSubmittedEntry
+                      ? "0 0 18px rgba(127,255,0,0.18)"
+                      : "none",
+
+                    borderRadius: isSubmittedEntry ? 8 : 0,
+
+                    padding: "10px 8px",
                   }}
                 >
                   <div style={{ color: "var(--accent4)" }}>
@@ -475,13 +489,19 @@ function LeaderboardScreen({ onBack }) {
 
                   <div style={{ color: "var(--text)" }}>
                     {entry.name}
+                      {isSubmittedEntry && (
+                        <span style={{ color: "var(--accent3)", marginLeft: 10, fontSize: "0.7rem" }}>
+                          YOU
+                        </span>
+                      )}
                   </div>
 
                   <div style={{ color: "var(--accent)", textAlign: "right" }}>
                     {entry.score.toLocaleString()}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -723,7 +743,10 @@ function App() {
         />
       )}
       {screen === "leaderboard" && (
-        <LeaderboardScreen onBack={() => setScreen("home")} />
+        <LeaderboardScreen
+          onBack={() => setScreen("home")}
+          submittedEntry={lastSubmittedScore}
+        />
       )}
       {screen === "settings" && (
         <SettingsScreen onBack={() => setScreen("home")} />
