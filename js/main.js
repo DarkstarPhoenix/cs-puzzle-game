@@ -416,6 +416,15 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
     return String(index + 1);
   }
 
+  function formatTime(seconds) {
+    if (!Number.isFinite(Number(seconds))) return "—";
+
+    const mins = Math.floor(seconds / 60);
+    const secs = Number(seconds) % 60;
+
+    return `${mins}:${String(secs).padStart(2, "0")}`;
+  }
+
   return (
     <div className="screen">
       <div className="victory-card">
@@ -448,7 +457,7 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "60px 1fr 90px",
+                  gridTemplateColumns: "60px 1fr 90px 70px",
                   gap: 10,
                   padding: "0 0 10px 0",
                   color: "var(--text-dim)",
@@ -461,7 +470,9 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                 <div>Rank</div>
                 <div>Player</div>
                 <div style={{ textAlign: "right" }}>Score</div>
+                <div style={{ textAlign: "right" }}>Time</div>
               </div>
+              
               {scores.map((entry, index) => {
                 const isSubmittedEntry = submittedEntry && entry.id === submittedEntry.id;
 
@@ -470,7 +481,7 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
                   key={entry.id}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "120px 1fr 120px",
+                    gridTemplateColumns: "70px 1fr 90px 70px",
                     alignItems: "center",
                     borderBottom: "1px solid var(--border)",
                     minHeight: 64,
@@ -503,6 +514,9 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
 
                   <div style={{ color: "var(--accent)", textAlign: "right" }}>
                     {entry.score.toLocaleString()}
+                  </div>
+                  <div style={{ color: "var(--text-dim)", textAlign: "right" }}>
+                    {formatTime(entry.completionTimeSeconds)}
                   </div>
                 </div>
                 );

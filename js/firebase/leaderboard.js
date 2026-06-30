@@ -26,7 +26,7 @@ export async function submitScore(name, score, completionTimeSeconds = null) {
         ? Number(completionTimeSeconds)
         : null,
     completedAt: serverTimestamp(),
-    version: "1.0",
+    version: "1.1",
     
   });
 
