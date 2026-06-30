@@ -1746,7 +1746,15 @@ else:
                 try {
                   setSubmitStatus("Submitting score...");
 
-                  const entryId = await window.CSLeaderboard.submitScore(playerName, score);
+                  const completionTimeSeconds = levelStartTime
+                    ? Math.round((Date.now() - levelStartTime) / 1000)
+                    : null;
+
+                  const entryId = await window.CSLeaderboard.submitScore(
+                    playerName,
+                    score,
+                    completionTimeSeconds
+                  );
 
                   setScoreSubmitted(true);
                   setTimeout(() => {

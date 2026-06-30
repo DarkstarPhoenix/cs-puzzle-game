@@ -11,7 +11,7 @@ import {
 
 const LEADERBOARD_COLLECTION = "leaderboard";
 
-export async function submitScore(name, score) {
+export async function submitScore(name, score, completionTimeSeconds = null) {
   const cleanName = String(name || "Player").trim().slice(0, 20) || "Player";
   const cleanScore = Number(score);
 
@@ -22,8 +22,12 @@ export async function submitScore(name, score) {
   const docRef = await addDoc(collection(db, LEADERBOARD_COLLECTION), {
     name: cleanName,
     score: cleanScore,
+    completionTimeSeconds: Number.isFinite(Number(completionTimeSeconds))
+        ? Number(completionTimeSeconds)
+        : null,
     completedAt: serverTimestamp(),
     version: "1.0",
+    
   });
 
   return docRef.id;
@@ -33,6 +37,8 @@ export async function getTopScores(limit = 10) {
   const leaderboardQuery = query(
     collection(db, LEADERBOARD_COLLECTION),
     orderBy("score", "desc"),
+    orderBy("completionTimeSeconds", "asc"),
+    orderBy("completedAt", "asc"),
     firestoreLimit(limit)
   );
 
@@ -47,7 +53,9 @@ export async function getTopScores(limit = 10) {
 export async function getRankForEntry(entryId) {
   const leaderboardQuery = query(
     collection(db, LEADERBOARD_COLLECTION),
-    orderBy("score", "desc")
+    orderBy("score", "desc"),
+    orderBy("completionTimeSeconds", "asc"),
+    orderBy("completedAt", "asc")
   );
 
   const snapshot = await getDocs(leaderboardQuery);
