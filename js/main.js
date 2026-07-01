@@ -177,10 +177,32 @@ const LEVELS = [
 // ── ACHIEVEMENT TOAST ─────────────────────────
 function AchievementToast({ achievement, onDone }) {
   useEffect(() => {
-    playSound("achievement");
+    if ((achievement.type || "achievement") === "achievement") {
+      playSound("achievement");
+    } else {
+      playSound("click");
+    }
     const t = setTimeout(onDone, 3500);
     return () => clearTimeout(t);
   }, []);
+
+  const toastType = achievement.type || "achievement";
+
+  const toastLabels = {
+    achievement: "ACHIEVEMENT UNLOCKED",
+    success: "SUCCESS",
+    warning: "WARNING",
+    error: "ERROR",
+    info: "INFO",
+  };
+
+  const toastBorders = {
+    achievement: "var(--accent3)",
+    success: "var(--accent)",
+    warning: "var(--accent4)",
+    error: "var(--accent2)",
+    info: "var(--accent)",
+  };
 
   return (
     <div
@@ -190,7 +212,7 @@ function AchievementToast({ achievement, onDone }) {
         right: 24,
         zIndex: 9999,
         background: "linear-gradient(135deg, #1a1a2e, #16213e)",
-        border: "1px solid var(--accent3)",
+        border: `1px solid ${toastBorders[toastType]}`,
         borderRadius: 12,
         padding: "14px 20px",
         boxShadow: "0 0 24px rgba(255,214,10,0.3)",
@@ -211,7 +233,7 @@ function AchievementToast({ achievement, onDone }) {
             marginBottom: 2,
           }}
         >
-          ACHIEVEMENT UNLOCKED
+          {toastLabels[toastType]}
         </div>
         <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff" }}>
           {achievement.title}
@@ -711,6 +733,7 @@ function SettingsScreen({
   onToggleMusic,
   soundEnabled,
   onToggleSound,
+  onRequestReset,
 }) {
   return (
     <div className="screen">
@@ -750,7 +773,7 @@ function SettingsScreen({
             title="Reset Local Progress"
             description="Clears local progress only. Global leaderboard scores are not affected."
             control={
-              <button className="btn btn-danger">
+              <button className="btn btn-danger" onClick={onRequestReset}>
                 RESET
               </button>
             }
@@ -786,6 +809,8 @@ function App() {
   
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [toastQueue, setToastQueue] = useState([]);
+
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const [lastSubmittedScore, setLastSubmittedScore] = useState(null);
 
@@ -891,6 +916,34 @@ function App() {
 
   function dismissToast() {
     setToastQueue((prev) => prev.slice(1));
+  }
+
+  function resetLocalProgress() {
+    localStorage.removeItem("musicEnabled");
+    localStorage.removeItem("soundEnabled");
+
+    setCompletedLevels([]);
+    setScores({});
+    setUnlockedAchievements([]);
+    setToastQueue([]);
+    setLastSubmittedScore(null);
+
+    setMusicEnabled(true);
+    setSoundEnabled(true);
+    window.soundEnabled = true;
+
+    setShowResetConfirm(false);
+
+    setToastQueue([
+      {
+        type: "success",
+        icon: "✅",
+        title: "Progress Reset",
+        desc: "Local progress has been reset successfully.",
+      },
+    ]);
+
+    setScreen("home");
   }
 
   function completeLevel(levelId, pts, mistakes = 0) {
@@ -1021,7 +1074,123 @@ function App() {
           onToggleMusic={() => setMusicEnabled((prev) => !prev)}
           soundEnabled={soundEnabled}
           onToggleSound={() => setSoundEnabled((prev) => !prev)}
+          onRequestReset={() => setShowResetConfirm(true)}
         />
+      )}
+      {showResetConfirm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9998,
+            background: "rgba(0,0,0,0.72)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <div
+            className="victory-card"
+            style={{
+              maxWidth: 600,
+              width: "100%",
+            }}
+          >
+            <div
+              style={{
+                color: "var(--accent4)",
+                fontSize: "2rem",
+                fontWeight: "bold",
+                textAlign: "center",
+                marginBottom: 24,
+              }}
+            >
+              ⚠ RESET LOCAL PROGRESS
+            </div>
+
+            <div
+              style={{
+                width: "fit-content",
+                margin: "0 auto 32px auto",
+                textAlign: "left",
+              }}
+            >
+              <div
+                style={{
+                  color: "var(--text)",
+                  lineHeight: 1.8,
+                  marginBottom: 12,
+                }}
+              >
+                This will permanently reset:
+              </div>
+
+              <div
+                style={{
+                  color: "var(--text-dim)",
+                  lineHeight: 1.8,
+                  marginLeft: 34,
+                  marginBottom: 20,
+                }}
+              >
+                • Completed levels
+                <br />
+                • Best scores
+                <br />
+                • Achievements
+                <br />
+                • Saved settings
+              </div>
+
+              <div
+                style={{
+                  color: "var(--text)",
+                  lineHeight: 1.8,
+                  marginBottom: 10,
+                }}
+              >
+                This{" "}
+                <span style={{ color: "var(--accent3)" }}>
+                  will NOT
+                </span>{" "}
+                remove:
+              </div>
+
+              <div
+                style={{
+                  color: "var(--text-dim)",
+                  lineHeight: 1.8,
+                  marginLeft: 34,
+                }}
+              >
+                <span style={{ color: "var(--accent3)" }}>✓</span> Global leaderboard entries
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: 18,
+              }}
+            >
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="btn btn-danger"
+                onClick={resetLocalProgress}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {toastQueue.length > 0 && (
         <AchievementToast achievement={toastQueue[0]} onDone={dismissToast} />
