@@ -264,6 +264,11 @@ function HomeScreen({
       completedLevels.includes(3)
     );
 
+  const careerScore = Object.values(scores).reduce(
+    (total, value) => total + Number(value || 0),
+    0
+  );
+
   return (
     <div className="screen">
       <div style={{ marginBottom: 8 }}>
@@ -278,6 +283,38 @@ function HomeScreen({
       </div>
       <div className="home-subtitle" style={{ marginBottom: 0 }}>
         Learn Computer Science by Playing
+      </div>
+
+      <div
+        style={{
+          marginTop: 18,
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            color: "var(--text-dim)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.2rem",
+            marginBottom: 4,
+          }}
+        >
+          CAREER SCORE
+        </div>
+
+        <div
+          style={{
+            color: "var(--accent)",
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: "1.4rem",
+            fontWeight: "bold",
+            textShadow: "0 0 12px rgba(0,245,255,0.35)",
+          }}
+        >
+          {careerScore > 0
+            ? `${careerScore.toLocaleString()} pts`
+            : "No score yet"}
+        </div>
       </div>
 
       <div className="level-grid" style={{ marginTop: 36 }}>
@@ -363,7 +400,7 @@ function HomeScreen({
           textAlign: "center",
         }}
       >
-        Play any level — explore different Computer Science concepts 🚀
+        Learn each concept, complete Levels 1–3, then unlock the final Text Adventure 🚀
       </div>
       {/* ── ACHIEVEMENTS ── */}
       {unlockedAchievements.length > 0 && (
@@ -853,10 +890,17 @@ function SettingsScreen({
 // ══════════════════════════════════════════════
 function App() {
   const [screen, setScreen] = useState("start");
-  const [completedLevels, setCompletedLevels] = useState([]);
-  const [scores, setScores] = useState({});
-  
-  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+  const [completedLevels, setCompletedLevels] = useState(() => {
+    return JSON.parse(localStorage.getItem("completedLevels") || "[]");
+  });
+
+  const [scores, setScores] = useState(() => {
+    return JSON.parse(localStorage.getItem("scores") || "{}");
+  });
+
+  const [unlockedAchievements, setUnlockedAchievements] = useState(() => {
+    return JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
+  });
   const [toastQueue, setToastQueue] = useState([]);
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -951,6 +995,21 @@ function App() {
     window.soundEnabled = soundEnabled;
   }, [soundEnabled]);
 
+  useEffect(() => {
+    localStorage.setItem("completedLevels", JSON.stringify(completedLevels));
+  }, [completedLevels]);
+
+  useEffect(() => {
+    localStorage.setItem("scores", JSON.stringify(scores));
+  }, [scores]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "unlockedAchievements",
+      JSON.stringify(unlockedAchievements)
+    );
+  }, [unlockedAchievements]);
+
   function handleSelectLevel(id) {
     setScreen(`level${id}`);
   }
@@ -970,6 +1029,9 @@ function App() {
   function resetLocalProgress() {
     localStorage.removeItem("musicEnabled");
     localStorage.removeItem("soundEnabled");
+    localStorage.removeItem("completedLevels");
+    localStorage.removeItem("scores");
+    localStorage.removeItem("unlockedAchievements");
 
     setCompletedLevels([]);
     setScores({});
@@ -995,7 +1057,7 @@ function App() {
     setScreen("home");
   }
 
-  function completeLevel(levelId, pts, mistakes = 0) {
+  function completeLevel(levelId, pts, mistakes = 0, goHome = false) {
     setCompletedLevels((prev) =>
       prev.includes(levelId) ? prev : [...prev, levelId],
     );
@@ -1019,6 +1081,11 @@ function App() {
       ? completedLevels
       : [...completedLevels, levelId];
     if (newCompleted.length >= 4) unlockAchievement("all_levels");
+
+    if (goHome) {
+      setScreen("home");
+      return;
+    }
 
     const nextId = levelId + 1;
     if (nextId <= 4) setScreen(`level${nextId}`);
@@ -1077,14 +1144,20 @@ function App() {
       {screen === "level1" && (
         <Level1
           onComplete={(pts, mistakes) => completeLevel(1, pts, mistakes)}
-          onBack={() => setScreen("home")}
+          onBack={(pts, mistakes, completed = false) => {
+            if (completed) completeLevel(1, pts, mistakes, true);
+            else setScreen("home");
+          }}
           onAchievement={unlockAchievement}
         />
       )}
       {screen === "level2" && (
         <Level2
           onComplete={(pts, mistakes) => completeLevel(2, pts, mistakes)}
-          onBack={() => setScreen("home")}
+          onBack={(pts, mistakes, completed = false) => {
+            if (completed) completeLevel(2, pts, mistakes, true);
+            else setScreen("home");
+          }}
           onAchievement={unlockAchievement}
         />
       )}
@@ -1092,7 +1165,10 @@ function App() {
       {screen === "level3" && (
         <Level3Wrapper
           onComplete={(pts, mistakes) => completeLevel(3, pts, mistakes)}
-          onBack={() => setScreen("home")}
+          onBack={(pts, mistakes, completed = false) => {
+            if (completed) completeLevel(3, pts, mistakes, true);
+            else setScreen("home");
+          }}
           onAchievement={unlockAchievement}
         />
       )}

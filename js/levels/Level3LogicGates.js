@@ -901,16 +901,6 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
       }}>
         {gate.realWorld}
       </div>
- 
-      <button
-        className="btn btn-primary"
-        onClick={() => {
-          playSound("click");
-          onProceedToChallenge();
-        }}
-      >
-        Ready for the challenge? →
-      </button>
     </div>
   );
 }
@@ -1005,7 +995,15 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
     else if (pct >= 50) rank = "Signal Apprentice";
 
     return (
-      <div className="screen">
+      <div
+        className="screen"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 10,
+          background: "var(--bg)",
+        }}
+      >
         <div className="victory-card">
           <div className="victory-title">CHALLENGE COMPLETE!</div>
           <div className="stars">{stars}</div>
@@ -1049,7 +1047,7 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
               className="btn btn-ghost"
               onClick={() => {
                 playSound("click");
-                onBack();
+                onBack(score, mistakes, true);
               }}
             >
               ← Menu

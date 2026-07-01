@@ -822,7 +822,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
               className="btn btn-ghost"
               onClick={() => {
                 playSound("click");
-                onBack();
+                onBack(score, mistakes, true);
               }}
             >
               ← Menu
