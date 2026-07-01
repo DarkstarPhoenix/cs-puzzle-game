@@ -379,6 +379,8 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   );
 
   function playLevel4Sound(type) {
+    if (!window.soundEnabled) return;
+
     try {
 
       // REAL AUDIO: typing

@@ -5,6 +5,7 @@
 
 const { useState, useEffect, useRef } = React;
 const TEST_MODE = true; // set to true to unlock all levels from the start
+const GAME_VERSION = "v1.1";
 
 // ── SOUND ENGINE
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -27,6 +28,9 @@ function getCtx() {
 }
 
 function playSound(type) {
+
+  if (!window.soundEnabled) return;
+
   try {
     const ctx = getCtx();
     const osc = ctx.createOscillator();
@@ -648,7 +652,13 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
   );
 }
 
-function SettingsScreen({ onBack }) {
+function SettingsScreen({
+  onBack,
+  musicEnabled,
+  onToggleMusic,
+  soundEnabled,
+  onToggleSound,
+}) {
   return (
     <div className="screen">
       <div className="victory-card">
@@ -656,17 +666,81 @@ function SettingsScreen({ onBack }) {
         <div className="victory-title">SETTINGS</div>
 
         <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
-          Game options will appear here.
+          Game options and local controls
         </div>
 
         <div className="code-block" style={{ textAlign: "left" }}>
-          Coming soon:
-          <br />
-          • Music toggle
-          <br />
-          • Sound effects toggle
-          <br />
-          • Reset local progress
+          <div style={{ marginBottom: 18 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            >
+              <strong>Music</strong>
+
+              <button
+                className="btn btn-primary"
+                style={{
+                  minWidth: 80,
+                  padding: "6px 14px",
+                  fontSize: "0.7rem",
+                }}
+                onClick={onToggleMusic}
+              >
+                {musicEnabled ? "ON" : "OFF"}
+              </button>
+            </div>
+
+            <div style={{ color: "var(--text-dim)" }}>
+              Toggle background music on or off.
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            >
+              <strong>Sound Effects</strong>
+
+              <button
+                className="btn btn-primary"
+                style={{
+                  minWidth: 80,
+                  padding: "6px 14px",
+                  fontSize: "0.7rem",
+                }}
+                onClick={onToggleSound}
+              >
+                {soundEnabled ? "ON" : "OFF"}
+              </button>
+            </div>
+
+            <div style={{ color: "var(--text-dim)" }}>
+              Toggle button and game sound effects.
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <strong>Reset Local Progress</strong>
+            <div style={{ color: "var(--text-dim)", marginTop: 6 }}>
+              Clear saved local scores and achievements.
+            </div>
+          </div>
+
+          <div>
+            <strong>Version</strong>
+            <div style={{ color: "var(--accent)", marginTop: 6 }}>
+              {GAME_VERSION}
+            </div>
+          </div>
         </div>
 
         <button className="btn btn-ghost" onClick={onBack}>
@@ -693,6 +767,9 @@ function App() {
   // BACKGROUND MUSIC
   const musicRef = useRef(null);
   const [trackIndex, setTrackIndex] = useState(0);
+  const [musicEnabled, setMusicEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  window.soundEnabled ??= true;
 
   const shuffledTracks = useRef(
     shuffleArray(BACKGROUND_TRACKS)
@@ -707,10 +784,13 @@ function App() {
     musicRef.current = audio;
 
     audio.volume = 0.035;
+    audio.muted = !musicEnabled;
 
-    audio.play().catch(() => {
-      console.log("Autoplay blocked until user interaction");
-    });
+    if (musicEnabled) {
+      audio.play().catch(() => {
+        console.log("Autoplay blocked until user interaction");
+      });
+    }
 
     audio.onended = () => {
       setTrackIndex(
@@ -723,6 +803,16 @@ function App() {
       audio.currentTime = 0;
     };
   }, [trackIndex]);
+
+  useEffect(() => {
+    if (!musicRef.current) return;
+
+    musicRef.current.muted = !musicEnabled;
+
+    if (musicEnabled) {
+      musicRef.current.play().catch(() => {});
+    }
+  }, [musicEnabled]);
 
 
   // ── START MUSIC AFTER FIRST USER INTERACTION ──────────────────
@@ -748,9 +838,13 @@ function App() {
 
   }, []);
 
+  useEffect(() => {
+    window.soundEnabled = soundEnabled;
+  }, [soundEnabled]);
+
   function handleSelectLevel(id) {
-  setScreen(`level${id}`);
-}
+    setScreen(`level${id}`);
+  }
 
   function unlockAchievement(id) {
     if (unlockedAchievements.includes(id)) return;
@@ -883,7 +977,13 @@ function App() {
         />
       )}
       {screen === "settings" && (
-        <SettingsScreen onBack={() => setScreen("home")} />
+        <SettingsScreen
+          onBack={() => setScreen("home")}
+          musicEnabled={musicEnabled}
+          onToggleMusic={() => setMusicEnabled((prev) => !prev)}
+          soundEnabled={soundEnabled}
+          onToggleSound={() => setSoundEnabled((prev) => !prev)}
+        />
       )}
       {toastQueue.length > 0 && (
         <AchievementToast achievement={toastQueue[0]} onDone={dismissToast} />
