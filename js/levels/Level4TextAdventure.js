@@ -9,7 +9,7 @@ const DEBUG_SKIP_TO_SCORE = false; // Set to true to skip Level 4 and jump strai
 const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
 
 // Enable faster text output (already exists)
-const FAST_MODE = true;
+const FAST_MODE = false;
 
 
 
@@ -1683,7 +1683,8 @@ else:
           <button
             className="btn btn-primary"
             onClick={() => {
-            triggerGlitch(1500);
+              playSound("click");
+              triggerGlitch(1500);
 
             setDigitising(true);
 
@@ -1747,6 +1748,7 @@ else:
             <button
               className="btn btn-primary"
               onClick={async () => {
+                playSound("click");
                 try {
                   setSubmitStatus("Submitting score...");
 
@@ -1788,7 +1790,13 @@ else:
           </div>
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-            <button className="btn btn-ghost" onClick={onBack}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                playSound("click");
+                onBack();
+              }}
+            >
               ← Menu
             </button>
           </div>
@@ -1807,6 +1815,7 @@ else:
       <span
         style={commandStyle}
         onClick={() => {
+          playSound("click");
           setInput(command);
 
           setTimeout(() => {
@@ -1825,7 +1834,10 @@ else:
         <button
           className="btn btn-ghost"
           style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-          onClick={onBack}
+          onClick={() => {
+            playSound("click");
+            onBack();
+          }}
         >
           ← Back
         </button>

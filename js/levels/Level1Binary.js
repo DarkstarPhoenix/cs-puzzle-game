@@ -182,6 +182,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
           <button
             className="btn btn-primary"
             onClick={() => {
+              playSound("click");
               setStarted(true);
 
               setTimeout(() => {
@@ -432,12 +433,20 @@ function Level1({ onComplete, onBack, onAchievement }) {
             Highest Streak: 🔥 {highestStreak}
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-            <button className="btn btn-ghost" onClick={onBack}>
+            <button 
+              className="btn btn-ghost" 
+              onClick={() => {
+                playSound("click");
+                onBack();
+              }}>
               ← Menu
             </button>
             <button
               className="btn btn-primary"
-              onClick={() => onComplete(score, mistakes)}
+              onClick={() => {
+                playSound("click");
+                onComplete(score, mistakes);
+              }}
             >
               Next Level →
             </button>
@@ -450,11 +459,21 @@ function Level1({ onComplete, onBack, onAchievement }) {
   return (
   <div className="game-screen">
     <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-      <button style={tabStyle(tab === "practice")} onClick={() => setTab("practice")}>
+      <button 
+        style={tabStyle(tab === "practice")} 
+        onClick={() => {
+          playSound("click");
+          setTab("practice");
+        }}>
         Practice
       </button>
 
-      <button style={tabStyle(tab === "challenge")} onClick={() => setTab("challenge")}>
+      <button 
+        style={tabStyle(tab === "challenge")} 
+        onClick={() => {
+          playSound("click");
+          setTab("challenge");
+        }}>
         Challenge
       </button>
     </div>
@@ -464,8 +483,14 @@ function Level1({ onComplete, onBack, onAchievement }) {
         <div className="game-header">
           <button
             className="btn btn-ghost"
-            style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-            onClick={onBack}
+            style={{ 
+              padding: "6px 12px", 
+              fontSize: "0.7rem" 
+            }}
+            onClick={() => {
+              playSound("click");
+              onBack();
+            }}
           >
             ← Back
           </button>
@@ -509,21 +534,30 @@ function Level1({ onComplete, onBack, onAchievement }) {
           <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
             <button
               style={practiceSectionStyle(practiceSection === "sandbox")}
-              onClick={() => setPracticeSection("sandbox")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("sandbox");
+              }}
             >
               Sandbox
             </button>
 
             <button
               style={practiceSectionStyle(practiceSection === "trainer")}
-              onClick={() => setPracticeSection("trainer")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("trainer");
+              }}
             >
               Decimal Trainer
             </button>
 
             <button
               style={practiceSectionStyle(practiceSection === "table")}
-              onClick={() => setPracticeSection("table")}
+              onClick={() => {
+                playSound("click");
+                setPracticeSection("table");
+              }}
             >
               Counting Table
             </button>
@@ -810,7 +844,10 @@ function Level1({ onComplete, onBack, onAchievement }) {
           <button
             className="btn btn-ghost"
             style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-            onClick={onBack}
+            onClick={() => {
+              playSound("click");
+              onBack();
+            }}
           >
             ← Back
           </button>
@@ -1010,7 +1047,10 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
             <button
               className="btn btn-primary"
-              onClick={next}
+              onClick={() => {
+                playSound("click");
+                next();
+              }}
               style={{ alignSelf: "flex-end" }}
             >
               {qIdx + 1 >= questions.length ? "See Results →" : "Next →"}

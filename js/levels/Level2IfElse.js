@@ -703,7 +703,13 @@ function Level2({ onComplete, onBack, onAchievement }) {
             &nbsp;&nbsp;&nbsp;&nbsp;print("Too young.")
           </div>
 
-          <button className="btn btn-primary" onClick={() => setStarted(true)}>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              playSound("click");
+              setStarted(true);
+            }}
+          >
             Start Level →
           </button>
         </div>
@@ -812,12 +818,21 @@ function Level2({ onComplete, onBack, onAchievement }) {
           </div>
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-            <button className="btn btn-ghost" onClick={onBack}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                playSound("click");
+                onBack();
+              }}
+            >
               ← Menu
             </button>
             <button
               className="btn btn-primary"
-              onClick={() => onComplete(score, mistakes)}
+              onClick={() => {
+                playSound("click");
+                onComplete(score, mistakes);
+              }}
             >
               Next Level →
             </button>
@@ -858,7 +873,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
             <button
               className="btn btn-ghost"
               style={{ padding: "6px 12px", fontSize: "0.7rem" }}
-              onClick={onBack}
+              onClick={() => {
+                playSound("click");
+                onBack();
+              }}
             >
               ← Back
             </button>
@@ -1669,7 +1687,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
           {answered && (
             <button
               className="btn btn-primary"
-              onClick={next}
+              onClick={() => {
+                playSound("click");
+                next();
+              }}
               style={{ alignSelf: "flex-end" }}
             >
               {qIdx + 1 >= questions.length

@@ -291,6 +291,8 @@ function HomeScreen({
               style={{ "--card-color": lvl.color }}
               onClick={() => {
                 if (!locked) {
+                  playSound("click");
+
                   if (lvl.id === "leaderboard") {
                     onLeaderboard();
                   } else if (lvl.id === "settings") {
@@ -666,7 +668,13 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
             </div>
           )}
 
-        <button className="btn btn-ghost" onClick={onBack}>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            playSound("click");
+            onBack();
+          }}
+        >
           ← Back
         </button>
       </div>
@@ -677,7 +685,10 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
 function ToggleButton({ enabled, onClick }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => {
+        playSound("click");
+        onClick();
+      }}
       className={enabled ? "btn btn-primary" : "btn btn-ghost"}
       style={{
         minWidth: 72,
@@ -799,7 +810,13 @@ function SettingsScreen({
             title="Reset Local Progress"
             description="Clears local progress only. Global leaderboard scores are not affected."
             control={
-              <button className="btn btn-danger" onClick={onRequestReset}>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  playSound("click");
+                  onRequestReset();
+                }}
+              >
                 RESET
               </button>
             }
@@ -817,7 +834,13 @@ function SettingsScreen({
           />
         </div>
 
-        <button className="btn btn-ghost" onClick={onBack}>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            playSound("click");
+            onBack();
+          }}
+        >
           ← Back
         </button>
       </div>
@@ -1203,14 +1226,20 @@ function App() {
             >
               <button
                 className="btn btn-ghost"
-                onClick={() => setShowResetConfirm(false)}
+                onClick={() => {
+                  playSound("click");
+                  setShowResetConfirm(false);
+                }}
               >
                 Cancel
               </button>
 
               <button
                 className="btn btn-danger"
-                onClick={resetLocalProgress}
+                onClick={() => {
+                  playSound("click");
+                  resetLocalProgress();
+                }}
               >
                 Reset
               </button>

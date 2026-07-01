@@ -747,7 +747,12 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
     <div className="game-screen">
       <div className="game-header">
         <button className="btn btn-ghost"
-          style={{ padding: "6px 12px", fontSize: "0.7rem" }} onClick={onBack}>
+          style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+          onClick={() => {
+            playSound("click");
+            onBack();
+          }}
+        >
           ← Back
         </button>
         <div className="level-tag">LEVEL 3 · PRACTICE</div>
@@ -832,7 +837,11 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
       {/* Truth table */}
       <button className="btn btn-ghost"
         style={{ marginBottom: 12, fontSize: "0.75rem", padding: "8px 16px" }}
-        onClick={() => setShowTable(t => !t)}>
+        onClick={() => {
+          playSound("click");
+          setShowTable(t => !t);
+        }}
+      >
         {showTable ? "▲ Hide" : "▼ Show"} truth table
       </button>
  
@@ -893,7 +902,13 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
         {gate.realWorld}
       </div>
  
-      <button className="btn btn-primary" onClick={onProceedToChallenge}>
+      <button
+        className="btn btn-primary"
+        onClick={() => {
+          playSound("click");
+          onProceedToChallenge();
+        }}
+      >
         Ready for the challenge? →
       </button>
     </div>
@@ -1030,8 +1045,22 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
               : "Keep going — head back to Practice and try each gate interactively."}
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-            <button className="btn btn-ghost" onClick={onBack}>← Menu</button>
-            <button className="btn btn-primary" onClick={() => onComplete(score, mistakes)}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                playSound("click");
+                onBack();
+              }}
+            >
+              ← Menu
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                playSound("click");
+                onComplete(score, mistakes);
+              }}
+            >
               Next Level →
             </button>
           </div>
@@ -1044,7 +1073,12 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
     <div className="game-screen">
       <div className="game-header">
         <button className="btn btn-ghost"
-          style={{ padding: "6px 12px", fontSize: "0.7rem" }} onClick={onBack}>
+          style={{ padding: "6px 12px", fontSize: "0.7rem" }}
+          onClick={() => {
+            playSound("click");
+            onBack();
+          }}
+        >
           ← Back
         </button>
         <div className="level-tag">LEVEL 3 · CHALLENGE</div>
@@ -1194,7 +1228,14 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
             </strong>
             {" "}{p.explain}
           </div>
-          <button className="btn btn-primary" style={{ alignSelf: "flex-end" }} onClick={next}>
+          <button
+            className="btn btn-primary"
+            style={{ alignSelf: "flex-end" }}
+            onClick={() => {
+              playSound("click");
+              next();
+            }}
+          >
             {pIdx+1 >= puzzles.length ? "See Results →" : "Next →"}
           </button>
         </>
@@ -1249,7 +1290,13 @@ function Level3Wrapper({ onComplete, onBack, onAchievement }) {
             💡 Tip: NAND and NOR are just inverted versions of AND and OR.
           </div>
 
-          <button className="btn btn-primary" onClick={() => setStarted(true)}>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              playSound("click");
+              setStarted(true);
+            }}
+          >
             Start Level →
           </button>
         </div>
@@ -1260,10 +1307,22 @@ function Level3Wrapper({ onComplete, onBack, onAchievement }) {
   return (
     <div className="game-screen">
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        <button style={tabStyle(tab === "practice")} onClick={() => setTab("practice")}>
+        <button
+          style={tabStyle(tab === "practice")}
+          onClick={() => {
+            playSound("click");
+            setTab("practice");
+          }}
+        >
           Practice
         </button>
-        <button style={tabStyle(tab === "challenge")} onClick={() => setTab("challenge")}>
+        <button
+          style={tabStyle(tab === "challenge")}
+          onClick={() => {
+            playSound("click");
+            setTab("challenge");
+          }}
+        >
           Challenge
         </button>
       </div>
