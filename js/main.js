@@ -652,6 +652,59 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
   );
 }
 
+function SettingCard({
+  icon,
+  title,
+  description,
+  control,
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid var(--border)",
+        borderRadius: 10,
+        padding: "16px",
+        marginBottom: 16,
+        background: "rgba(255,255,255,0.02)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <span style={{ fontSize: "1.2rem" }}>
+            {icon}
+          </span>
+
+          <strong>{title}</strong>
+        </div>
+
+        {control}
+      </div>
+
+      <div
+        style={{
+          color: "var(--text-dim)",
+          fontSize: "0.8rem",
+        }}
+      >
+        {description}
+      </div>
+    </div>
+  );
+}
+
 function SettingsScreen({
   onBack,
   musicEnabled,
@@ -666,81 +719,53 @@ function SettingsScreen({
         <div className="victory-title">SETTINGS</div>
 
         <div style={{ color: "var(--text-dim)", marginBottom: 24 }}>
-          Game options and local controls
+          Configure game options
         </div>
 
         <div className="code-block" style={{ textAlign: "left" }}>
-          <div style={{ marginBottom: 18 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 8,
-              }}
-            >
-              <strong>Music</strong>
-
-              <button
-                className="btn btn-primary"
-                style={{
-                  minWidth: 80,
-                  padding: "6px 14px",
-                  fontSize: "0.7rem",
-                }}
-                onClick={onToggleMusic}
-              >
+          <SettingCard
+            icon="🎵"
+            title="Music"
+            description="Background music during gameplay."
+            control={
+              <button className="btn btn-primary" onClick={onToggleMusic}>
                 {musicEnabled ? "ON" : "OFF"}
               </button>
-            </div>
+            }
+          />
 
-            <div style={{ color: "var(--text-dim)" }}>
-              Toggle background music on or off.
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 18 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 8,
-              }}
-            >
-              <strong>Sound Effects</strong>
-
-              <button
-                className="btn btn-primary"
-                style={{
-                  minWidth: 80,
-                  padding: "6px 14px",
-                  fontSize: "0.7rem",
-                }}
-                onClick={onToggleSound}
-              >
+          <SettingCard
+            icon="🔊"
+            title="Sound Effects"
+            description="Button clicks and puzzle sounds."
+            control={
+              <button className="btn btn-primary" onClick={onToggleSound}>
                 {soundEnabled ? "ON" : "OFF"}
               </button>
-            </div>
+            }
+          />
 
-            <div style={{ color: "var(--text-dim)" }}>
-              Toggle button and game sound effects.
-            </div>
-          </div>
+          <SettingCard
+            icon="♻️"
+            title="Reset Local Progress"
+            description="Clears local progress only. Global leaderboard scores are not affected."
+            control={
+              <button className="btn btn-danger">
+                RESET
+              </button>
+            }
+          />
 
-          <div style={{ marginBottom: 18 }}>
-            <strong>Reset Local Progress</strong>
-            <div style={{ color: "var(--text-dim)", marginTop: 6 }}>
-              Clear saved local scores and achievements.
-            </div>
-          </div>
-
-          <div>
-            <strong>Version</strong>
-            <div style={{ color: "var(--accent)", marginTop: 6 }}>
-              {GAME_VERSION}
-            </div>
-          </div>
+          <SettingCard
+            icon="ℹ️"
+            title="Version"
+            description="CS Puzzle Game release version."
+            control={
+              <span style={{ color: "var(--accent)" }}>
+                {GAME_VERSION}
+              </span>
+            }
+          />
         </div>
 
         <button className="btn btn-ghost" onClick={onBack}>
@@ -767,8 +792,13 @@ function App() {
   // BACKGROUND MUSIC
   const musicRef = useRef(null);
   const [trackIndex, setTrackIndex] = useState(0);
-  const [musicEnabled, setMusicEnabled] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [musicEnabled, setMusicEnabled] = useState(() => {
+    return localStorage.getItem("musicEnabled") !== "false";
+  });
+
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    return localStorage.getItem("soundEnabled") !== "false";
+  });
   window.soundEnabled ??= true;
 
   const shuffledTracks = useRef(
@@ -802,7 +832,7 @@ function App() {
       audio.pause();
       audio.currentTime = 0;
     };
-  }, [trackIndex]);
+  }, [trackIndex, musicEnabled]);
 
   useEffect(() => {
     if (!musicRef.current) return;
@@ -839,6 +869,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("musicEnabled", String(musicEnabled));
+  }, [musicEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem("soundEnabled", String(soundEnabled));
     window.soundEnabled = soundEnabled;
   }, [soundEnabled]);
 
@@ -910,10 +945,13 @@ function App() {
               onClick={() => {
                 if (musicRef.current) {
                   musicRef.current.volume = 0.05;
-                  musicRef.current.muted = false;
-                  musicRef.current.play()
-                    .then(() => console.log("Music started"))
-                    .catch(err => console.log("Music failed:", err));
+                  musicRef.current.muted = !musicEnabled;
+
+                  if (musicEnabled) {
+                    musicRef.current.play()
+                      .then(() => console.log("Music started"))
+                      .catch(err => console.log("Music failed:", err));
+                  }
                 }
 
                 setScreen("home");
