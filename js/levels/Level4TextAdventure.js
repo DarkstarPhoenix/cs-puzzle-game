@@ -3,7 +3,7 @@
 // =====================================================
 
 // Skip directly to the Game Complete screen.
-const DEBUG_SKIP_TO_SCORE = true; // Set to true to skip Level 4 and jump straight to the score submission screen.
+const DEBUG_SKIP_TO_SCORE = false; // Set to true to skip Level 4 and jump straight to the score submission screen.
 
 // Score shown on the Game Complete screen.
 const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
@@ -1710,7 +1710,7 @@ else:
           <div className="victory-title">ESCAPED!</div>
           <div className="stars">{stars}</div>
           <div style={{ color: "var(--text-dim)", marginBottom: 8 }}>
-            Text Adventure complete
+            CS Puzzle Game Complete
           </div>
           <div className="victory-score">{score} pts</div>
           <div
@@ -1720,9 +1720,11 @@ else:
               marginBottom: 24,
             }}
           >
-            The answer was 42 — <em>"loops + 1"</em> = a reference to the
-            classic programming joke! (Also the answer to life, the universe and
-            everything 😄)
+            SYSTEM RESTORED — you navigated the Computer Science core, solved the
+            binary firewall, and escaped the digital system.
+            <br />
+            <br />
+            <em>So long, and thanks for all the fish.</em>
           </div>
           <div style={{ marginBottom: 18 }}>
             <input

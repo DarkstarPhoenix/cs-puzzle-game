@@ -674,6 +674,22 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
   );
 }
 
+function ToggleButton({ enabled, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={enabled ? "btn btn-primary" : "btn btn-ghost"}
+      style={{
+        minWidth: 72,
+        fontWeight: "bold",
+        transition: "all 0.2s ease",
+      }}
+    >
+      {enabled ? "ON" : "OFF"}
+    </button>
+  );
+}
+
 function SettingCard({
   icon,
   title,
@@ -712,7 +728,15 @@ function SettingCard({
           <strong>{title}</strong>
         </div>
 
-        {control}
+        <div
+          style={{
+            minWidth: 90,
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          {control}
+        </div>
       </div>
 
       <div
@@ -751,9 +775,10 @@ function SettingsScreen({
             title="Music"
             description="Background music during gameplay."
             control={
-              <button className="btn btn-primary" onClick={onToggleMusic}>
-                {musicEnabled ? "ON" : "OFF"}
-              </button>
+              <ToggleButton
+                enabled={musicEnabled}
+                onClick={onToggleMusic}
+              />
             }
           />
 
@@ -762,9 +787,10 @@ function SettingsScreen({
             title="Sound Effects"
             description="Button clicks and puzzle sounds."
             control={
-              <button className="btn btn-primary" onClick={onToggleSound}>
-                {soundEnabled ? "ON" : "OFF"}
-              </button>
+              <ToggleButton
+                enabled={soundEnabled}
+                onClick={onToggleSound}
+              />
             }
           />
 
