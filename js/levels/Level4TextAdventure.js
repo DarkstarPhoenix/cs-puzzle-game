@@ -253,18 +253,11 @@ Type: solve [decimal]`,
     exit: {
       desc: `> SYSTEM RESTORED
 
-All errors resolved.
-
 You feel your body reforming...
 
 > EXITING DIGITAL WORLD...
 
-🎉 You escaped the system!
-
-> SO LONG, AND THANKS FOR ALL THE FISH.
-
-> FINAL COMMAND REQUIRED
-> Type: exit()`,
+🎉 You escaped the system!`,
       exits: {},
       win: true
     },    
@@ -899,8 +892,8 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
-  function generateIfElsePuzzle(stage = 1) {
-    const route = getIfElseDirections(previousIfDirection);
+  function generateIfElsePuzzle(stage = 1, previousDirection = previousIfDirection) {
+    const route = getIfElseDirections(previousDirection);
 
     if (stage === 1) {
       const energy = Math.floor(Math.random() * 100);
@@ -1256,9 +1249,11 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
                 }
 
                 const nextStage = ifStage + 1;
+                const previousDirection = ifPuzzle.correct;
 
                 setIfStage(nextStage);
-                setIfPuzzle(generateIfElsePuzzle(nextStage));
+                setPreviousIfDirection(previousDirection);
+                setIfPuzzle(generateIfElsePuzzle(nextStage, previousDirection));
 
                 return addLine(`> IF / ELSE STAGE ${ifStage}/3 COMPLETE`, "system")
                   .then(() => new Promise(r => setTimeout(r, delay(500))))
@@ -1643,18 +1638,11 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
                 setAwaitingExitCommand(true);
 
                 return addLine("> ACCESS GRANTED", "success")
-                  .then(() => addLine(`> TIME BONUS: +${timeBonus}`, "success"))
-                  .then(() => addLine(`> BIT BONUS: +${bitBonus}`, "success"))
+                  .then(() => addLine("> FIREWALL DISABLED", "success"))
+                  .then(() => addLine("> DIGITAL EXIT STABILISED", "success"))
                   .then(() => addLine("", "system"))
-                  .then(() => addLine("> FINAL COMMAND REQUIRED", "system"))
+                  .then(() => addLine("> USER SESSION READY FOR TERMINATION", "system"))
                   .then(() => addLine("> Type: exit()", "success"));
-              })
-              .then(() => new Promise(r => setTimeout(r, delay(600))))
-              .then(() => {
-                const nextRoom = ADVENTURE.rooms[currentRoom.puzzle.success];
-                
-                setRoom(currentRoom.puzzle.success);
-                return loadNewRoom(nextRoom.desc);
               })
           );
         } else {
