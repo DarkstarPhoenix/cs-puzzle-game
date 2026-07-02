@@ -9,7 +9,7 @@ const DEBUG_SKIP_TO_SCORE = false; // Set to true to skip Level 4 and jump strai
 const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
 
 // Enable faster text output (already exists)
-const FAST_MODE = false;
+const FAST_MODE = true;
 
 
 
@@ -116,9 +116,14 @@ Paths branch in all directions.`,
       enterOther: "You return to the same quiet section. Something feels slightly off.",
       
       desc: `The environment here appears stable, but something isn't quite right.
+
 The same structures repeat around you, almost identically.
 
-Paths detected: NORTH, EAST, SOUTH, WEST`,
+Paths detected:
+NORTH — Unknown Node
+EAST — Unknown Node
+SOUTH — Unknown Node
+WEST — Unknown Node`,
       exits: {
         north: "loop",
         east: "loop",
@@ -372,7 +377,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
   const deniedSound = useRef(
   new Audio("assets/sfx/freesound_community-access-denied-102628.mp3")
-);
+  );
 
   const unlockSound = useRef(
     new Audio("assets/sfx/freesound_community-access-granted-87075.mp3")
@@ -481,7 +486,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
   const typingQueue = useRef(Promise.resolve());
 
-  function addLine(text, type = "system") {
+  function addLine(text, type = "system", compact = false) {
     setIsTyping(true);
     
     typingQueue.current = typingQueue.current.then(() => {
@@ -540,7 +545,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
               setTimeout(typeChar, CHAR_SPEED);
             } else {
               // add newline after finishing line
-              currentText += "\n";
+              if (!compact || lineIndex < lines.length - 1) {
+                currentText += "\n";
+              }
+
               lineIndex++;
 
               setTimeout(typeLine, LINE_DELAY); // ⏸ pause between lines
@@ -784,7 +792,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
   setGlitch(true);
   setTimeout(() => setGlitch(false), duration);
-}
+  }
 
   function awardBits(count) {
     return new Promise(resolve => {
@@ -813,143 +821,220 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     });
   }
 
-function generateDebugPuzzle(stage = 1) {
-  if (stage === 1) {
+  function generateDebugPuzzle(stage = 1) {
+    if (stage === 1) {
+      return {
+        stage,
+        question: `Code snippet:
+
+  total = 0
+  numbers = [2, 4, 6]
+
+  for num in numbers:
+      total = num
+  }
+
+  What is the bug?`,
+        answers: ["overwrite", "replaces", "assignment", "not accumulating"],
+        keywords: ["overwrite", "overwritten", "replace", "replaces"],
+        hint: "Look at how the total variable is updated inside the loop. Is it adding to the total or replacing it?"
+      };
+    }
+
+    if (stage === 2) {
+      return {
+        stage,
+        question: `Fix the broken line:
+
+  total = 0
+  numbers = [2, 4, 6]
+
+  for num in numbers:
+      total = num
+  }
+
+  Type the corrected line.`,
+        answers: ["total += num", "total = total + num"],
+        hint: "You want to add num to total, not replace it. Try using += or total = total + num"
+      };
+    }
+
     return {
       stage,
-      question: `Code snippet:
+      question: `What is the output?
 
-total = 0
-numbers = [2, 4, 6]
+  let score = 3;
 
-for num in numbers:
-    total = num
-}
+  score += 2;
+  score *= 4;
+  score -= 5;
 
-What is the bug?`,
-      answers: ["overwrite", "replaces", "assignment", "not accumulating"],
-      keywords: ["overwrite", "overwritten", "replace", "replaces"],
-      hint: "Look at how the total variable is updated inside the loop. Is it adding to the total or replacing it?"
+  console.log(score);`,
+      answers: ["15"],
+      hint: "Follow the operations step by step: start with 3, add 2, then multiply by 4, then subtract 5. What do you get?"
     };
   }
 
-  if (stage === 2) {
-    return {
-      stage,
-      question: `Fix the broken line:
+  function generateIfElsePuzzle(stage = 1) {
+    if (stage === 1) {
+      const energy = Math.floor(Math.random() * 100);
+      const threshold = 40;
+      const result = energy >= threshold;
 
-total = 0
-numbers = [2, 4, 6]
+      return {
+        stage,
+        title: "Power threshold",
+        condition: `energy >= ${threshold}`,
+        variables: [`energy = ${energy}`],
+        correct: result ? "north" : "south",
+        explanation: `${energy} >= ${threshold} is ${result ? "TRUE" : "FALSE"}.`
+      };
+    }
 
-for num in numbers:
-    total = num
-}
+    if (stage === 2) {
+      const accessLevel = Math.floor(Math.random() * 5) + 1;
+      const systemLocked = Math.random() < 0.5;
+      const result = accessLevel >= 3 && systemLocked === false;
 
-Type the corrected line.`,
-      answers: ["total += num", "total = total + num"],
-      hint: "You want to add num to total, not replace it. Try using += or total = total + num"
-    };
-  }
+      return {
+        stage,
+        title: "Access control",
+        condition: `access_level >= 3 and system_locked == False`,
+        variables: [
+          `access_level = ${accessLevel}`,
+          `system_locked = ${systemLocked ? "True" : "False"}`
+        ],
+        correct: result ? "north" : "south",
+        explanation: `Access only succeeds if level is 3 or higher AND the system is not locked.`
+      };
+    }
 
-  return {
-    stage,
-    question: `What is the output?
-
-let score = 3;
-
-score += 2;
-score *= 4;
-score -= 5;
-
-console.log(score);`,
-    answers: ["15"],
-    hint: "Follow the operations step by step: start with 3, add 2, then multiply by 4, then subtract 5. What do you get?"
-  };
-}
-
-function generateIfElsePuzzle(stage = 1) {
-  if (stage === 1) {
-    const energy = Math.floor(Math.random() * 100);
-    const threshold = 40;
-    const result = energy >= threshold;
-
-    return {
-      stage,
-      title: "Power threshold",
-      condition: `energy >= ${threshold}`,
-      variables: [`energy = ${energy}`],
-      correct: result ? "north" : "south",
-      explanation: `${energy} >= ${threshold} is ${result ? "TRUE" : "FALSE"}.`
-    };
-  }
-
-  if (stage === 2) {
-    const accessLevel = Math.floor(Math.random() * 5) + 1;
-    const systemLocked = Math.random() < 0.5;
-    const result = accessLevel >= 3 && systemLocked === false;
+    const signalStable = Math.random() < 0.5;
+    const overrideActive = Math.random() < 0.5;
+    const corruptionLevel = Math.floor(Math.random() * 100);
+    const result = (signalStable || overrideActive) && corruptionLevel < 60;
 
     return {
       stage,
-      title: "Access control",
-      condition: `access_level >= 3 and system_locked == False`,
+      title: "Nested system condition",
+      condition: `(signal_stable or override_active) and corruption_level < 60`,
       variables: [
-        `access_level = ${accessLevel}`,
-        `system_locked = ${systemLocked ? "True" : "False"}`
+        `signal_stable = ${signalStable ? "True" : "False"}`,
+        `override_active = ${overrideActive ? "True" : "False"}`,
+        `corruption_level = ${corruptionLevel}`
       ],
       correct: result ? "north" : "south",
-      explanation: `Access only succeeds if level is 3 or higher AND the system is not locked.`
+      explanation: `The first part needs either signal_stable OR override_active to be true, and corruption_level must be below 60.`
     };
   }
 
-  const signalStable = Math.random() < 0.5;
-  const overrideActive = Math.random() < 0.5;
-  const corruptionLevel = Math.floor(Math.random() * 100);
-  const result = (signalStable || overrideActive) && corruptionLevel < 60;
+  function generateFirewallBoss(codeArray) {
+    const original = codeArray.join("");
+    const ones = original.split("").filter(bit => bit === "1").length;
 
-  return {
-    stage,
-    title: "Nested system condition",
-    condition: `(signal_stable or override_active) and corruption_level < 60`,
-    variables: [
-      `signal_stable = ${signalStable ? "True" : "False"}`,
-      `override_active = ${overrideActive ? "True" : "False"}`,
-      `corruption_level = ${corruptionLevel}`
-    ],
-    correct: result ? "north" : "south",
-    explanation: `The first part needs either signal_stable OR override_active to be true, and corruption_level must be below 60.`
-  };
-}
+    let ruleText = "";
+    let transformed = "";
 
-function generateFirewallBoss(codeArray) {
-  const original = codeArray.join("");
-  const ones = original.split("").filter(bit => bit === "1").length;
+    if (ones > 3) {
+      ruleText = `if number_of_1s > 3:
+      invert_bits()`;
+      transformed = original
+        .split("")
+        .map(bit => bit === "1" ? "0" : "1")
+        .join("");
+    } else {
+      ruleText = `if number_of_1s > 3:
+      invert_bits()
+  else:
+      rotate_left()`;
+      transformed = original.slice(1) + original[0];
+    }
 
-  let ruleText = "";
-  let transformed = "";
-
-  if (ones > 3) {
-    ruleText = `if number_of_1s > 3:
-    invert_bits()`;
-    transformed = original
-      .split("")
-      .map(bit => bit === "1" ? "0" : "1")
-      .join("");
-  } else {
-    ruleText = `if number_of_1s > 3:
-    invert_bits()
-else:
-    rotate_left()`;
-    transformed = original.slice(1) + original[0];
+    return {
+      original,
+      ones,
+      ruleText,
+      transformed,
+      answer: parseInt(transformed, 2)
+    };
   }
 
-  return {
-    original,
-    ones,
-    ruleText,
-    transformed,
-    answer: parseInt(transformed, 2)
-  };
-}
+  function getCorePathLines() {
+    const roomLabels = {
+      room1: "Digitising Platform",
+      loopRoom: "Loop Node",
+      loop: "Loop Node",
+      logic: "Logic Node",
+      ifelse: "Conditional Node",
+      debug: "Debug Node",
+      firewall:
+        binaryCode.length >= 7
+          ? "Ready"
+          : `Locked (${binaryCode.length}/7 fragments)`,
+    };
+
+    const completionKeys = {
+      loopRoom: "loop",
+      loop: "loop",
+      logic: "logic",
+      ifelse: "ifelse",
+      debug: "debug",
+    };
+
+    return Object.entries(coreExits).map(([direction, roomId]) => {
+      const hasVisited =
+        visitedRooms[roomId] || roomId === "room1" || roomId === "firewall";
+      const completionKey = completionKeys[roomId];
+      const isComplete = completionKey && completedRooms[completionKey];
+
+      const name = hasVisited
+        ? roomLabels[roomId] || roomId
+        : "Unknown Node";
+
+      if (isComplete) {
+        return {
+          text: `${direction.toUpperCase()} — ${name} (STABILISED)`,
+          type: "success",
+        };
+      }
+
+      if (roomId === "room1") {
+        return {
+          text: `${direction.toUpperCase()} — ${name}`,
+          type: "success",
+        };
+      }
+
+      if (roomId === "firewall" && binaryCode.length >= 7) {
+        return {
+          text: "FIREWALL — ACCESS AVAILABLE",
+          type: "success",
+        };
+      }
+
+      return {
+        text: `${direction.toUpperCase()} — ${name}`,
+        type: "system",
+      };
+    });
+  }
+
+  function displayPathMap(description, paths) {
+    return runBusySequence(() =>
+      addLine(description.trim(), "system")
+        .then(() => addLine("", "system"))
+        .then(() => addLine("Paths detected:", "system"))
+        .then(() =>
+          paths.reduce(
+            (chain, path) =>
+              chain.then(() =>
+                addLine(path.text, path.type ?? "system", true)
+              ),
+            Promise.resolve()
+          )
+        )
+    );
+  }
 
   // ── COMMAND HANDLER ──────────────────
   // Processes all player input:
@@ -1076,8 +1161,42 @@ else:
           );
       }
 
+      if (room === "loopRoom") {
+        return displayPathMap(
+          ADVENTURE.rooms.loopRoom.desc.split("Paths detected:")[0],
+          [
+            { text: "NORTH — Unknown Node" },
+            { text: "EAST — Unknown Node" },
+            { text: "SOUTH — Unknown Node" },
+            { text: "WEST — Unknown Node" },
+          ]
+        );
+      }
+
+      if (room === "room1") {
+        return displayPathMap(
+          ADVENTURE.rooms.room1.desc.split("Paths detected:")[0],
+          [
+            {
+              text: visitedRooms.core
+                ? "EAST — Core System"
+                : "EAST — Unknown Node",
+              type: visitedRooms.core ? "success" : "system",
+            },
+          ]
+        );
+      }
+
+      // ── CORE ROOM MAP ──────────────────
+      if (room === "core") {
+        return displayPathMap(
+          ADVENTURE.rooms.core.desc.split("Paths detected:")[0],
+          getCorePathLines()
+        );
+      }
+
       // ── OTHER ROOMS ──────────────────
-      return addLine(currentRoom.desc, "system");   
+      return addLine(currentRoom.desc, "system");
 
     // ── GO ──────────────────
     } else if (raw.startsWith("go ")) {

@@ -1174,6 +1174,10 @@ function App() {
       )}
       {screen === "level4" && (
         <Level4
+          initialScore={Object.values(scores).reduce(
+            (total, value) => total + Number(value || 0),
+            0
+          )}
           onComplete={(pts) => completeLevel(4, pts)}
           onBack={() => setScreen("home")}
           onScoreSubmitted={(id, name, score) => {
