@@ -346,6 +346,8 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   const [ifPuzzle, setIfPuzzle] = useState(null);
   const [ifStage, setIfStage] = useState(1);
 
+  const [previousIfDirection, setPreviousIfDirection] = useState(null);
+
   const [firewallBoss, setFirewallBoss] = useState(null);
   
   const [coreExits] = useState(() => {
@@ -875,7 +877,31 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  function getIfElseDirections(previousDirection) {
+    const opposite = {
+      north: "south",
+      south: "north",
+      east: "west",
+      west: "east",
+    };
+
+    const directions = ["north", "south", "east", "west"];
+
+    const availableDirections = previousDirection
+      ? directions.filter((dir) => dir !== opposite[previousDirection])
+      : directions;
+
+    const shuffled = shuffleArray(availableDirections);
+
+    return {
+      trueDir: shuffled[0],
+      falseDir: shuffled[1],
+    };
+  }
+
   function generateIfElsePuzzle(stage = 1) {
+    const route = getIfElseDirections(previousIfDirection);
+
     if (stage === 1) {
       const energy = Math.floor(Math.random() * 100);
       const threshold = 40;
@@ -886,8 +912,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
         title: "Power threshold",
         condition: `energy >= ${threshold}`,
         variables: [`energy = ${energy}`],
-        correct: result ? "north" : "south",
-        explanation: `${energy} >= ${threshold} is ${result ? "TRUE" : "FALSE"}.`
+        trueDir: route.trueDir,
+        falseDir: route.falseDir,
+        correct: result ? route.trueDir : route.falseDir,
+        explanation: `${energy} >= ${threshold} is ${result ? "TRUE" : "FALSE"}.`,
       };
     }
 
@@ -902,10 +930,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
         condition: `access_level >= 3 and system_locked == False`,
         variables: [
           `access_level = ${accessLevel}`,
-          `system_locked = ${systemLocked ? "True" : "False"}`
+          `system_locked = ${systemLocked ? "True" : "False"}`,
         ],
-        correct: result ? "north" : "south",
-        explanation: `Access only succeeds if level is 3 or higher AND the system is not locked.`
+        trueDir: route.trueDir,
+        falseDir: route.falseDir,
+        correct: result ? route.trueDir : route.falseDir,
+        explanation:
+          "Access only succeeds if level is 3 or higher AND the system is not locked.",
       };
     }
 
@@ -921,10 +952,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
       variables: [
         `signal_stable = ${signalStable ? "True" : "False"}`,
         `override_active = ${overrideActive ? "True" : "False"}`,
-        `corruption_level = ${corruptionLevel}`
+        `corruption_level = ${corruptionLevel}`,
       ],
-      correct: result ? "north" : "south",
-      explanation: `The first part needs either signal_stable OR override_active to be true, and corruption_level must be below 60.`
+      trueDir: route.trueDir,
+      falseDir: route.falseDir,
+      correct: result ? route.trueDir : route.falseDir,
+      explanation:
+        "The first part needs either signal_stable OR override_active to be true, and corruption_level must be below 60.",
     };
   }
 
@@ -1094,9 +1128,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
             .then(() => addLine(ifPuzzle.variables.join("\n"), "system"))
             .then(() => addLine("", "system"))
             .then(() => addLine(`if ${ifPuzzle.condition}:`, "system"))
-            .then(() => addLine("    go north", "system"))
+            .then(() => addLine(`    go ${ifPuzzle.trueDir}`, "system"))
             .then(() => addLine("else:", "system"))
-            .then(() => addLine("    go south", "system"))
+            .then(() => addLine(`    go ${ifPuzzle.falseDir}`, "system"))
           );
       }
 
@@ -1207,6 +1241,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
         if (dir === ifPuzzle.correct) {
           
           addScore(10);
+          setPreviousIfDirection(ifPuzzle.correct);
 
           return runBusySequence(() =>
             addLine("> EVALUATING CONDITION...", "system")
@@ -1350,6 +1385,8 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
             ...prev,
             [nextId]: true,
           }));
+
+          setPreviousIfDirection(null);
 
           const puzzle = generateIfElsePuzzle(1);
           setIfPuzzle(puzzle);
