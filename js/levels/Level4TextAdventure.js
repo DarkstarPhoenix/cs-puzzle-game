@@ -3,13 +3,13 @@
 // =====================================================
 
 // Skip directly to the Game Complete screen.
-const DEBUG_SKIP_TO_SCORE = false; // Set to true to skip Level 4 and jump straight to the score submission screen.
+const DEBUG_SKIP_TO_SCORE = true; // Set to true to skip Level 4 and jump straight to the score submission screen.
 
 // Score shown on the Game Complete screen.
 const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
 
 // Enable faster text output (already exists)
-const FAST_MODE = true;
+const FAST_MODE = true; // Set to true to enable faster text output (no typewriter effect)
 
 
 
@@ -339,6 +339,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   const [ifPuzzle, setIfPuzzle] = useState(null);
   const [ifStage, setIfStage] = useState(1);
 
+  const [ifEntryDirection, setIfEntryDirection] = useState(null);
   const [previousIfDirection, setPreviousIfDirection] = useState(null);
 
   const [firewallBoss, setFirewallBoss] = useState(null);
@@ -662,7 +663,8 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
     setRoom(nextRoomId);
 
-    return new Promise(r => setTimeout(r, delay(delayText)))
+    return addLine("> RETURNING TO CORE...", "system")
+      .then(() => new Promise(r => setTimeout(r, delay(delayText))))
       .then(() => {
         const textToShow = getRoomText(nextRoomId);
         return loadNewRoom(textToShow);
@@ -677,12 +679,32 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
     addScore(30);
 
+    const roomNames = {
+      logic: "LOGIC NODE",
+      loop: "LOOP NODE",
+      ifelse: "CONDITIONAL NODE",
+      debug: "DEBUG NODE"
+    };
+
+    const roomTitle = roomNames[roomId] || "NODE";
+
     return runBusySequence(() =>
-      addLine("✅ NODE STABILISED", "success")
-        .then(() => new Promise(r => setTimeout(r, delay(800))))
+      addLine(`✅ ${roomTitle} STABILISED`, "success")
 
         .then(() => {
-          if (bits > 0) return awardBits(bits);
+          playLevel4Sound("unlock");
+          return new Promise(r => setTimeout(r, delay(600)));
+        })
+
+        .then(() => {
+          if (bits > 0) {
+            return addLine(
+              `> +${bits} DATA FRAGMENT${bits > 1 ? "S" : ""} ACQUIRED`,
+              "success"
+            )
+            .then(() => new Promise(r => setTimeout(r, delay(600))))
+            .then(() => awardBits(bits));
+          }
 
           return addLine("> NO DATA RECOVERED", "error")
             .then(() => binaryCode);
@@ -870,6 +892,17 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  function oppositeDirection(direction) {
+    const opposite = {
+      north: "south",
+      south: "north",
+      east: "west",
+      west: "east",
+    };
+
+    return opposite[direction] || null;
+  }
+
   function getIfElseDirections(previousDirection) {
     const opposite = {
       north: "south",
@@ -880,8 +913,12 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
     const directions = ["north", "south", "east", "west"];
 
-    const availableDirections = previousDirection
-      ? directions.filter((dir) => dir !== opposite[previousDirection])
+    const blockedDirection = previousDirection
+      ? opposite[previousDirection]
+      : ifEntryDirection;
+
+    const availableDirections = blockedDirection
+      ? directions.filter((dir) => dir !== blockedDirection)
       : directions;
 
     const shuffled = shuffleArray(availableDirections);
@@ -1242,7 +1279,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
               .then(() => addLine("> PROCESSING...", "system"))
               .then(() => new Promise(r => setTimeout(r, delay(400))))
               .then(() => addLine("✅ CONDITION EVALUATED CORRECTLY", "success"))
+              .then(() => addLine("", "system"))
               .then(() => addLine(`> ${ifPuzzle.explanation}`, "system"))
+              .then(() => addLine("", "system"))
               .then(() => {
                 if (ifStage === 3) {
                   return handleRoomSuccess("ifelse", 3);
@@ -1382,6 +1421,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
           }));
 
           setPreviousIfDirection(null);
+          setIfEntryDirection(oppositeDirection(dir));
 
           const puzzle = generateIfElsePuzzle(1);
           setIfPuzzle(puzzle);
@@ -1619,8 +1659,7 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
               .then(() => new Promise(r => setTimeout(r, delay(800))))
               .then(() => {
                 playLevel4Sound("unlock");
-
-                
+                setTimeout(() => playLevel4Sound("unlock"), 250);             
                 
                 const timeBonus = getTimeBonus();
                 const bitBonus = getBitBonus();
@@ -1747,6 +1786,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
         return;
       }
 
+      playLevel4Sound("unlock");
+      setTimeout(() => playLevel4Sound("unlock"), 300);
+
       return runBusySequence(() =>
         addLine("> EXECUTING exit()", "success")
           .then(() => new Promise(r => setTimeout(r, delay(600))))
@@ -1759,8 +1801,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
     // UNKNOWN COMMAND
     } else {
-      addLine(`Unknown command: '${raw}'. Type 'help' for commands.`, "error");
-      deductScore(5);
+      triggerGlitch(250);
+
+        addLine("> COMMAND NOT RECOGNISED", "error");
+        addLine(`> INPUT RECEIVED: ${raw.toUpperCase() || "EMPTY"}`, "system");
+        addLine("> TYPE 'HELP' FOR AVAILABLE COMMANDS", "system");
+
+        deductScore(5);
     }
 
   }
@@ -1849,13 +1896,40 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   if (won) {
     const scorePercent = Math.round((score / TOTAL_GAME_MAX_SCORE) * 100);
     const stars = scorePercent >= 90 ? "⭐⭐⭐" : scorePercent >= 60 ? "⭐⭐" : "⭐";
+
+    const fragmentCount = binaryCode.length;
+    const completionTimeSeconds = levelStartTime
+      ? Math.round((Date.now() - levelStartTime) / 1000)
+      : 0;
+
+    const minutes = String(Math.floor(completionTimeSeconds / 60)).padStart(2, "0");
+    const seconds = String(completionTimeSeconds % 60).padStart(2, "0");
+
+    const rank =
+      scorePercent >= 90
+        ? "SYSTEM ARCHITECT"
+        : scorePercent >= 70
+        ? "CORE RESTORER"
+        : scorePercent >= 50
+        ? "DIGITAL ESCAPEE"
+        : "SYSTEM SURVIVOR";
+      
+      const rankColor =
+        rank === "SYSTEM ARCHITECT"
+          ? "var(--accent2)"
+          : rank === "CORE RESTORER"
+          ? "var(--accent4)"
+          : rank === "DIGITAL ESCAPEE"
+          ? "var(--accent)"
+          : "var(--accent3)";
+
     return (
       <div className="screen">
         <div className="victory-card">
           <div className="victory-title">ESCAPED!</div>
           <div className="stars">{stars}</div>
           <div style={{ color: "var(--text-dim)", marginBottom: 8 }}>
-            CS Puzzle Game Complete
+            SYSTEM SUCCESSFULLY RESTORED
           </div>
           <div className="victory-score">{score} pts</div>
           <div
@@ -1863,13 +1937,42 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
               color: "var(--text-dim)",
               fontSize: "0.8rem",
               marginBottom: 24,
+              lineHeight: 1.7,
             }}
           >
-            SYSTEM RESTORED — you navigated the Computer Science core, solved the
-            binary firewall, and escaped the digital system.
+            <div style={{ color: "var(--accent3)", marginBottom: 10 }}>
+              MISSION SUMMARY
+            </div>
+
+            <div>All core nodes stabilised.</div>
+            <div>Firewall bypassed successfully.</div>
+            <div>Consciousness transfer complete.</div>
+
             <br />
+
+            <div>Time: {minutes}:{seconds}</div>
+            <div>Fragments Collected: {fragmentCount}/9</div>
+
             <br />
-            <em>So long, and thanks for all the fish.</em>
+
+            <div style={{ color: "var(--accent3)", marginBottom: 4 }}>
+              RANK ACHIEVED
+            </div>
+
+            <div
+              style={{
+                color: rankColor,
+                fontWeight: "bold",
+                fontSize: "1rem",
+                letterSpacing: "0.08em",
+              }}
+            >
+              {rank}
+            </div>
+
+            <br />
+
+            <em>So long, and thanks for all the fish. 🐬</em>
           </div>
           <div style={{ marginBottom: 18 }}>
             <input
