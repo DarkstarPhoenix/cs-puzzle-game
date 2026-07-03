@@ -19,7 +19,7 @@ const GAME_VERSION = "v1.1";
 // Development helper.
 // When true, Level 4 is unlocked without completing Levels 1–3.
 // Set to false before final submission.
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 
 // ======================================================
