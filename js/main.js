@@ -1309,9 +1309,9 @@ function App() {
           onRequestReset={() => setShowResetConfirm(true)}
         />
       )}
-      // ======================================================
-      // Reset Progress Confirmation Dialog
-      // ======================================================
+      {/* ======================================================
+          Reset Progress Confirmation Dialog
+      ====================================================== */}
       {showResetConfirm && (
         <div
           style={{
@@ -1433,9 +1433,9 @@ function App() {
           </div>
         </div>
       )}
-      // ======================================================
-      // Notification Toast
-      // ======================================================
+      {/* ======================================================
+          Notification Toast
+      ====================================================== */}
       {toastQueue.length > 0 && (
         <AchievementToast achievement={toastQueue[0]} onDone={dismissToast} />
       )}
