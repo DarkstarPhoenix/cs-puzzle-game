@@ -1,30 +1,37 @@
-// =====================================================
-// DEVELOPMENT / DEBUG OPTIONS
-// =====================================================
+// ======================================================
+// Level 4 - Text Adventure
+//
+// Final level of the CS Puzzle Game.
+// The player explores a terminal-based digital world,
+// solves puzzles based on previous levels, collects binary
+// fragments and bypasses a firewall to escape.
+// ======================================================
 
+// ======================================================
+// Development Options
+// ======================================================
 // Skip directly to the Game Complete screen.
-const DEBUG_SKIP_TO_SCORE = true; // Set to true to skip Level 4 and jump straight to the score submission screen.
+const DEBUG_SKIP_TO_SCORE = false; // Set to true/false to skip Level 4 and jump straight to the score submission screen.
 
 // Score shown on the Game Complete screen.
 const DEBUG_SCORE = 40; // Set to the score you want to display on the Game Complete screen.
 
 // Enable faster text output (already exists)
-const FAST_MODE = true; // Set to true to enable faster text output (no typewriter effect)
-
-
-
-// ── LEVEL 4 – TEXT ADVENTURE ──────────────────
-// Each room contains:
-// enterFirst -> text shown first time entering
-// enterOther -> text shown on repeat visits
-// desc -> full descriptionshown when player types "look"
-// exits -> available directions
-// puzzle -> optional puzzle for the room
+const FAST_MODE = false; // Set to true/false to enable faster text output (no typewriter effect)
 
 const ENABLE_DEBUG_ROOM = false; // Set to true to enable the debug room
 const ENABLE_IF_ELSE_ROOM = true; // Set to true to enable the if/else room
 
+// ======================================================
+// Adventure Room Data
+// ======================================================
 
+// Defines the text, exits and puzzle behaviour for each room
+// in the text adventure map.
+
+// ======================================================
+// Shared Helpers and Score Constants
+// ======================================================
 const ADVENTURE = {
   start: "room1",
   rooms: {
@@ -274,6 +281,9 @@ You feel your body reforming...
 
 // ── LEVEL 4 – TEXT ADVENTURE ──────────────────
 
+// ======================================================
+// Level 4 Component
+// ======================================================
 function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
@@ -290,8 +300,53 @@ const TOTAL_GAME_MAX_SCORE =
   LEVEL_4_MAX_SCORE;
 
 function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
+
+  // ======================================================
+  // Core Game State
+  // ======================================================
+
+  // Tracks the current room, terminal history, player input,
+  // score, timer and overall win state.
   const [room, setRoom] = useState(ADVENTURE.start);
   const [displayedHistory, setDisplayedHistory] = useState([]);
+  const [started, setStarted] = useState(false);
+  const [digitising, setDigitising] = useState(false);
+  const [input, setInput] = useState("");
+  const [won, setWon] = useState(false);
+  const [awaitingExitCommand, setAwaitingExitCommand] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [glitch, setGlitch] = useState(false);
+
+  // ======================================================
+  // Score and Submission State
+  // ======================================================
+  const [score, setScore] = useState(initialScore);
+  const [levelStartTime, setLevelStartTime] = useState(null);
+  const [playerName, setPlayerName] = useState("");
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
+
+  // ======================================================
+  // Room and Puzzle Progress State
+  // ======================================================
+  // Tracks puzzle stages, collected binary fragments,
+  // visited rooms, completed rooms and special room logic.
+  const [loopCount, setLoopCount] = useState(0);
+  const [logicPuzzle, setLogicPuzzle] = useState(null);
+  const [logicStage, setLogicStage] = useState(1);
+  const [binaryCode, setBinaryCode] = useState([]);
+  const [visitedRooms, setVisitedRooms] = useState({
+    room1: true
+  });  
+  const [completedRooms, setCompletedRooms] = useState({});  
+  const [debugStage, setDebugStage] = useState(1);
+  const [debugPuzzle, setDebugPuzzle] = useState(null);
+  const [debugWrongAttempts, setDebugWrongAttempts] = useState(0);
+  const [ifPuzzle, setIfPuzzle] = useState(null);
+  const [ifStage, setIfStage] = useState(1);
+  const [ifEntryDirection, setIfEntryDirection] = useState(null);
+  const [previousIfDirection, setPreviousIfDirection] = useState(null);
+  const [firewallBoss, setFirewallBoss] = useState(null);
 
   // Initial boot sequence (used once on load)
   const [history] = useState([
@@ -300,50 +355,29 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     { text: "> WARNING: USER DIGITISED", type: "error" },
     { text: ADVENTURE.rooms["room1"].enterFirst, type: "system" },
     { text: "Type: go [direction] / look / help", type: "system" },
-  ]);
+  ]);  
 
-  const [started, setStarted] = useState(false);
-  const [digitising, setDigitising] = useState(false);
-  const [input, setInput] = useState("");
-  const [won, setWon] = useState(false);
-  const [awaitingExitCommand, setAwaitingExitCommand] = useState(false);
-  
-  const [score, setScore] = useState(initialScore);
-  const [levelStartTime, setLevelStartTime] = useState(null);
+  // ======================================================
+  // Refs and Typing Control
+  // ======================================================
 
-  const [playerName, setPlayerName] = useState("");
-  const [scoreSubmitted, setScoreSubmitted] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState("");
-
+  // Refs are used for scrolling, input focus and controlling
+  // the asynchronous terminal typing queue.
   const historyRef = useRef(null);
   const inputRef = useRef(null);
     
   const isMounted = useRef(true);
   const forceBusy = useRef(false);
   const busyDepth = useRef(0);
-
-  const [loopCount, setLoopCount] = useState(0);
-  const [logicPuzzle, setLogicPuzzle] = useState(null);
-  const [logicStage, setLogicStage] = useState(1);
   
-  const [binaryCode, setBinaryCode] = useState([]);
-  const [glitch, setGlitch] = useState(false);
-  const [visitedRooms, setVisitedRooms] = useState({
-    room1: true
-  });
-  const [completedRooms, setCompletedRooms] = useState({});
-  const [isTyping, setIsTyping] = useState(false);
-  const [debugStage, setDebugStage] = useState(1);
-  const [debugPuzzle, setDebugPuzzle] = useState(null);
-  const [debugWrongAttempts, setDebugWrongAttempts] = useState(0);
-  const [ifPuzzle, setIfPuzzle] = useState(null);
-  const [ifStage, setIfStage] = useState(1);
+  // ======================================================
+  // Adventure Configuration
+  // ======================================================
 
-  const [ifEntryDirection, setIfEntryDirection] = useState(null);
-  const [previousIfDirection, setPreviousIfDirection] = useState(null);
-
-  const [firewallBoss, setFirewallBoss] = useState(null);
-  
+  // Randomly assigns the three puzzle rooms to the
+  // North, East and South exits each playthrough.
+  // The layout changes every game while preserving
+  // the same overall adventure flow.
   const [coreExits] = useState(() => {
     const puzzleRooms = shuffleArray(["loopRoom", "logic", "ifelse"]);
 
@@ -356,17 +390,27 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   });
 
-  //const FAST_MODE = true; // for testing true = instant text, false = typewriter effect
+  // ======================================================
+  // Terminal Configuration
+  // ======================================================
 
-  // Debug only:
-  // true  = skip Level 4 and jump straight to the score submission screen.
-  // false = play Level 4 normally.
-  //const DEBUG_SKIP_TO_SCORE = true;
-  //const DEBUG_SCORE = 250;
+  // Controls typing speed and animation delays.
   const CHAR_SPEED = FAST_MODE ? 0 : 28;
   const LINE_DELAY = FAST_MODE ? 0 : 180;
   const delay = (ms) => FAST_MODE ? ms * 0.6 : ms; // speed up all timeouts in fast mode
 
+
+
+  // ======================================================
+  // Audio
+  // ======================================================
+
+  // Audio references for Level 4 sound effects.
+  /**
+   * Plays Level 4-specific sound effects.
+   * Uses real audio files for typing/access sounds and zzfx
+   * for synthetic glitch effects.
+   */
   const typeSound = useRef(
   new Audio("assets/sfx/dragon-studio-single-key-press-393908.mp3")
   );
@@ -377,8 +421,12 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
   const unlockSound = useRef(
     new Audio("assets/sfx/freesound_community-access-granted-87075.mp3")
-  );
+  );  
 
+  /**
+   * Adds text to the terminal with a typewriter effect.
+   * A promise queue ensures lines appear in the correct order.
+   */
   function playLevel4Sound(type) {
     if (!window.soundEnabled) return;
 
@@ -423,6 +471,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     }
   }
 
+  // ======================================================
+  // React Effects
+  // ======================================================
   useEffect(() => {
     if (!started || won) return;
 
@@ -482,6 +533,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
 
   const typingQueue = useRef(Promise.resolve());
 
+  // ======================================================
+  // Utility Functions
+  // ======================================================
+  /**
+   * Forces the terminal into a busy state while a scripted
+   * sequence is running, preventing player input mid-animation.
+   */
   function addLine(text, type = "system", compact = false) {
     setIsTyping(true);
     
@@ -579,6 +637,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     }, 50);
   }
 
+  /**
+   * Loads a new room using a short transfer animation.
+   */
   function runBusySequence(sequence) {
     busyDepth.current++;
     forceBusy.current = true;
@@ -609,6 +670,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     setScore((s) => Math.max(0, s - points));
   }
 
+  /**
+   * Marks a puzzle room as complete and returns the player
+   * to the Core room.
+   */
   function loadNewRoom(text) {
     setDisplayedHistory([]);
 
@@ -645,6 +710,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     return 0;
   }
 
+  // ======================================================
+  // Room Management
+  // ======================================================
   function getRoomText(roomId) {
     const roomData = ADVENTURE.rooms[roomId];
     const hasVisited = visitedRooms[roomId];
@@ -653,6 +721,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     return roomData.enterOther || roomData.desc;
   }
 
+  /**
+   * Shared completion flow for puzzle rooms.
+   * Awards score, binary fragments and completion feedback.
+   */
   function completeRoom(roomId, delayText, latestCode = binaryCode) {
     const nextRoomId = "core";
 
@@ -675,6 +747,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
       });
   }
 
+  /**
+   * Generates the multi-stage logic gate puzzle used in
+   * the Logic Node.
+   */
   function handleRoomSuccess(roomId, bits = 1, transitionDelay = 1200) {
 
     addScore(30);
@@ -725,6 +801,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     );
   }
 
+  // ======================================================
+  // Puzzle Generation
+  // ======================================================
+  /**
+   * Awards fewer fragments if the player takes longer
+   * to escape the loop room.
+   */
   function generateLogicPuzzle(stage = 1) {
     const gates = ["AND", "OR", "XOR", "NAND", "NOR"];
 
@@ -766,6 +849,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  /**
+   * Adds visual glitching to terminal text.
+   */
   function getLoopBits(loopCount) {
     if (loopCount <= 3) return 3; // fast escape
     if (loopCount <= 6) return 2; // medium
@@ -790,6 +876,9 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     }
   }
 
+  /**
+   * Awards binary fragments and updates the current access code.
+   */
   function glitchText(text, intensity = 0.1) {
     const chars = "!@#$%^&*<>?/[]{}";
 
@@ -811,6 +900,10 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
   setTimeout(() => setGlitch(false), duration);
   }
 
+  /**
+   * Generates the conditional routing puzzle used in
+   * the If/Else room.
+   */
   function awardBits(count) {
     return new Promise(resolve => {
       setBinaryCode(prev => {
@@ -929,6 +1022,11 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  /**
+   * Creates the final firewall rule.
+   * The player must apply the rule to the collected binary
+   * fragments and convert the result to decimal.
+   */
   function generateIfElsePuzzle(stage = 1, previousDirection = previousIfDirection) {
     const route = getIfElseDirections(previousDirection);
 
@@ -992,6 +1090,11 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  /**
+   * Builds the dynamic Core room path list.
+   * Discovered rooms show their names and completed rooms
+   * are marked as stabilised.
+   */
   function generateFirewallBoss(codeArray) {
     const original = codeArray.join("");
     const ones = original.split("").filter(bit => bit === "1").length;
@@ -1023,6 +1126,12 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     };
   }
 
+  // ======================================================
+  // Terminal Display Helpers
+  // ======================================================
+  /**
+   * Renders a consistent path map for rooms that show exits.
+   */
   function getCorePathLines() {
     const roomLabels = {
       room1: "Digitising Platform",
@@ -1100,13 +1209,13 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
     );
   }
 
-  // ── COMMAND HANDLER ──────────────────
-  // Processes all player input:
-  // help -> show commands
-  // look -> show room descriptions
-  // go -> move between rooms
-  // solve -> attempt puzzles
-  // uknown -> error handling
+  // ======================================================
+  // Command Processing
+  // ======================================================
+
+  // Processes every command entered by the player.
+  // Handles navigation, puzzle solving, room progression,
+  // firewall interaction and error handling.
   function handleCommand(cmd) {
     if (isTyping) return;
 
@@ -1762,8 +1871,6 @@ function Level4({ onComplete, onBack, onScoreSubmitted, initialScore = 0 }) {
       if (currentRoom.puzzle) {
         if (answer === currentRoom.puzzle.answer) {
           const nextRoom = ADVENTURE.rooms[currentRoom.puzzle.success];
-
-          const bit = Math.round(Math.random());
 
           setRoom(currentRoom.puzzle.success);
 

@@ -1,5 +1,18 @@
-// ── LEVEL 3 – LOGIC GATES ─────────────────────
-// ── GATE DATA ─────────────────────────────────
+// ======================================================
+// Level 3 - Logic Gates
+//
+// Teaches AND, OR, NOT, NAND, NOR and XOR gates through
+// interactive circuit diagrams, truth tables and a
+// progressively harder challenge mode.
+// ======================================================
+
+// ======================================================
+// Gate Definitions
+// ======================================================
+
+// Data used by practice mode to display gate descriptions,
+// real-world examples, input counts and output functions.
+
 const GATE_DATA = [
   {
     id: "AND",
@@ -52,6 +65,11 @@ const GATE_DATA = [
 ];
  
 // ── HELPERS ───────────────────────────────────
+
+/**
+ * Calculates the output for a named logic gate.
+ * Used by generated challenge questions.
+ */
 function computeGateValue(id, a, b) {
   switch (id) {
     case "AND":  return a & b;
@@ -64,6 +82,9 @@ function computeGateValue(id, a, b) {
   }
 }
  
+/**
+ * Builds the truth table rows for the selected gate.
+ */
 function getTruthRows(gate) {
   if (gate.inputs === 1)
     return [[0, gate.fn(0)], [1, gate.fn(1)]];
@@ -75,6 +96,10 @@ function getTruthRows(gate) {
   ];
 }
 
+/**
+ * Shuffles an array using Fisher-Yates.
+ * Keeps questions and answer buttons varied between runs.
+ */
 function shuffleLevel3Array(array) {
   const shuffled = [...array];
 
@@ -86,19 +111,27 @@ function shuffleLevel3Array(array) {
   return shuffled;
 }
 
+// Returns either 0 or 1 for generated gate inputs.
 function randomBit() {
   return Math.random() < 0.5 ? 0 : 1;
 }
 
+// Selects one random item from an array.
 function pickRandom(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
+// Creates a unique key so generated questions are not duplicated.
 function createQuestionSignature(...parts) {
   return parts.join("|");
 }
  
 // ── SVG GATE BODY PATH ────────────────────────
+/**
+ * Returns the SVG path used to draw each logic gate shape.
+ * This keeps the visual diagrams consistent across practice
+ * and challenge components.
+ */
 function gateBodyPath(id, gx, gy, gw, gh, cx, cy) {
   if (id === "AND" || id === "NAND")
     return `M ${gx} ${gy} L ${gx} ${gy+gh} L ${gx+gw/2} ${gy+gh} A ${gh/2} ${gh/2} 0 0 0 ${gx+gw/2} ${gy} Z`;
@@ -111,8 +144,12 @@ function gateBodyPath(id, gx, gy, gw, gh, cx, cy) {
   return "";
 }
  
-// ── CHALLENGE PUZZLES — 15 total ──────────────
- 
+// ======================================================
+// Verified Challenge Puzzle Bank
+// ======================================================
+
+// These fixed puzzles are manually checked and used for
+// higher-tier identify-gate questions.
 const VERIFIED_PUZZLES = [
  
   // ── TIER 1: Single gate — find the output (3 questions) ──
@@ -245,6 +282,10 @@ const VERIFIED_PUZZLES = [
 
 const TIER4_IDENTIFY_BANK = VERIFIED_PUZZLES.filter((p) => p.tier === 4);
 
+/**
+ * Builds the full Level 3 challenge by combining generated
+ * questions with verified expert questions.
+ */
 function generateLevel3Puzzles() {
   const tier1 = generateTier1Level3Questions();
   const tier2 = generateTier2Level3Questions();
@@ -261,6 +302,10 @@ function generateLevel3Puzzles() {
   ];
 }
 
+/**
+ * Generates Tier 1 questions.
+ * Focus: single gate output.
+ */
 function generateTier1Level3Questions() {
   const gates = ["AND", "OR", "XOR", "NAND", "NOR"];
 
@@ -283,6 +328,10 @@ function generateTier1Level3Questions() {
   });
 }
 
+/**
+ * Generates Tier 2 questions.
+ * Focus: two-gate output chains.
+ */
 function generateTier2Level3Questions() {
   const firstGates = ["AND", "OR", "XOR", "NAND", "NOR"];
   const secondGates = ["NOT", "AND", "OR", "XOR"];
@@ -333,6 +382,10 @@ function generateTier2Level3Questions() {
   return questions;
 }
 
+/**
+ * Generates Tier 3 questions.
+ * Focus: three-gate output chains.
+ */
 function generateTier3Level3Questions() {
   const gate1Options = ["AND", "OR", "XOR", "NAND", "NOR"];
   const gate2Options = ["AND", "OR", "XOR"];
@@ -385,11 +438,19 @@ function generateTier3Level3Questions() {
   return questions;
 }
 
+/**
+ * Selects Tier 4 identify-gate questions from the verified bank.
+ */
 function generateTier4Level3Questions() {
   return shuffleLevel3Array(TIER4_IDENTIFY_BANK).slice(0, 3);
 }
  
-// SVG COMPONENTS
+// ======================================================
+// SVG Diagram Styling
+// ======================================================
+
+// Wire colours represent binary signal states.
+// Green = 1, red = 0, grey = hidden/neutral, blue = unknown.
 const WIRE_ON      = "#1D9E75";
 const WIRE_OFF     = "#A32D2D";
 const WIRE_NEUTRAL = "#6a7a9a";
@@ -397,6 +458,11 @@ const WIRE_Q       = "#378ADD";
 const wireColor = (v) => (v === 1 ? WIRE_ON : WIRE_OFF);
  
 // ── Practice mode: interactive diagram with clickable input circles ──
+/**
+ * Interactive practice diagram.
+ * Players can click input circles to toggle binary values
+ * and immediately see the output change.
+ */
 function GateDiagram({ gateId, inputA, inputB, output, onToggleA, onToggleB }) {
   const isSingle = gateId === "NOT";
   const bubble   = gateId === "NAND" || gateId === "NOR";
@@ -481,6 +547,10 @@ function GateDiagram({ gateId, inputA, inputB, output, onToggleA, onToggleB }) {
 }
  
 // ── Challenge: single gate diagram ──
+/**
+ * Renders a single-gate challenge diagram.
+ * Used for both output questions and identify-the-gate questions.
+ */
 function ChallengeSVGSingle({ gate1, a, b, isIdentify, target }) {
   const isSingle = gate1 === "NOT";
   const bubble   = gate1 === "NAND" || gate1 === "NOR";
@@ -556,6 +626,10 @@ function ChallengeSVGSingle({ gate1, a, b, isIdentify, target }) {
 }
  
 // ── Challenge: two-gate chain diagram ──
+/**
+ * Renders a two-gate challenge diagram.
+ * Intermediate wires stay neutral so the answer is not revealed.
+ */
 function ChallengeSVGChain({ gate1, gate2, a, b, cInput, isIdentifyChain, target }) {
   const g1x = 170, g1y = 35, gw = 80, gh = 60;
   const g2x = 370, g2y = 35;
@@ -650,6 +724,10 @@ function ChallengeSVGChain({ gate1, gate2, a, b, cInput, isIdentifyChain, target
 }
  
 // ── Challenge: three-gate chain diagram ──
+/**
+ * Renders a three-gate challenge diagram for harder questions.
+ * Intermediate wires are neutral to encourage manual reasoning.
+ */
 function ChallengeSVGThreeChain({ gate1, gate2, gate3, a, b, cInput }) {
   const gw = 64, gh = 52;
   const g1x = 60,  g1y = 44, cy1 = g1y + gh/2;
@@ -723,8 +801,15 @@ function ChallengeSVGThreeChain({ gate1, gate2, gate3, a, b, cInput }) {
   );
 }
  
-// LEVEL 3 — PRACTICE MODE
-function Level3Practice({ onProceedToChallenge, onBack }) {
+// ======================================================
+// Practice Mode
+// ======================================================
+
+/**
+ * Practice mode for exploring gates interactively.
+ * Includes live diagrams, truth tables and real-world examples.
+ */
+function Level3Practice({ onBack }) {
   const [gateIdx, setGateIdx]     = useState(0);
   const [inputA, setInputA]       = useState(0);
   const [inputB, setInputB]       = useState(0);
@@ -735,6 +820,7 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
   const rows   = getTruthRows(gate);
   const currentRowKey = gate.inputs === 1 ? `${inputA}` : `${inputA}${inputB}`;
  
+  // Changes the selected gate and resets the practice inputs.
   function selectGate(i) {
     setGateIdx(i);
     setInputA(0);
@@ -905,7 +991,15 @@ function Level3Practice({ onProceedToChallenge, onBack }) {
   );
 }
  
-// LEVEL 3 — CHALLENGE MODE
+// ======================================================
+// Challenge Mode
+// ======================================================
+
+/**
+ * Challenge mode for Level 3.
+ * Handles generated puzzles, scoring, streak bonuses,
+ * mistakes, achievements and the final results screen.
+ */
 function Level3Challenge({ onComplete, onBack, onAchievement }) {
   const [pIdx, setPIdx]         = useState(0);
   const [answered, setAnswered] = useState(false);
@@ -939,6 +1033,10 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
   const tierColors = { 1: "#00f5ff", 2: "#ffd60a", 3: "#ff006e", 4: "#ff006e", 5: "#b66bff" };
   const tierColor  = tierColors[p.tier] || "var(--accent)";
  
+  /**
+   * Checks the selected answer and updates score, streak,
+   * mistakes and first-correct achievement state.
+   */
   function checkAnswer(val) {
     if (answered) return;
     const correct = String(val) === String(p.answer);
@@ -977,11 +1075,13 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
     }
   }
  
+  // Moves to the next puzzle or opens the results screen.
   function next() {
     if (pIdx + 1 >= puzzles.length) setDone(true);
     else { setPIdx(i => i+1); setAnswered(false); setSelected(null); }
   }
  
+  // Final results screen shown after all challenge puzzles are complete.
   if (done) {
     const maxScore = puzzles.reduce((s, q) => s + q.tier * 80, 0);
     const pct   = Math.round(score / maxScore * 100);
@@ -1242,12 +1342,20 @@ function Level3Challenge({ onComplete, onBack, onAchievement }) {
   );
 }
  
-// LEVEL 3 WRAPPER — Practice | Challenge tabs
-// This is the single component used for screen "level 3"
+// ======================================================
+// Level 3 Wrapper
+// ======================================================
+
+/**
+ * Top-level Level 3 component.
+ * Shows the intro screen and switches between Practice
+ * and Challenge tabs.
+ */
 function Level3Wrapper({ onComplete, onBack, onAchievement }) {
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
  
+  // Shared styling for the Practice / Challenge tabs.
   const tabStyle = (active) => ({
     flex: 1, padding: "10px 0",
     border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
@@ -1259,6 +1367,7 @@ function Level3Wrapper({ onComplete, onBack, onAchievement }) {
     cursor: "pointer", transition: "all 0.2s", textAlign: "center",
   });
 
+  // Intro screen shown before the player starts Level 3.
   if (!started) {
     return (
       <div className="screen">
@@ -1326,10 +1435,7 @@ function Level3Wrapper({ onComplete, onBack, onAchievement }) {
       </div>
  
       {tab === "practice" && (
-        <Level3Practice
-          onProceedToChallenge={() => setTab("challenge")}
-          onBack={onBack}
-        />
+        <Level3Practice onBack={onBack} />
       )}
       {tab === "challenge" && (
         <Level3Challenge

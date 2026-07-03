@@ -1,12 +1,23 @@
-// ── LEVEL 2 – IF / ELSE + LOOPS QUESTION GENERATOR ───────────────
-function randomFrom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
+// ======================================================
+// Level 2 - If / Else and Loops
+//
+// Introduces Python decision making and iteration through
+// interactive practice modules before testing the player
+// with progressively harder challenge questions.
+// ======================================================
 
+/**
+ * Randomises the order of an array.
+ * Used to keep challenge questions and answer options fresh.
+ */
 function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+/**
+ * Creates a Tier 1 question where the player predicts
+ * the output of a simple if/else statement.
+ */
 function makeIfElseOutputQuestion({
   context,
   variableLine,
@@ -34,6 +45,10 @@ function makeIfElseOutputQuestion({
   };
 }
 
+/**
+ * Creates a Tier 2 question where the player chooses
+ * the correct condition to complete the code.
+ */
 function makeMissingConditionQuestion({
   context,
   variableLine,
@@ -64,6 +79,9 @@ function makeMissingConditionQuestion({
   };
 }
 
+/**
+ * Creates a Tier 3 question covering if / elif / else logic.
+ */
 function makeElifOutputQuestion({
   context,
   variableLine,
@@ -95,6 +113,10 @@ function makeElifOutputQuestion({
   };
 }
 
+/**
+ * Creates a Tier 5 question demonstrating break
+ * and continue behaviour.
+ */
 function makeLoopOutputQuestion({
   context,
   codeLines,
@@ -135,6 +157,10 @@ function makeBreakContinueQuestion({
   };
 }
 
+/**
+ * Generates Tier 1 challenge questions.
+ * Focus: if / elif / else logic.
+ */
 function generateTier1IfElseQuestions() {
   const questions = [];
 
@@ -216,6 +242,10 @@ function generateTier1IfElseQuestions() {
   return shuffleArray(questions);
 }
 
+/**
+ * Generates Tier 2 challenge questions.
+ * Focus: if / elif / else logic.
+ */
 function generateTier2MissingConditionQuestions() {
   const questions = [];
 
@@ -292,6 +322,10 @@ function generateTier2MissingConditionQuestions() {
   return shuffleArray(questions);
 }
 
+/**
+ * Generates Tier 3 challenge questions.
+ * Focus: if / elif / else logic.
+ */
 function generateTier3ElifQuestions() {
   const questions = [];
 
@@ -346,6 +380,10 @@ function generateTier3ElifQuestions() {
   return shuffleArray(questions);
 }
 
+/**
+ * Generates Tier 4 challenge questions.
+ * Focus: loops.
+ */
 function generateTier4LoopQuestions() {
   const questions = [];
 
@@ -417,6 +455,10 @@ function generateTier4LoopQuestions() {
   return shuffleArray(questions);
 }
 
+/**
+ * Generates Tier 5 challenge questions.
+ * Focus: break and continue statements.
+ */
 function generateTier5BreakContinueQuestions() {
   const questions = [];
 
@@ -467,10 +509,17 @@ function generateTier5BreakContinueQuestions() {
   return shuffleArray(questions);
 }
 
+/**
+ * Selects a random subset of questions from a tier.
+ */
 function takeQuestions(questionList, count) {
   return shuffleArray(questionList).slice(0, count);
 }
 
+/**
+ * Builds the complete Level 2 challenge by combining
+ * questions from all five difficulty tiers.
+ */
 function generateIfElseQuestions() {
   const tier1 = generateTier1IfElseQuestions();
   const tier2 = generateTier2MissingConditionQuestions();
@@ -488,7 +537,20 @@ function generateIfElseQuestions() {
 }
 
 // ── LEVEL 2 – IF/ELSE ─────────────────────────
+/**
+ * Main Level 2 component.
+ * Handles the introduction, practice modules,
+ * challenge mode, scoring, streak bonuses and
+ * final results screen.
+ */
 function Level2({ onComplete, onBack, onAchievement }) {
+
+  // ======================================================
+  // Level State
+  // ======================================================
+
+  // Tracks the current practice module, challenge progress,
+  // score, streaks and overall completion state.
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
   const [practiceSection, setPracticeSection] = useState("basics");
@@ -512,14 +574,18 @@ function Level2({ onComplete, onBack, onAchievement }) {
   const [lastBonus, setLastBonus] = useState(null);
   const [showStreakBanner, setShowStreakBanner] = useState(false);
   const [done, setDone] = useState(false);
-  const [mistakes, setMistakes] = useState(0); // ── NEW
-  const [firstCorrect, setFirstCorrect] = useState(false); // ── NEW
+  const [mistakes, setMistakes] = useState(0);
+  const [firstCorrect, setFirstCorrect] = useState(false);
 
   const [questions] = useState(() => generateIfElseQuestions());
 
   const q = questions[qIdx];
   const progress = (qIdx / questions.length) * 100;
 
+  /**
+   * Handles answer selection during the challenge.
+   * Updates score, streak bonuses and achievements.
+   */
   function choose(opt) {
     if (answered) return;
 
@@ -575,6 +641,10 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
   const isCorrect = answered && q.correctAnswers.includes(selected);
 
+  /**
+   * Evaluates the comparison selected in the
+   * Basics practice module.
+   */
   function evaluatePracticeCondition() {
     if (practiceOperator === ">") return practiceValue > practiceTarget;
     if (practiceOperator === "<") return practiceValue < practiceTarget;
@@ -599,17 +669,21 @@ function Level2({ onComplete, onBack, onAchievement }) {
 
   const logicResult = evaluateLogicCondition();
 
+  // Generate the values produced by the example for-loop.
   const loopValues = Array.from(
     { length: loopRange },
     (_, i) => i
   );
 
+  // Simulate the while loop for the visualiser.
   const whileValues = [];
 
   for (let i = 0; i < whileLimit; i++) {
     whileValues.push(i);
   }
 
+  // Simulate break or continue so the visualiser
+  // matches real Python behaviour.
   const breakValues = [];
 
   for (let i = 0; i < 10; i++) {
@@ -624,8 +698,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     breakValues.push(i);
   }
 
-
-
+  // Human-readable descriptions used by the Basics module.
   const operatorDescriptions = {
     ">": "Greater than",
     "<": "Less than",
@@ -635,6 +708,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     "!=": "Not equal to",
   };
 
+  // Shared styling for the Practice / Challenge tabs.
   const tabStyle = (active) => ({
     flex: 1,
     padding: "10px 0",
@@ -650,6 +724,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     textAlign: "center",
   });
 
+  // Shared styling for the practice module buttons.
   const practiceSectionStyle = (active) => ({
     flex: 1,
     padding: "8px 10px",
@@ -662,6 +737,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     cursor: "pointer",
   });
 
+  // Shared styling for the loop practice sub-tabs.
   const loopTabStyle = (active) => ({
     padding: "10px 24px",
     border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
@@ -675,6 +751,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     cursor: "pointer",
   });
 
+  // Display the introduction screen before the level begins.
   if (!started) {
     return (
       <div className="screen">
@@ -717,6 +794,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
     );
   }
 
+  // Display the final results screen after the challenge is completed.
   if (done) {
     const accuracy = Math.round(
       ((questions.length - mistakes) / questions.length) * 100
@@ -754,6 +832,8 @@ function Level2({ onComplete, onBack, onAchievement }) {
             title: "Syntax Trainee",
             color: "var(--accent2)",
           };
+
+    // Main gameplay interface containing Practice and Challenge modes.      
     return (
       <div className="screen">
         <div className="victory-card">

@@ -1,8 +1,21 @@
-// ── LEVEL 1 - BINARY TO DECIMAL QUESTIONS ───────────────
+// ======================================================
+// Level 1 - Binary to Decimal
+//
+// Teaches binary place values through practice tools,
+// then tests the player with binary-to-decimal and
+// decimal-to-binary challenge questions.
+// ======================================================
+
+/**
+ * Generates a fresh set of Level 1 challenge questions.
+ * The question set gradually increases in difficulty and
+ * includes both binary-to-decimal and decimal-to-binary tasks.
+ */
 function generateBinaryQuestions() {
   const questions = [];
   const used = new Set();
 
+  // Prevents repeated numbers appearing in the same challenge run.
   function getUniqueNumber(min, max) {
     let num;
 
@@ -14,6 +27,7 @@ function generateBinaryQuestions() {
     return num;
   }
 
+  // Creates a binary-to-decimal question with a worked explanation.
   function makeBinToDec(num) {
     const binary = num.toString(2);
 
@@ -65,7 +79,19 @@ function generateBinaryQuestions() {
 }
   
 // ── LEVEL 1 – BINARY TO DECIMAL ───────────────
+/**
+ * Main Level 1 component.
+ * Manages the introduction screen, practice mode, challenge mode,
+ * scoring, streak bonuses and final results screen.
+ */
 function Level1({ onComplete, onBack, onAchievement }) {
+
+  // ======================================================
+  // Level State
+  // ======================================================
+
+  // State is split between practice mode, challenge progress,
+  // scoring, streak tracking and final completion.
   const [started, setStarted] = useState(false);
   const [tab, setTab] = useState("practice");
   const [questions] = useState(() => generateBinaryQuestions());
@@ -92,6 +118,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
   const q = questions[qIdx];
   const progress = (qIdx / questions.length) * 100;
 
+  // Changes the challenge card styling as questions become harder.
   const difficultyTheme =
   qIdx < 5
     ? {
@@ -117,6 +144,8 @@ function Level1({ onComplete, onBack, onAchievement }) {
         bg: "rgba(255,215,0,0.1)",
       };
 
+  // Place values change depending on whether the player is practising
+  // with 4-bit or 8-bit binary numbers.      
   const practicePlaceValues =
     practiceMode === 8
       ? [128, 64, 32, 16, 8, 4, 2, 1]
@@ -132,7 +161,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
 
   const practiceMatch = practiceDecimal === practiceTarget;
 
-  const practiceTableLimit = practiceMode === 4 ? 16 : 16;
+  const practiceTableLimit = 16;
 
   const practiceTableRows = Array.from(
     { length: practiceTableLimit },
@@ -143,6 +172,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     
   );
 
+  // Adds a small visual pulse whenever the practice decimal total changes.
   useEffect(() => {
     setTotalPulse(true);
 
@@ -153,6 +183,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     return () => clearTimeout(timer);
   }, [practiceDecimal]);
 
+  // Intro screen shown before the player starts Level 1.
   if (!started) {
     return (
       <div className="screen">
@@ -197,6 +228,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     );
   }
 
+  // Shared styling for the Practice / Challenge tabs.
   const tabStyle = (active) => ({
     flex: 1,
     padding: "10px 0",
@@ -212,6 +244,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     textAlign: "center",
   });
 
+  // Shared styling for the practice sub-section buttons.
   const practiceSectionStyle = (active) => ({
     flex: 1,
     padding: "8px 10px",
@@ -224,6 +257,9 @@ function Level1({ onComplete, onBack, onAchievement }) {
     cursor: "pointer",
   });
 
+  /**
+   * Generates a random decimal target for the Decimal Trainer.
+   */
   function randomPracticeTarget(bits = practiceMode) {
 
     const max = bits === 8 ? 255 : 15;
@@ -235,6 +271,10 @@ function Level1({ onComplete, onBack, onAchievement }) {
     playSound("click");
   }
 
+  /**
+   * Switches between 4-bit and 8-bit practice mode.
+   * Also resets the bit buttons so the display stays consistent.
+   */
   function setPracticeBitMode(bits) {
     setPracticeMode(bits);
 
@@ -248,6 +288,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     randomPracticeTarget(bits);
   }
 
+  // Toggles a bit in the practice tools between 0 and 1.
   function togglePracticeBit(index) {
     setPracticeBits(bits =>
       bits.map((bit, i) => i === index ? (bit === 0 ? 1 : 0) : bit)
@@ -256,6 +297,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     playSound("click");
   }
 
+  // Toggles a bit during decimal-to-binary challenge questions.
   function toggleChallengeBit(index) {
     setChallengeBits(bits =>
       bits.map((bit, i) => i === index ? (bit === 0 ? 1 : 0) : bit)
@@ -268,6 +310,10 @@ function Level1({ onComplete, onBack, onAchievement }) {
     setChallengeBits([0, 0, 0, 0, 0, 0, 0, 0]);
   }
 
+  /**
+   * Checks the player's answer, updates score and streak,
+   * and awards the first-correct achievement when appropriate.
+   */
   function checkAnswer() {
     if (answered) return;
 
@@ -318,6 +364,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     }
   }
 
+  // Moves to the next challenge question or opens the results screen.
   function next() {
     if (qIdx + 1 >= questions.length) {
       setDone(true);
@@ -334,6 +381,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
     }
   }
 
+  // Final results screen shown after all challenge questions are complete.
   if (done) {
     const stars = score >= 500 ? "⭐⭐⭐" : score >= 300 ? "⭐⭐" : "⭐";
 
@@ -372,6 +420,7 @@ function Level1({ onComplete, onBack, onAchievement }) {
             color: "var(--accent2)",
           };
 
+    // Main gameplay screen containing Practice and Challenge tabs.          
     return (
       <div className="screen">
         <div className="victory-card">

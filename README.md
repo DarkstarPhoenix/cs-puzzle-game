@@ -1,101 +1,210 @@
-# cs-puzzle-game
-This is an interactive educational game designed to introduce core computer science concepts to users aged 14–17. The system combines puzzle-based learning with a text-based adventure to create an engaging and structured learning experience.
+# CS Puzzle Game
 
-The game is divided into four levels, each focusing on a key topic:
-• Level 1 – Binary to Decimal conversion  
-• Level 2 – If/Else logic + Loops
-• Level 3 – Logic Gates  
-• Level 4 – Text-based adventure integrating all concepts  
+An interactive educational game designed to introduce core computer
+science concepts to students aged **14--17** through puzzle-based
+learning and a terminal-style adventure. The project was developed as
+part of a **University of Lincoln** Computer Science team software
+engineering module.
 
-The aim of the artefact is to improve understanding of fundamental computing concepts through interactive problem-solving. The system is designed to progressively increase in difficulty, allowing users to build knowledge step-by-step.
+------------------------------------------------------------------------
 
-The goals of the project are:
-• To provide an engaging and accessible introduction to computer science  
-• To support learning through interactive puzzles and feedback  
-• To reinforce concepts by applying them in a final integrated challenge (firewall boss)  
-• To create a system that is easy to use, maintain, and extend
- 
-Instruction For Use
-To use the artefact, open the application in a web browser. The user will be presented with a home screen where they can select a level to play.
+# Educational Design
 
-However if this doesn't work. Open folder in VS Code and ensure "Live Server" Extension is installed. Right click index.html, and click "Open with Live Server"
+Each level follows the same learning structure:
 
-Level 1 – Binary to Decimal
+1.  Learn the concept through guided explanations.
+2.  Experiment using interactive practice activities.
+3.  Complete a progressively harder challenge.
+4.  Receive immediate feedback, a score and an overall rank.
 
-Users learn how binary numbers are converted into decimal values through an interactive practice mode. Visual place values, binary toggles, and worked examples help explain the conversion process.
+The final level combines concepts from the previous three levels into a
+single integrated text adventure.
 
-Challenge mode presents progressively harder binary and decimal conversion questions, rewarding streaks, scores, and ranks based on performance.
+------------------------------------------------------------------------
 
-Level 2 – If / Else + Loops
+# Features
 
-Users learn how Python conditional statements, comparison operators, boolean logic, and loops work.
+-   Four educational learning levels
+-   Practice and Challenge modes
+-   Progressive difficulty
+-   Live score and streak systems
+-   Achievement system
+-   Interactive command-line adventure
+-   Dynamic room randomisation
+-   Firebase leaderboard
+-   Background music and sound effects
+-   Persistent progress using browser storage
 
-Practice mode includes:
-• If / Else examples
-• Comparison operators
-• AND / OR / NOT logic
-• Interactive For Loop visualiser
-• Interactive While Loop visualiser
-• Break and Continue demonstrations
+------------------------------------------------------------------------
 
-Challenge mode contains 15 progressively harder questions covering condition evaluation, branching logic, loops, and program flow. Players earn points, build streaks, and receive a final rank based on their performance.
+# Technologies Used
 
-Level 3 – Logic Gates
+-   HTML5
+-   CSS3
+-   JavaScript (ES6)
+-   React
+-   Firebase Firestore
+-   Local Storage
 
-Users learn how digital logic circuits process binary inputs to produce outputs. Practice mode includes interactive gate diagrams where users can toggle inputs and instantly see how the output changes. Each gate also includes a truth table and real-world examples to reinforce understanding.
+------------------------------------------------------------------------
 
-The level introduces:
-• AND gates
-• OR gates
-• NOT gates
-• NAND gates
-• NOR gates
-• XOR gates
+# Installation
 
-Challenge mode contains 15 progressively more difficult puzzles covering:
-• Single-gate output evaluation
-• Multi-gate circuit tracing
-• Logic chain analysis
-• Identifying missing gates
-• Working backwards through circuits
+1.  Clone or download the repository.
+2.  Open the project in **Visual Studio Code**.
+3.  Install the **Live Server** extension if required.
+4.  Right-click `index.html`.
+5.  Select **Open with Live Server**.
 
-Players earn points through correct answers, build score multipliers through streaks, and receive a final rank based on their overall performance.
+The game will launch in your default web browser.
 
-Level 4 – Text Adventure  
-Users navigate a system using text commands such as:
-• go north / south / east / west  
-• look  
-• solve [answer]
-• help
-Clickable command shortcuts are shown on screen. Clicking a command places it into the input box, then the player presses Enter to run it.
+------------------------------------------------------------------------
 
-Players explore different rooms, solve puzzles, and collect binary fragments. These fragments are used to unlock the final firewall challenge.
-Firewall Boss  
-Users must apply rules to transform binary data and convert the result into a decimal value. This requires knowledge from previous levels.
-General Controls  
-• Input commands or answers using the text input field  
-• Follow on-screen instructions and prompts  
-• Progress through levels by solving puzzles  
-The system provides feedback throughout to guide the user and support learning.
+# Gameplay Overview
 
+## Level 1 -- Binary to Decimal
 
-## Asset Credits
+Learn binary place values using interactive binary switches before
+completing progressively harder binary conversion challenges.
 
-### Sound Effects
-- Keyboard typing sound:
-  “Dragon Studio Single Key Press” sourced from Pixabay
-  https://pixabay.com/sound-effects/
+**Topics covered**
 
-- Access granted sound:
-  “Access Granted” sourced from Freesound Community
-  https://pixabay.com/sound-effects/
+-   Binary place values
+-   Binary to decimal conversion
+-   Decimal to binary conversion
 
-### Background Music
-- Background music tracks sourced from Pixabay Music
-  https://pixabay.com/music/
+------------------------------------------------------------------------
 
-Tracks used:
-- Inplusmusic — Technology Science Digital Technology Music
-- Miromaxmusic — Cyber Dance No Copyright DJ Music
-- Miromaxmusic — Cyber Sport No Copyright DJ Music
-- Miromaxmusic — Sport Cyber No Copyright DJ Music
+## Level 2 -- If / Else and Loops
+
+Introduces conditional logic, comparison operators and iteration through
+interactive practice activities and generated challenge questions.
+
+**Topics covered**
+
+-   If / Else
+-   Comparison operators
+-   Boolean logic
+-   For loops
+-   While loops
+-   Break and Continue
+
+------------------------------------------------------------------------
+
+## Level 3 -- Logic Gates
+
+Explore digital logic using interactive gate diagrams, truth tables and
+progressively harder circuit puzzles.
+
+**Topics covered**
+
+-   AND
+-   OR
+-   NOT
+-   NAND
+-   NOR
+-   XOR
+
+------------------------------------------------------------------------
+
+## Level 4 -- Text Adventure
+
+The final challenge places the player inside a digitised computer
+system.
+
+Navigate using commands such as:
+
+-   `go north`
+-   `go south`
+-   `go east`
+-   `go west`
+-   `go firewall`
+-   `look`
+-   `solve [answer]`
+-   `help`
+
+Players solve multi-stage puzzles, collect binary fragments and defeat
+the firewall by applying concepts learned throughout the game.
+
+------------------------------------------------------------------------
+
+# Scoring
+
+Players are rewarded for:
+
+-   Correct answers
+-   Consecutive answer streaks
+-   Fast completion
+-   Collecting binary fragments
+-   Completing every level
+
+Incorrect answers and unnecessary actions reduce the player's score.
+
+------------------------------------------------------------------------
+
+# Leaderboard
+
+After completing the final level, players can submit their score to the
+global Firebase Firestore leaderboard and compare their performance with
+other players.
+
+------------------------------------------------------------------------
+
+# Project Structure
+
+``` text
+main.js
+Level1Binary.js
+Level2IfElse.js
+Level3LogicGates.js
+Level4TextAdventure.js
+firebase.js
+assets/
+```
+
+------------------------------------------------------------------------
+
+# Screenshots
+
+Add screenshots before submission.
+
+Suggested images:
+
+-   Main Menu
+-   Level 1 Practice
+-   Level 2 Challenge
+-   Level 3 Logic Gates
+-   Level 4 Text Adventure
+-   Final Results Screen
+-   Leaderboard
+
+------------------------------------------------------------------------
+
+# Acknowledgements
+
+## Sound Effects
+
+-   Keyboard typing sound --- Pixabay
+-   Access Granted --- Freesound Community
+
+## Background Music
+
+Music sourced from Pixabay Music.
+
+Tracks include:
+
+-   Technology Science Digital Technology Music
+-   Cyber Dance
+-   Cyber Sport
+-   Sport Cyber
+
+------------------------------------------------------------------------
+
+# Future Improvements
+
+-   Additional achievements
+-   Expanded puzzle banks
+-   Accessibility improvements
+-   Mobile optimisation
+-   Additional sound effects
+-   More educational levels

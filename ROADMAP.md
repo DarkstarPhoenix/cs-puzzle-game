@@ -24,14 +24,14 @@
   - [ ] Achievements
   - [ ] Settings
 
-- [ ] Add audio feedback system
-  - [ ] Ensure all clickable buttons have audio feedback
-  - [ ] Add click sound to menu navigation
-  - [ ] Add click sound to tab switches
-  - [ ] Add click sound to Back/Menu buttons
-  - [ ] Add click sound to Next/Start buttons
-  - [ ] Keep correct/wrong sounds for answer feedback
-  - [ ] Check audio does not double-trigger on quiz answers
+- [x] Add audio feedback system
+  - [x] Ensure all clickable buttons have audio feedback
+  - [x] Add click sound to menu navigation
+  - [x] Add click sound to tab switches
+  - [x] Add click sound to Back/Menu buttons
+  - [x] Add click sound to Next/Start buttons
+  - [x] Keep correct/wrong sounds for answer feedback
+  - [x] Check audio does not double-trigger on quiz answers
 
 - [ ] Update README documentation
   - [ ] Installation/setup instructions
@@ -44,7 +44,6 @@
   - [ ] Screenshots/GIFs
 
 - [ ] Disable TEST_MODE for release
-- [ ] Add Firestore leaderboard
 - [ ] Mobile/tablet UI testing pass
 - [ ] Final balancing pass
 
@@ -100,15 +99,15 @@
 
 ## Challenge Mode
 - [x] Expand to 15 questions
-- [ ] Add progressive challenge question tiers
+- [x] Add progressive challenge question tiers
   - [x] Tier 1: evaluate simple if / else output
   - [x] Tier 2: choose missing if condition
   - [x] Tier 3: evaluate if / elif / else output
   - [x] Tier 4: basic for / while loop output
   - [x] Tier 5: break / continue behaviour
   - [x] Ensure generated questions remain logically consistent
-  - Still predictable enough for fair scoring
-- [ ] Improve randomised question generation
+  - [x] Still predictable enough for fair scoring
+- [x] Improve randomised question generation
   - [x] Randomise variable values
   - [x] Randomise comparison operators
   - [x] Randomise correct answer logic
@@ -160,8 +159,6 @@
   - [ ] Add more Tier 4 identify questions
   - [ ] Add more Tier 5 reverse-logic questions
 
-
-
 - [ ] Improve UI consistency with Level 1 and Level 2
 - [ ] Review score balancing
 
@@ -181,18 +178,29 @@
 - [x] Final exit command
 - [x] Clickable commands
 - [x] Room completion protection
+- [x] Dynamic room randomisation
+- [x] Randomised Core room layout
+- [x] Multi-stage Logic puzzle
+- [x] Multi-stage Debug puzzle
+- [x] Multi-stage If/Else puzzle
+- [x] Interactive terminal command buttons
+- [x] Dynamic Core room map
+- [x] Exit command sequence
+- [x] Terminal sound effects
+- [x] Typewriter effect
+- [x] Terminal glitch effects
 
 ## To Do
-- [ ] Add score breakdown UI
-  - [ ] Current score
-  - [ ] Fragment count
-  - [ ] Time warning
+- [x] Add score breakdown UI
+  - [x] Current score
+  - [x] Fragment count
+  - [x] Time display
 
-- [ ] Add final rank/debrief screen
-- [ ] Improve ending sequence polish
+- [x] Add final rank/debrief screen
+- [x] Improve ending sequence polish
 - [ ] Review scoring balance
 - [ ] Final playthrough testing
-- [ ] Set FAST_MODE = false for release
+- [ ] Disable FAST_MODE for release
 
 ---
 
@@ -205,15 +213,24 @@
 - [x] Read helper
 - [x] Write helper
 - [x] Navigation screen
+- [x] Player name entry
+- [x] Submit final score after Level 4
 - [ ] Live leaderboard display
-- [ ] Player name entry
-- [ ] Submit final score after Level 4
 - [ ] Global leaderboard UI polish
 
 ## Audio
 - [ ] More SFX variety
 - [ ] Volume controls
 - [ ] Music toggle
+
+## Code Quality
+
+- [x] Standardised section headers
+- [x] Added documentation comments
+- [x] Improved code organisation
+- [x] Removed obsolete logic
+- [x] Improved function grouping
+- [x] Improved readability for assessment
 
 ## Polish
 - [ ] Loading transitions
@@ -222,22 +239,15 @@
 - [ ] Better responsive layout
 - [ ] Save/resume support
 
-### Victory Screen Polish
-- [ ] Review and redesign the final victory screen.
-- [ ] Remove the outdated "42 / loops + 1" explanation (no longer matches the current firewall puzzle).
-- [ ] Decide whether to relocate or replace the Hitchhiker's Guide reference.
-- [ ] Improve the end-of-game flow leading into leaderboard submission.
-- [ ] Add a stronger "Game Complete" congratulatory message.
-
 ---
 
 # Suggested Commit Milestones
 
 ## Next Commits
-- [ ] Level 1 score display + binary UI polish
-- [ ] Level 2 practice/challenge refactor
-- [x] Level 3 result screen + streaks
-- [ ] Level 4 score breakdown
+- [ ] Full code cleanup and documentation
+- [ ] README rewrite
+- [ ] Final balancing pass
+- [ ] Responsive/mobile testing
 - [ ] localStorage save system
-- [ ] Leaderboard integration
+- [ ] Leaderboard polish
 - [ ] Final release cleanup

@@ -1,16 +1,35 @@
-// =============================================
-// CS PUZZLE GAME - Main React App
+// ======================================================
+// CS Puzzle Game
+// Main Application
 // Team: Valik, Simon, Fred
-// =============================================
+//
+// This file acts as the central controller for the app.
+// It manages screen navigation, saved progress,
+// achievements, global audio settings and level completion.
+// ======================================================
+
 
 const { useState, useEffect, useRef } = React;
-const TEST_MODE = true; // set to true to unlock all levels from the start
 const GAME_VERSION = "v1.1";
 
-// ── SOUND ENGINE
+// ======================================================
+// Configuration
+// ======================================================
+
+// Development helper.
+// When true, Level 4 is unlocked without completing Levels 1–3.
+// Set to false before final submission.
+const TEST_MODE = true;
+
+
+// ======================================================
+// Sound Engine
+// ======================================================
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
+// Background music files are shuffled when the app starts
+// so the menu/gameplay does not always begin with the same track.
 const BACKGROUND_TRACKS = [
   "assets/background_music/bg1.mp3",
   "assets/background_music/bg2.mp3",
@@ -18,15 +37,27 @@ const BACKGROUND_TRACKS = [
   "assets/background_music/bg4.mp3"
 ];
 
+/**
+ * Randomises the order of an array.
+ * Used to shuffle background music playback.
+ */
 function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+/**
+ * Creates the Web Audio context the first time it is needed.
+ * The same context is reused for all sound effects.
+ */
 function getCtx() {
   if (!audioCtx) audioCtx = new AudioCtx();
   return audioCtx;
 }
 
+/**
+ * Plays short sound effects using the Web Audio API.
+ * This avoids needing separate audio files for every simple UI effect.
+ */
 function playSound(type) {
 
   if (!window.soundEnabled) return;
@@ -78,7 +109,11 @@ function playSound(type) {
   } catch (e) {}
 }
 
-// ── ACHIEVEMENTS ──────────────────────────────
+// ======================================================
+// Achievement Definitions
+// ======================================================
+// Defines all achievements available in the game.
+// Individual levels trigger these using the onAchievement callback.
 const ACHIEVEMENTS = [
   {
     id: "first_blood",
@@ -118,7 +153,12 @@ const ACHIEVEMENTS = [
   },
 ];
 
-// ── LEVEL DATA ────────────────────────────────
+// ======================================================
+// Level Card Data
+// ======================================================
+// Data used to render the main menu level cards.
+// Keeping this in one array makes it easier to update level names,
+// descriptions, icons and difficulty labels.
 const LEVELS = [
   {
     id: 1,
@@ -170,10 +210,13 @@ const LEVELS = [
   },
 ];
 
-// ══════════════════════════════════════════════
-// COMPONENTS
-// ══════════════════════════════════════════════
-
+// ======================================================
+// Shared UI Components
+// ======================================================
+/**
+ * Displays temporary feedback when an achievement is unlocked
+ * or when the game needs to show a short success/status message.
+ */
 // ── ACHIEVEMENT TOAST ─────────────────────────
 function AchievementToast({ achievement, onDone }) {
   useEffect(() => {
@@ -247,6 +290,11 @@ function AchievementToast({ achievement, onDone }) {
 }
 
 // ── HOME SCREEN ───────────────────────────────
+/**
+ * Main menu screen.
+ * Shows available levels, career score, achievements,
+ * leaderboard access and settings access.
+ */
 function HomeScreen({
   completedLevels,
   scores,
@@ -256,6 +304,8 @@ function HomeScreen({
   unlockedAchievements,
 }) {
 
+  // Level 4 acts as the final challenge, so it is locked
+  // until the first three learning levels are completed.
   const level4Unlocked =
     TEST_MODE ||
     (
@@ -448,6 +498,11 @@ function HomeScreen({
   );
 }
 
+/**
+ * Displays global leaderboard results from Firebase.
+ * If the player has just submitted a score, their entry/rank
+ * can also be highlighted here.
+ */
 function LeaderboardScreen({ onBack, submittedEntry }) {
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -719,6 +774,9 @@ function LeaderboardScreen({ onBack, submittedEntry }) {
   );
 }
 
+/**
+ * Reusable ON/OFF button used by the settings screen.
+ */
 function ToggleButton({ enabled, onClick }) {
   return (
     <button
@@ -738,6 +796,9 @@ function ToggleButton({ enabled, onClick }) {
   );
 }
 
+/**
+ * Reusable layout component for each settings option.
+ */
 function SettingCard({
   icon,
   title,
@@ -799,6 +860,10 @@ function SettingCard({
   );
 }
 
+/**
+ * Settings screen for music, sound effects and local progress reset.
+ * Resetting only clears local browser data, not global leaderboard entries.
+ */
 function SettingsScreen({
   onBack,
   musicEnabled,
@@ -885,10 +950,20 @@ function SettingsScreen({
   );
 }
 
-// ══════════════════════════════════════════════
-// APP ROOT
-// ══════════════════════════════════════════════
+// ======================================================
+// App Root
+// ======================================================
+/**
+ * Root application component.
+ * Stores global state and decides which screen or level is currently shown.
+ */
 function App() {
+  // ======================================================
+  // Global App State
+  // ======================================================
+
+  // Most progress is loaded from localStorage so the player
+  // can refresh or return later without losing local progress.
   const [screen, setScreen] = useState("start");
   const [completedLevels, setCompletedLevels] = useState(() => {
     return JSON.parse(localStorage.getItem("completedLevels") || "[]");
@@ -907,7 +982,7 @@ function App() {
 
   const [lastSubmittedScore, setLastSubmittedScore] = useState(null);
 
-  // BACKGROUND MUSIC
+  // References and state used by the background music system.
   const musicRef = useRef(null);
   const [trackIndex, setTrackIndex] = useState(0);
   const [musicEnabled, setMusicEnabled] = useState(() => {
@@ -923,7 +998,12 @@ function App() {
     shuffleArray(BACKGROUND_TRACKS)
   );
 
-  // ── CREATE / SWITCH TRACKS ──────────────────
+  // ======================================================
+  // Background Music
+  // ======================================================
+
+  // Creates the current background music track and moves to
+  // the next shuffled track when the current one finishes.
   useEffect(() => {
     const audio = new Audio(
       shuffledTracks.current[trackIndex]
@@ -986,6 +1066,11 @@ function App() {
 
   }, []);
 
+  // ======================================================
+  // Local Storage Persistence
+  // ======================================================
+
+  // Automatically save settings and progress whenever they change.
   useEffect(() => {
     localStorage.setItem("musicEnabled", String(musicEnabled));
   }, [musicEnabled]);
@@ -1010,10 +1095,10 @@ function App() {
     );
   }, [unlockedAchievements]);
 
-  function handleSelectLevel(id) {
-    setScreen(`level${id}`);
-  }
-
+  /**
+ * Unlocks an achievement if it has not already been earned.
+ * The achievement is added to local progress and queued as a toast.
+ */
   function unlockAchievement(id) {
     if (unlockedAchievements.includes(id)) return;
     const achievement = ACHIEVEMENTS.find((a) => a.id === id);
@@ -1022,10 +1107,17 @@ function App() {
     setToastQueue((prev) => [...prev, achievement]);
   }
 
+  /**
+   * Removes the oldest notification from the toast queue.
+   */
   function dismissToast() {
     setToastQueue((prev) => prev.slice(1));
   }
 
+  /**
+   * Clears local progress from the browser.
+   * Global leaderboard entries are stored remotely and are not affected.
+   */
   function resetLocalProgress() {
     localStorage.removeItem("musicEnabled");
     localStorage.removeItem("soundEnabled");
@@ -1057,6 +1149,11 @@ function App() {
     setScreen("home");
   }
 
+  /**
+   * Handles completion of a level.
+   * Updates completed levels, stores the best score, awards achievements
+   * and moves the player to the next screen.
+   */
   function completeLevel(levelId, pts, mistakes = 0, goHome = false) {
     setCompletedLevels((prev) =>
       prev.includes(levelId) ? prev : [...prev, levelId],
@@ -1092,6 +1189,12 @@ function App() {
     else setScreen("home");
   }
 
+  // ======================================================
+  // Screen Rendering
+  // ======================================================
+
+  // The app uses simple screen state to decide which component
+  // should be displayed.
   return (
     <>
       {screen === "start" && (
@@ -1206,6 +1309,9 @@ function App() {
           onRequestReset={() => setShowResetConfirm(true)}
         />
       )}
+      // ======================================================
+      // Reset Progress Confirmation Dialog
+      // ======================================================
       {showResetConfirm && (
         <div
           style={{
@@ -1327,6 +1433,9 @@ function App() {
           </div>
         </div>
       )}
+      // ======================================================
+      // Notification Toast
+      // ======================================================
       {toastQueue.length > 0 && (
         <AchievementToast achievement={toastQueue[0]} onDone={dismissToast} />
       )}
