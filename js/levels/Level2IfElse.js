@@ -1704,7 +1704,7 @@ function Level2({ onComplete, onBack, onAchievement }) {
                     dangerouslySetInnerHTML={{
                       __html: line.text
                         .replace(
-                          /(if|elif|else|while|for|break|continue|print|True|False|and|or|not|in|range)/g,
+                          /\b(if|elif|else|while|for|break|continue|print|True|False|and|or|not|in|range)\b/g,
                           "<span class='kw'>$1</span>"
                         )
                         .replace(/(".*?")/g, "<span class='str'>$1</span>")
